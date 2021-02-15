@@ -46,4 +46,20 @@ a:hover {
   text-decoration: underline;
 }
 
+.search {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+.wrapper {
+  position: relative;
+  /* top: 311px; */
+  top: 292px;
+  margin-top: 0;
+  width: 100%;
+  min-width: 336px;
+}
+
 /*# sourceMappingURL=styles.css.map */

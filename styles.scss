@@ -29,7 +29,6 @@ nav {
 }
 a {
     font-family: arial, sans-serif;
-
     background-color: transparent;
     text-decoration: none;
     padding-right: 15px;
@@ -44,4 +43,19 @@ a {
     &:hover {
         text-decoration: underline;
     }
+}
+
+.search {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.wrapper {
+    position: relative;
+    /* top: 311px; */
+    top: 292px;
+    margin-top: 0;
+    width: 100%;
+    min-width: 336px; 
 }
