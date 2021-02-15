@@ -6,4 +6,44 @@ body {
   color: #202124;
 }
 
+div {
+  display: block;
+}
+
+#navigation {
+  top: 9px;
+  position: relative;
+  text-align: right;
+  min-width: 220px;
+  font-size: 13px;
+  float: right;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+nav {
+  height: 30px;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+}
+
+a {
+  font-family: arial, sans-serif;
+  background-color: transparent;
+  text-decoration: none;
+  padding-right: 15px;
+  display: inline-block;
+  line-height: 24px;
+  vertical-align: middle;
+}
+a:-webkit-any-link {
+  color: rgba(0, 0, 0, 0.87);
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 /*# sourceMappingURL=styles.css.map */
