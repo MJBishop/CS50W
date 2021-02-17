@@ -87,4 +87,18 @@ input[type=text]:hover {
   border-color: rgba(223, 225, 229, 0);
 }
 
+input[type=submit] {
+  font-size: 14px;
+  line-height: 27px;
+  height: 36px;
+  min-width: 54px;
+  background-color: #f8f9fa;
+  color: #3c4043;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
 /*# sourceMappingURL=styles.css.map */
