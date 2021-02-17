@@ -24,8 +24,9 @@ nav {
     height: 30px;
     align-items: center;
     display: flex;
-    justify-content: flex-end;
-    position: relative;
+    // justify-content: flex-end;
+    position: fixed;
+    right: 20px;
 }
 a {
     font-family: arial, sans-serif;
@@ -53,8 +54,7 @@ a {
 }
 .wrapper {
     position: relative;
-    /* top: 311px; */
-    top: 292px;
+    top: 322px;
     margin-top: 0;
     width: 100%;
     min-width: 336px; 

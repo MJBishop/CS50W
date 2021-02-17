@@ -25,8 +25,8 @@ nav {
   height: 30px;
   align-items: center;
   display: flex;
-  justify-content: flex-end;
-  position: relative;
+  position: fixed;
+  right: 20px;
 }
 
 a {
@@ -55,8 +55,7 @@ a:hover {
 
 .wrapper {
   position: relative;
-  /* top: 311px; */
-  top: 292px;
+  top: 322px;
   margin-top: 0;
   width: 100%;
   min-width: 336px;
