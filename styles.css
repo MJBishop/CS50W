@@ -112,6 +112,9 @@ input[type=submit]:hover {
   border: 1px solid #dadce0;
   color: #202124;
 }
+input[type=submit]:selection {
+  border: 1px solid blue;
+}
 
 input, textarea, select {
   outline: none;

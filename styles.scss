@@ -115,7 +115,10 @@ input[type="submit"] {
         border: 1px solid #dadce0;
         color: #202124;
     }
+    &:selection {
+        border: 1px solid blue;
+    }
 }
-input,textarea,select {
+input, textarea, select {
     outline: none;
 }
