@@ -112,8 +112,8 @@ input[type=submit]:hover {
   border: 1px solid #dadce0;
   color: #202124;
 }
-input[type=submit]:selection {
-  border: 1px solid blue;
+input[type=submit]:focus {
+  border: 1px solid #4f91f6;
 }
 
 input, textarea, select {
