@@ -108,4 +108,11 @@ input[type="submit"] {
     margin-right: 4px;
     margin-bottom: 11px;
     margin-left: 4px;
+
+    &:hover {
+        box-shadow: 0 1px 1px rgb(0 0 0 / 10%);
+        background-color: #f8f9fa;
+        border: 1px solid #dadce0;
+        color: #202124;
+    }
 }
