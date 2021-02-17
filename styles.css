@@ -113,4 +113,8 @@ input[type=submit]:hover {
   color: #202124;
 }
 
+input, textarea, select {
+  outline: none;
+}
+
 /*# sourceMappingURL=styles.css.map */

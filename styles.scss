@@ -116,3 +116,6 @@ input[type="submit"] {
         color: #202124;
     }
 }
+input,textarea,select {
+    outline: none;
+}
