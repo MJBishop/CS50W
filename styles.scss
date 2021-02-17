@@ -98,9 +98,14 @@ input[type="submit"] {
     color: #3c4043;
     border: 1px solid transparent;
     border-radius: 4px;
-
     text-align: center;
     cursor: pointer;
     user-select: none;
 
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-top: 15px;
+    margin-right: 4px;
+    margin-bottom: 11px;
+    margin-left: 4px;
 }
