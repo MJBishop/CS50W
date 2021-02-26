@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Google Advanced Search</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="adv-search-styles.css">
+    </head>
+    <body>
+        <div style="top:0;left:0;right:0;width:100%;">
+            <div id="navigation">
+                <nav>
+                    <a href="index.html">Google Search</a>
+                </nav>
+            </div>
+            <div class="main">
+                <form action="https://google.com/search">
+                    <div id="grid">
+                        <div id="subheading" class="grid-item">
+                            <span>Find pages with...</span>
+                        </div>
+                        <div class="grid-item in"></div>
+                        <div class="grid-item about">
+                            <label for="all">all these words:</label>
+                        </div>
+                        <div class="grid-item in">
+                            <input type="text" id="all" name="q" autocomplete="off"><br>
+                        </div>
+                        <div class="grid-item about">
+                            <label for="exact">this exact word or phrase:</label>
+                        </div>
+                        <div class="grid-item in">
+                            <input type="text" id="exact" name="q" autocomplete="off"><br>
+                        </div>
+                        <div class="grid-item about">
+                            <label for="any">any of these words:</label>
+                        </div>
+                        <div class="grid-item in">
+                            <input type="text" id="any" name="q" autocomplete="off"><br>
+                        </div>
+                        <div class="grid-item about">
+                            <label for="none">none of these words:</label>
+                        </div>
+                        <div class="grid-item in">
+                            <input type="text" id="none" name="q" autocomplete="off"><br>
+                        </div>
+                        <div class="">
+                            <input type="submit" value="Advanced Search">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
