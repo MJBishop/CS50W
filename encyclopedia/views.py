@@ -1,3 +1,4 @@
+from django.http import HttpResponse, Http404
 import markdown2
 from django.shortcuts import render
 
@@ -13,7 +14,10 @@ def index(request):
 # Entry View
 # Returns the entry of a given title
 def entry(request, title):
+    entry = util.get_entry(title)
+    if entry == None:
+        raise Http404("Entry not found")
     return render(request, "encyclopedia/entry.html", {
-        "entry": markdown2.markdown(util.get_entry(title))
+        "entry": markdown2.markdown(entry)
     })
 
