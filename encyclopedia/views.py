@@ -54,10 +54,21 @@ def entry(request, title):
 def new(request):
     return render(request, "encyclopedia/new.html")
 
-def edit(request, title):# title not being passed..
+def edit(request, title):
     entry = util.get_entry(title)
     return render(request, "encyclopedia/edit.html", {
         "entry": entry,
         "title": title
     })
 
+def save(request, title):
+    entry = request.GET.get("entry")
+    print(title)
+    print(entry)
+
+    util.save_entry(title, entry)
+    entry = util.get_entry(title)
+    return render(request, "encyclopedia/entry.html", {
+        "entry": markdown2.markdown(entry),
+        "title": title
+    })
