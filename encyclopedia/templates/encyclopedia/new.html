@@ -5,8 +5,18 @@
 {% endblock %}
 
 {% block body %}
-    <!-- <h1>New Entry</h1> -->
-    <input type="text" placeholder="Title"></input><br>
-    <textarea placeholder="Entry"></textarea>
+    <form  action="{% url 'encyclopedia:add' %}" method="post" class="row">
+        {% csrf_token %}
+        <div class="col-12">
+            <div class="input-group">
+                <!-- <h1 style="padding-right: 40px">??</h1> -->
+                <h1 style="padding-right: 40px">{{ form.titleField }}</h1> 
+                <input style="margin-top: 25px; height: 40px" class="btn btn-primary" type="submit" value="Save"></submit>
+            </div>
+        </div>
+        <div class="col-12">
+            {{ form.entryField }}
+        </div>
+    </form>
 
 {% endblock %}
