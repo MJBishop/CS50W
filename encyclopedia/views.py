@@ -63,11 +63,8 @@ def randomEntry(request):
     title = entryList[0]
     if title == None:
         raise Http404("Entry not found")
-    entry = util.get_entry(title)
-    return render(request, "encyclopedia/entry.html", {
-        "entry": markdown2.markdown(entry),
-        "title": title
-    })
+    # entry = util.get_entry(title)
+    return HttpResponseRedirect(reverse("encyclopedia:entry", args=(title,)))
 
 def edit(request, title):
     if request.method == "POST":
