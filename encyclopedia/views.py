@@ -1,5 +1,5 @@
 import markdown2
-from random import *
+import random 
 from django import forms
 from django.http import HttpResponse, Http404
 from django.http import HttpResponseRedirect
@@ -53,6 +53,17 @@ def entry(request, title):
     entry = util.get_entry(title)
     if entry == None:
         raise Http404("Entry not found")
+    return render(request, "encyclopedia/entry.html", {
+        "entry": markdown2.markdown(entry),
+        "title": title
+    })
+
+def randomEntry(request):
+    entryList = random.sample(util.list_entries(), 1)
+    title = entryList[0]
+    if title == None:
+        raise Http404("Entry not found")
+    entry = util.get_entry(title)
     return render(request, "encyclopedia/entry.html", {
         "entry": markdown2.markdown(entry),
         "title": title
