@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block body %}
-    <form action="{% url 'save' title %}"  class="row">
-        <!-- {% csrf_token %} -->
+    <form  action="{% url 'encyclopedia:edit' title %}" method="post" class="row">
+        {% csrf_token %}
         <div class="col-12">
             <div class="input-group">
-                <h1 style="padding-right: 40px"> {{ title }} </h1>
+                <h1 style="padding-right: 40px">{{ title }}</h1>
                 <input style="margin-top: 25px; height: 40px" class="btn btn-primary" type="submit" value="Save"></submit>
             </div>
         </div>
         <div class="col-12">
-            <textarea placeholder="Entry" name="entry" value="entry">{{ entry | safe }}</textarea>
+            <!-- <textarea placeholder="Entry" name="entry">{{ entry | safe }}</textarea> -->
+            {{ form }}
         </div>
     </form>
 
