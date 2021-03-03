@@ -16,7 +16,7 @@ class TextAreaForm(forms.Form):
 def search(request):
     search_string = request.GET.get("q")
     if len(search_string) > 0:
-        # print("search string: " + search_string)
+        print("search string: " + search_string)
         partial_matches = []
         for title in util.list_entries(): #if title in ...entries ?
             if title == search_string:
