@@ -29,6 +29,12 @@ def watchlist(request):
         "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'))
     })
 
+def listing(request, listing_id):
+    return render(request, "auctions/listing.html", {
+        "listing": Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id),
+        "comments": Comment.objects.filter(listing_id=listing_id)
+    })
+
 
 def login_view(request):
     if request.method == "POST":
