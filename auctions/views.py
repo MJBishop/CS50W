@@ -20,8 +20,13 @@ def categories(request):
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        "listings": Listing.objects.filter(category=category), 
+        "listings": Listing.objects.filter(category=category).annotate(max_bid=Max('bids__bid')), 
         "category": category
+    })
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {
+        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'))
     })
 
 
