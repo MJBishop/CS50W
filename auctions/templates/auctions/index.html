@@ -9,7 +9,7 @@
                 <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
                 <h5>{{ listing.category }}</h5>
                 <p>{{ listing.description }}</p>  
-                <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">
+                <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">>
             </li>
         {% empty %}
             <li>No Listings</li>

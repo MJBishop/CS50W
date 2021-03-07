@@ -13,6 +13,11 @@ def index(request):
         "listings": Listing.objects.annotate(max_bid=Max('bids__bid'))
     })
 
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct()
+    })
+
 
 def login_view(request):
     if request.method == "POST":
