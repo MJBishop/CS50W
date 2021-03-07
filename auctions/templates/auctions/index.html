@@ -2,18 +2,7 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    <ul>
-        {% for listing in listings %}
-            <li>
-                <h4>{{ listing.title }}</h4>
-                <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
-                <h5>{{ listing.category }}</h5>
-                <p>{{ listing.description }}</p>  
-                <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">>
-            </li>
-        {% empty %}
-            <li>No Listings</li>
-        {% endfor %}
-    </ul>
+    
+    {% include "auctions/listings.html" %}
     
 {% endblock %}
