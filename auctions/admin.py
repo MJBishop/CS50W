@@ -10,7 +10,7 @@ class BidAdmin(admin.ModelAdmin):
     list_display = ("id", "listing", "user", "bid") 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("id", "listing", "user", "comment")
+    list_display = ("id", "listing", "user_name", "comment")
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ("username", "is_superuser")
