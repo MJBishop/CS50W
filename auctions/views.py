@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.db.models import Max
+from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -31,7 +31,7 @@ def watchlist(request):
 
 def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id),
+        "listing": Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id),
         "comments": Comment.objects.filter(listing_id=listing_id)
     })
 
@@ -48,6 +48,13 @@ def toggleWatchlist(request, listing_id):
             listing.watching.add(current_user)
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+# def placeBid(request, listing_id):
+#     if request.method == "POST":
+#         current_user = request.user
+#         listing = Listing.objects.get(pk=listing_id)
+
+
 
 
 def login_view(request):
