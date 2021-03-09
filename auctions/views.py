@@ -35,6 +35,20 @@ def listing(request, listing_id):
         "comments": Comment.objects.filter(listing_id=listing_id)
     })
 
+def toggleWatchlist(request, listing_id):
+    if request.method == "POST":
+        current_user = request.user
+        listing = Listing.objects.get(pk=listing_id)
+        
+        if current_user in listing.watching.all():
+            # remove user from watchlist
+            listing.watching.remove(current_user)
+        else:
+            # add user to watchlist
+            listing.watching.add(current_user)
+
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
 
 def login_view(request):
     if request.method == "POST":
