@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col-md-6 col-lg-5">
+        <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">
+    </div>
+    <div class="col-md-6 col-lg-7">
+        <h5>{{ listing.category }}</h5>
+        <p>{{ listing.description }}</p> 
+        <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
+        <p>{{ listing.bid_count }} bid(s) so far.</p>
+        <!-- <p> is currently the highest bidder</p> -->
+    </div>
+</div>
+
+ 

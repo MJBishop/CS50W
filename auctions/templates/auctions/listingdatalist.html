@@ -1,0 +1,11 @@
+<ul>
+    {% for listing in listings %}
+        <li>
+            <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
+            
+            {% include "auctions/listingdata.html" %}
+        </li>
+    {% empty %}
+        <li>No Listings</li>
+    {% endfor %}
+</ul>

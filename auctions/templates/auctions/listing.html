@@ -1,0 +1,67 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+    
+    {% include "auctions/listingdata.html" %}
+
+    {% if user.is_authenticated %}
+        <div class="row">
+            <div class="col-md-6 col-lg-7">
+                {% if listing.owner == user %}
+                    <form action="">
+                        {% csrf_token %}
+                        <input type="submit" value="Close Auction">
+                    </form>
+                {% else %}
+                    <form action="">
+                        {% csrf_token %}
+                        <input type="text" placeholder="Bid">
+                        <input type="submit" value="Place Bid">
+                    </form>
+                {% endif %}
+                <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
+                    {% csrf_token %}
+                    {% if listing in user.watchlist.all %}
+                        <input type="submit" value="Remove from Watchlist">
+                    {% else %}
+                        <input type="submit" value="Add to Watchlist">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <h4>Comments</h4>
+    {% if user.is_authenticated %}
+        <form action="">
+            <div class="row">
+                <div class="col-xs-0 col-md-2"></div>
+                <div class="col-8">
+                    <textarea name="comment_text" id="" style="width: 100%"></textarea>
+                </div>
+                <div class="col-2">
+                    <input type="submit" style="vertical-align: center">
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    <ul>
+        {% for comment in comments %}
+            
+            <div class="row">
+                <div class="col-xs-0 col-md-2"></div>
+                <div class="col-8">
+                    <li>
+                        <h5>{{ comment.user_name }}</h5>
+                        <p>{{ comment.comment }}</p>
+                    </li>
+                </div>
+                <div class="col-xs-0 col-md-2"></div>
+            </div>
+            
+        {% endfor %}
+    </ul>
+    
+{% endblock %}
