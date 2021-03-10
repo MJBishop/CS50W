@@ -22,10 +22,11 @@
                 {% endif %}
                 <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
                     {% csrf_token %}
+                    <label for="all">{{ listing.watching.count }} watching this auction.</label>
                     {% if listing in user.watchlist.all %}
-                        <input type="submit" value="Remove from Watchlist">
+                        <input type="submit" value="Remove from Watchlist" id="all">
                     {% else %}
-                        <input type="submit" value="Add to Watchlist">
+                        <input type="submit" value="Add to Watchlist" id="all">
                     {% endif %}
                 </form>
             </div>
