@@ -10,7 +10,16 @@ from .models import User, Listing, Bid, Comment
 
 # Forms
 class NewBidForm(forms.Form):
-    new_bid = forms.IntegerField(label='')
+    newbid = forms.IntegerField(label='', min_value=1)
+
+    def __init__(self, *args, **kwargs):
+        # forces a default min_bid to be passed when casting from 'POST'
+        min_bid = kwargs.pop('min_bid')
+        super(NewBidForm, self).__init__(*args, **kwargs)
+        self.fields['newbid'].widget.attrs['min'] = min_bid
+
+
+
 
 
 def index(request):
@@ -35,11 +44,15 @@ def watchlist(request):
     })
 
 def listing(request, listing_id):
+    listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
+    min_bid = listing.starting_bid
+    if listing.max_bid is not None:
+        min_bid = listing.max_bid + 1
 
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id),
+        "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id),
-        "form": NewBidForm()
+        "form": NewBidForm(min_bid=min_bid )
     })
 
 def toggleWatchlist(request, listing_id):
@@ -58,17 +71,20 @@ def toggleWatchlist(request, listing_id):
 
 def placeBid(request, listing_id):
     if request.method == "POST":
-        form = NewBidForm(request.POST)
+        form = NewBidForm(request.POST, min_bid=0)
 
         if form.is_valid():
+            print('FORM IS VALID')
             current_user = request.user
-            new_bid_amount = form.cleaned_data["new_bid"]
+            new_bid_amount = form.cleaned_data["newbid"]
             listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
 
             if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
                 # Add a new bid to the listing
                 new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
                 new_bid.save()
+        else:
+            print('FORM IS NOT VALID')
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
