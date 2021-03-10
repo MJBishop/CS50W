@@ -2,10 +2,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
+from django import forms
 from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Bid, Comment
+
+# Forms
+class NewBidForm(forms.Form):
+    new_bid = forms.IntegerField(label='')
 
 
 def index(request):
@@ -30,9 +35,11 @@ def watchlist(request):
     })
 
 def listing(request, listing_id):
+
     return render(request, "auctions/listing.html", {
         "listing": Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id),
-        "comments": Comment.objects.filter(listing_id=listing_id)
+        "comments": Comment.objects.filter(listing_id=listing_id),
+        "form": NewBidForm()
     })
 
 def toggleWatchlist(request, listing_id):
@@ -49,10 +56,23 @@ def toggleWatchlist(request, listing_id):
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
-# def placeBid(request, listing_id):
-#     if request.method == "POST":
-#         current_user = request.user
-#         listing = Listing.objects.get(pk=listing_id)
+def placeBid(request, listing_id):
+    if request.method == "POST":
+        form = NewBidForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
+            current_bid = listing.max_bid
+            new_bid_amount = form.cleaned_data["new_bid"]
+            if new_bid_amount > current_bid:
+                # Add a new bid to the listing
+                new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
+                new_bid.save()
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+
+
+
 
 
 
