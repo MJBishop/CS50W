@@ -16,8 +16,7 @@
                 {% else %}
                     <form action="{% url 'placeBid' listing.id %}" method="post">
                         {% csrf_token %}
-                        <!-- <input type="text" placeholder="Bid"> -->
-                        {{ form }}
+                        {{ bid_form }}
                         <input type="submit" value="Place Bid">
                     </form>
                 {% endif %}
@@ -36,11 +35,13 @@
 
     <h4>Comments</h4>
     {% if user.is_authenticated %}
-        <form action="">
+        <form action="{% url 'addComment' listing.id %}" method="post">
             <div class="row">
                 <div class="col-xs-0 col-md-2"></div>
                 <div class="col-8">
-                    <textarea name="comment_text" id="" style="width: 100%"></textarea>
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <!-- <textarea name="comment_text" id="" style="width: 100%"></textarea> -->
                 </div>
                 <div class="col-2">
                     <input type="submit" style="vertical-align: center">

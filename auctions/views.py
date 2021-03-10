@@ -20,13 +20,15 @@ class NewBidForm(forms.Form):
 
     #clean_newbid
 
-
+class NewCommentForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment'}), label='')
 
 
 
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.annotate(max_bid=Max('bids__bid'))
+        # "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'))
     })
 
 def categories(request):
@@ -37,6 +39,7 @@ def categories(request):
 def category(request, category):
     return render(request, "auctions/category.html", {
         "listings": Listing.objects.filter(category=category).annotate(max_bid=Max('bids__bid')), 
+        # "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid')), 
         "category": category
     })
 
@@ -55,10 +58,13 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id),
-        "form": NewBidForm(min_bid=min_bid )
+        "bid_form": NewBidForm(min_bid=min_bid ),
+        "comment_form": NewCommentForm()
     })
 
 def toggleWatchlist(request, listing_id):
+    # TODO - Inform user if un-watching an auction the user has won
+
     if request.method == "POST":
         current_user = request.user
         listing = Listing.objects.get(pk=listing_id)
@@ -95,7 +101,15 @@ def placeBid(request, listing_id):
             print('FORM IS NOT VALID')
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
-
+def addComment(request, listing_id):
+    if request.method == "POST":
+        form = NewCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data["comment"]
+            listing = Listing.objects.get(pk=listing_id)
+            new_comment = Comment(comment=comment, user_name=request.user, listing=listing)
+            new_comment.save()
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
 def login_view(request):
