@@ -10,13 +10,15 @@ from .models import User, Listing, Bid, Comment
 
 # Forms
 class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(label='', min_value=1)
+    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Bid'}), label='', min_value=1)
 
     def __init__(self, *args, **kwargs):
         # forces a default min_bid to be passed when casting from 'POST'
         min_bid = kwargs.pop('min_bid')
         super(NewBidForm, self).__init__(*args, **kwargs)
         self.fields['newbid'].widget.attrs['min'] = min_bid
+
+    #clean_newbid
 
 
 
@@ -46,6 +48,7 @@ def watchlist(request):
 def listing(request, listing_id):
     listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     min_bid = listing.starting_bid
+    
     if listing.max_bid is not None:
         min_bid = listing.max_bid + 1
 
@@ -71,14 +74,19 @@ def toggleWatchlist(request, listing_id):
 
 def placeBid(request, listing_id):
     if request.method == "POST":
-        form = NewBidForm(request.POST, min_bid=0)
+        listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
+        min_bid = listing.starting_bid
 
+        if listing.max_bid is not None:
+            min_bid = listing.max_bid + 1
+        form = NewBidForm(request.POST, min_bid=min_bid)
+
+        # TODO - Notify User IF min_bid has increased since the listings page has loaded..
         if form.is_valid():
             print('FORM IS VALID')
             current_user = request.user
             new_bid_amount = form.cleaned_data["newbid"]
-            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
-
+    
             if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
                 # Add a new bid to the listing
                 new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
@@ -86,10 +94,6 @@ def placeBid(request, listing_id):
         else:
             print('FORM IS NOT VALID')
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
-
-
-
-
 
 
 
