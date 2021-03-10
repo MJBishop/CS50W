@@ -59,16 +59,17 @@ def toggleWatchlist(request, listing_id):
 def placeBid(request, listing_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
+
         if form.is_valid():
             current_user = request.user
-            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
-            current_bid = listing.max_bid
             new_bid_amount = form.cleaned_data["new_bid"]
-            if new_bid_amount > current_bid:
+            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
+
+            if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
                 # Add a new bid to the listing
                 new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
                 new_bid.save()
-        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
 
