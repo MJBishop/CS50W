@@ -29,8 +29,8 @@ class NewCommentForm(forms.Form):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.annotate(max_bid=Max('bids__bid'))
-        # "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'))
+        # "listings": Listing.objects.annotate(max_bid=Max('bids__bid'))
+        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'))
     })
 
 def categories(request):
@@ -40,8 +40,8 @@ def categories(request):
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        "listings": Listing.objects.filter(category=category).annotate(max_bid=Max('bids__bid')), 
-        # "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid')), 
+        # "listings": Listing.objects.filter(category=category).annotate(max_bid=Max('bids__bid')), 
+        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid')), 
         "category": category
     })
 
