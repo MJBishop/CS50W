@@ -29,7 +29,7 @@ class NewCommentForm(forms.Form):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'))
+        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
     })
 
 def categories(request):
@@ -39,27 +39,33 @@ def categories(request):
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid')), 
+        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')), 
         "category": category
     })
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html", {
-        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'))
+        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
     })
 
 def listing(request, listing_id):
     listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     min_bid = listing.starting_bid
-    
+
     if listing.max_bid is not None:
         min_bid = listing.max_bid + 1
 
+    bid = Bid.objects.filter(listing=listing).order_by('-bid').first()
+    # print(bid.bid)
+    
+
+    # TODO - just pass the Bid object
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
-        "bid_form": NewBidForm(initial={ 'min_bid':min_bid } ),
-        "comment_form": NewCommentForm()
+        "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
+        "comment_form": NewCommentForm(),
+        "bid_or_None": bid
     })
 
 def toggleWatchlist(request, listing_id):
@@ -82,49 +88,59 @@ def placeBid(request, listing_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
 
-        # TODO - Notify User IF min_bid has increased since the listings page has loaded..
         if form.is_valid():
             new_bid_amount = form.cleaned_data["newbid"]
-            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
-            current_user = request.user
+            listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
             if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
-                # Add a new bid to the listing
-                new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
+
+                # Create & Save a new listing bid
+                new_bid = Bid(listing=listing, user=request.user, bid=new_bid_amount)
                 new_bid.save()
+
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
             else:
                 # min_bid has changed since loading the page (by another user)
-                # notify user by returning a new form with a new label
                 min_bid = listing.starting_bid
-                new_form = NewBidForm(initial={ 'min_bid':min_bid } )
-                new_form.fields['newbid'].label = "Your bid was below the new minimum bid"
+                if listing.max_bid is not None:
+                    min_bid = listing.max_bid + 1
 
+                # notify user by returning a new form and a message
                 return render(request, "auctions/listing.html", {
                     "listing": listing,
                     "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
-                    "bid_form": new_form,
-                    "comment_form": NewCommentForm()
+                    "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
+                    "comment_form": NewCommentForm(),
+                    "message": "Your bid was below the new minimum bid."
                 })
         
 
 def addComment(request, listing_id):
     if request.method == "POST":
         form = NewCommentForm(request.POST)
+
         if form.is_valid():
             comment = form.cleaned_data["comment"]
             listing = Listing.objects.get(pk=listing_id)
+
+            # Create & Save the new comment
             new_comment = Comment(comment=comment, user_name=request.user, listing=listing)
             new_comment.save()
+
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
 def closeAuction(request, listing_id):
     if request.method == "POST":
         listing = Listing.objects.get(pk=listing_id)
+
+        # Check the user is the listing.owner
         if request.user.id == listing.owner.id:
+
+            # Set listing as inactive
             setattr(listing, "active", False)
             listing.save()
+
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 

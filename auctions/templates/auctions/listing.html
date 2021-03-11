@@ -3,23 +3,57 @@
 {% block body %}
     <h2>{{ listing.title }}</h2>
     
+    <!-- listing data -->
     {% include "auctions/listingdata.html" %}
 
     {% if user.is_authenticated %}
         <div class="row">
             <div class="col-md-6 col-lg-7">
-                {% if listing.owner == user %}
-                    <form action="{% url 'closeAuction' listing.id %}" method="post">
-                        {% csrf_token %}
-                        <input type="submit" value="Close Auction">
-                    </form>
+
+                <!-- active listing -->
+                {% if listing.active %}
+
+                    <!-- highest bidder. -->
+                    {% if user == bid_or_None.user %}
+                        <p>You are the highest bidder.</p>
+                    {% elif bid_or_None %}
+                        <p>{{ bid_or_None.user }} is the highest bidder.</p>
+                    {% endif %}
+
+                    {% if listing.owner == user %}
+
+                        <!-- close auction -->
+                        <form action="{% url 'closeAuction' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" value="Close Auction">
+                        </form>
+                    {% else %}
+
+                        <!-- bid changed message -->
+                        {% if message %}
+                            <div>{{ message }}</div>
+                        {% endif %}
+
+                        <!-- place bid -->
+                        <form action="{% url 'placeBid' listing.id %}" method="post">
+                            {% csrf_token %}
+                            {{ bid_form }}
+                            <input type="submit" value="Place Bid">
+                        </form>
+                    {% endif %}
+
+                <!-- listing is closed -->
                 {% else %}
-                    <form action="{% url 'placeBid' listing.id %}" method="post">
-                        {% csrf_token %}
-                        {{ bid_form }}
-                        <input type="submit" value="Place Bid">
-                    </form>
+
+                    <div>Auction is closed.</div>
+                    {% if user == bid_or_None.user %}
+                        <div>YOU won this auction!</div>
+                    {% else %}
+                        <div>{{ bid_or_None.user }} won this auction.</div>
+                    {% endif %}
                 {% endif %}
+
+                <!-- watchlist -->
                 <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
                     {% csrf_token %}
                     <label for="all">{{ listing.watching.count }} watching this auction.</label>
@@ -34,6 +68,8 @@
     {% endif %}
 
     <h4>Comments</h4>
+    
+    <!-- add comment -->
     {% if user.is_authenticated %}
         <form action="{% url 'addComment' listing.id %}" method="post">
             <div class="row">
@@ -41,7 +77,6 @@
                 <div class="col-8">
                     {% csrf_token %}
                     {{ comment_form }}
-                    <!-- <textarea name="comment_text" id="" style="width: 100%"></textarea> -->
                 </div>
                 <div class="col-2">
                     <input type="submit" style="vertical-align: center">
@@ -50,9 +85,9 @@
         </form>
     {% endif %}
 
+    <!-- comments -->
     <ul>
         {% for comment in comments %}
-            
             <div class="row">
                 <div class="col-xs-0 col-md-2"></div>
                 <div class="col-8">
@@ -63,7 +98,6 @@
                 </div>
                 <div class="col-xs-0 col-md-2"></div>
             </div>
-            
         {% endfor %}
     </ul>
     

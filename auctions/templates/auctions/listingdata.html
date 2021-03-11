@@ -6,8 +6,16 @@
         <h5>{{ listing.category }}</h5>
         <p>{{ listing.description }}</p> 
         <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
-        <p>{{ listing.bid_count }} bid(s) so far.</p>
-        <!-- <p> is currently the highest bidder</p> -->
+
+        {% if listing.bid_count == 0 %}
+            <p>No bids yet.</p>
+        {% else %}
+            {% if listing.bid_count == 1 %}
+                <p>1 bid so far.</p>
+            {% else %}
+                <p>{{ listing.bid_count }} bids so far.</p>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 
