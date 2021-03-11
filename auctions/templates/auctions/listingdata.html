@@ -3,6 +3,7 @@
         <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">
     </div>
     <div class="col-md-6 col-lg-7">
+        <span>Created {{ listing.date_created }}</span>
         <h5>{{ listing.category }}</h5>
         <p>{{ listing.description }}</p> 
         <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>

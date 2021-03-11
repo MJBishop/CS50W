@@ -68,7 +68,7 @@
     {% endif %}
 
     <h4>Comments</h4>
-    
+
     <!-- add comment -->
     {% if user.is_authenticated %}
         <form action="{% url 'addComment' listing.id %}" method="post">
@@ -93,6 +93,7 @@
                 <div class="col-8">
                     <li>
                         <h5>{{ comment.user_name }}</h5>
+                        <span>{{ comment.date_created }}</span>
                         <p>{{ comment.comment }}</p>
                     </li>
                 </div>
