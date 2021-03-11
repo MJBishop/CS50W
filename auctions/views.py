@@ -29,7 +29,6 @@ class NewCommentForm(forms.Form):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        # "listings": Listing.objects.annotate(max_bid=Max('bids__bid'))
         "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'))
     })
 
@@ -40,7 +39,6 @@ def categories(request):
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        # "listings": Listing.objects.filter(category=category).annotate(max_bid=Max('bids__bid')), 
         "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid')), 
         "category": category
     })
@@ -118,6 +116,15 @@ def addComment(request, listing_id):
             listing = Listing.objects.get(pk=listing_id)
             new_comment = Comment(comment=comment, user_name=request.user, listing=listing)
             new_comment.save()
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+
+def closeAuction(request, listing_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=listing_id)
+        if request.user.id == listing.owner.id:
+            setattr(listing, "active", False)
+            listing.save()
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
