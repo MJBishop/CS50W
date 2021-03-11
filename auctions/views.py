@@ -13,10 +13,12 @@ class NewBidForm(forms.Form):
     newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Bid'}), label='', min_value=1)
 
     def __init__(self, *args, **kwargs):
-        # forces a default min_bid to be passed when casting from 'POST'
-        min_bid = kwargs.pop('min_bid')
+        initial_arguments = kwargs.get('initial', None)
+
         super(NewBidForm, self).__init__(*args, **kwargs)
-        self.fields['newbid'].widget.attrs['min'] = min_bid
+        if initial_arguments:
+            min_bid = initial_arguments.get('min_bid', None)
+            self.fields['newbid'].widget.attrs['min'] = min_bid
 
     #clean_newbid
 
@@ -57,8 +59,8 @@ def listing(request, listing_id):
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "comments": Comment.objects.filter(listing_id=listing_id),
-        "bid_form": NewBidForm(min_bid=min_bid ),
+        "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
+        "bid_form": NewBidForm(initial={ 'min_bid':min_bid } ),
         "comment_form": NewCommentForm()
     })
 
@@ -80,26 +82,33 @@ def toggleWatchlist(request, listing_id):
 
 def placeBid(request, listing_id):
     if request.method == "POST":
-        listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
-        min_bid = listing.starting_bid
-
-        if listing.max_bid is not None:
-            min_bid = listing.max_bid + 1
-        form = NewBidForm(request.POST, min_bid=min_bid)
+        form = NewBidForm(request.POST)
 
         # TODO - Notify User IF min_bid has increased since the listings page has loaded..
         if form.is_valid():
-            print('FORM IS VALID')
-            current_user = request.user
             new_bid_amount = form.cleaned_data["newbid"]
+            listing = Listing.objects.annotate(max_bid=Max('bids__bid')).get(pk=listing_id)
+            current_user = request.user
     
             if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
                 # Add a new bid to the listing
                 new_bid = Bid(listing=listing, user=current_user, bid=new_bid_amount)
                 new_bid.save()
-        else:
-            print('FORM IS NOT VALID')
-        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+            else:
+                # min_bid has changed since loading the page (by another user)
+                # notify user by returning a new form with a new label
+                min_bid = listing.starting_bid
+                new_form = NewBidForm(initial={ 'min_bid':min_bid } )
+                new_form.fields['newbid'].label = "Your bid was below the new minimum bid"
+
+                return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
+                    "bid_form": new_form,
+                    "comment_form": NewCommentForm()
+                })
+        
 
 def addComment(request, listing_id):
     if request.method == "POST":
