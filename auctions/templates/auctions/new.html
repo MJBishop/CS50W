@@ -2,24 +2,24 @@
 
 {% block body %}
 
-<h2>New Listing</h2>
+<h2>Create Listing</h2>
 
 <form method="post">
     {% csrf_token %}
-    <!-- {{ form }} -->
     {% for field in form %}
-    <div class="row">
-       <div class="col-md-2">    
-        {{ field.label_tag }}
-        {% if field.help_text %}
-          <sup>{{ field.help_text }}</sup>
-        {% endif %}
-        {{ field.errors }}
-       </div><div class="col-md-10 pull-left">
-         {{ field }}
-       </div>
-    </div>
- {% endfor %}
+        <div class="row">
+            <div class="col-md-2">    
+                {{ field.label_tag }}
+                {% if field.help_text %}
+                    <sup>{{ field.help_text }}</sup>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+            <div class="col-md-10 pull-left">
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
     <input type="submit" value="Save">
 </form>
 

@@ -1,21 +1,19 @@
 <div class="row">
-    <div class="col-md-6 col-lg-5">
-        <img itemprop="image" src="{{  listing.img_url }}" alt="" height="200">
+    <div class="col-md-6 order-md-12 col-lg-5">
+        <img itemprop="image" src="{{  listing.img_url }}" alt="" height="180">
     </div>
-    <div class="col-md-6 col-lg-7">
+    <div class="col-md-6 order-md-1 col-lg-7">
         <span>Created {{ listing.date_created }}</span>
         <h5>{{ listing.category }}</h5>
         <p>{{ listing.description }}</p> 
         <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
 
         {% if listing.bid_count == 0 %}
-            <p>No bids yet.</p>
+            <p>No bids.</p>
+        {% elif listing.bid_count == 1 %}
+            <p>1 bid.</p>
         {% else %}
-            {% if listing.bid_count == 1 %}
-                <p>1 bid so far.</p>
-            {% else %}
-                <p>{{ listing.bid_count }} bids so far.</p>
-            {% endif %}
+            <p>{{ listing.bid_count }} bids.</p>
         {% endif %}
     </div>
 </div>
