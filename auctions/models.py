@@ -8,12 +8,12 @@ class User(AbstractUser):
     pass
 
 class Listing(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="listings")
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=500)
+    category = models.CharField(max_length=30, blank=True, default='')
     starting_bid = models.DecimalField(max_digits=7, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     img_url = models.URLField(blank=True, default='')
-    category = models.CharField(max_length=30, blank=True, default='')
     watching = models.ManyToManyField(User, blank=True, related_name="watchlist")
     date_created = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)

@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
+from django.forms import ModelForm
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Listing, Bid, Comment
 
@@ -16,14 +18,20 @@ class NewBidForm(forms.Form):
         initial_arguments = kwargs.get('initial', None)
 
         super(NewBidForm, self).__init__(*args, **kwargs)
+
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
             self.fields['newbid'].widget.attrs['min'] = min_bid
 
-    #clean_newbid
 
 class NewCommentForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment'}), label='')
+
+
+class NewListingForm(ModelForm):
+    class Meta:
+        model = Listing
+        exclude = ['watching', 'date_created', 'active']
 
 
 
@@ -46,6 +54,20 @@ def category(request, category):
 def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
+    })
+
+@login_required
+def createListing(request):
+    if request.method == "POST":
+        listing = Listing(owner=request.user) 
+        form = NewListingForm(request.POST, instance=listing)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("index"))
+
+    return render(request, "auctions/new.html", {
+        "form": NewListingForm()
     })
 
 def listing(request, listing_id):
@@ -142,6 +164,7 @@ def closeAuction(request, listing_id):
             listing.save()
 
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
 
 
 def login_view(request):
