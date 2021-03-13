@@ -16,16 +16,25 @@
                 {{ field.errors }}
             </div>
             <div class="col-md-10 pull-left">
-                {{ field }}
+                {% if field.name == "starting_bid" %}
+                    <div class="form-group input-icon">
+                        {{ field }}
+                        <i>£</i>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        {{ field }}
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
     <div class="row">
-        <div class="col-md-1">  
-            <input type="submit" value="Save">
+        <div class="col-md-2">  
+            <button type="submit" class="btn btn-primary">Save</button>
         </div>
         {% if message %}
-            <div  class="col-md-11 pull-left">{{ message }}</div>
+            <div  class="col-md-10 pull-left">{{ message }}</div>
         {% endif %}
     </div>
     

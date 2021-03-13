@@ -25,7 +25,8 @@
                         <!-- close auction -->
                         <form action="{% url 'closeAuction' listing.id %}" method="post">
                             {% csrf_token %}
-                            <input type="submit" value="Close Auction">
+                            <!-- <input type="submit" value=""> -->
+                            <button type="submit" class="btn btn-danger">Close Auction</button>
                         </form>
                     {% else %}
 
@@ -35,10 +36,13 @@
                         {% endif %}
 
                         <!-- place bid -->
-                        <form action="{% url 'placeBid' listing.id %}" method="post">
-                            {% csrf_token %}
-                            {{ bid_form }}
-                            <input type="submit" value="Place Bid">
+                        <form class="form-inline" action="{% url 'placeBid' listing.id %}" method="post">
+                            <div class="form-group input-icon">
+                                {% csrf_token %}
+                                {{ bid_form }}
+                                <i>£</i>
+                            </div>
+                            <button type="submit" class="btn btn-danger">Place Bid</button>
                         </form>
                     {% endif %}
 
@@ -58,9 +62,9 @@
                     {% csrf_token %}
                     <label for="all">{{ listing.watching.count }} watching this auction.</label>
                     {% if listing in user.watchlist.all %}
-                        <input type="submit" value="Remove from Watchlist" id="all">
+                        <button type="submit" class="btn btn-primary">Remove from Watchlist</button>
                     {% else %}
-                        <input type="submit" value="Add to Watchlist" id="all">
+                        <button type="submit" class="btn btn-primary">Add to Watchlist</button>
                     {% endif %}
                 </form>
             </div>
@@ -79,7 +83,7 @@
                     {{ comment_form }}
                 </div>
                 <div class="col-2">
-                    <input type="submit" style="vertical-align: center">
+                    <button type="submit" class="btn btn-success">Add Comment</button>
                 </div>
             </div>
         </form>

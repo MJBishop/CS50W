@@ -13,7 +13,7 @@ from .models import User, Listing, Bid, Comment
 
 # Forms
 class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Bid'}), label='', min_value=1)
+    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control'}), label='', min_value=1)
 
     def __init__(self, *args, **kwargs):
         initial_arguments = kwargs.get('initial', None)
@@ -38,6 +38,9 @@ class NewListingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['starting_bid'].widget.attrs['min'] = 0.01
+        self.fields['starting_bid'].widget.attrs['placeholder'] = "0.00"
+        self.fields['img_url'].widget.attrs['placeholder'] = "optional"
+        self.fields['category'].widget.attrs['placeholder'] = "optional"
         
 
 
