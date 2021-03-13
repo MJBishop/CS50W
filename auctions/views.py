@@ -37,12 +37,12 @@ class NewListingForm(ModelForm):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
+        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).order_by('-date_created')
     })
 
 def categories(request):
     return render(request, "auctions/categories.html", {
-        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct().exclude(category__exact='')
+        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct().exclude(category__exact='').order_by('category')
     })
 
 def category(request, category):
@@ -78,10 +78,7 @@ def listing(request, listing_id):
         min_bid = listing.max_bid + 1
 
     bid = Bid.objects.filter(listing=listing).order_by('-bid').first()
-    # print(bid.bid)
     
-
-    # TODO - just pass the Bid object
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
