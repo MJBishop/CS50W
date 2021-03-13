@@ -20,7 +20,15 @@
             </div>
         </div>
     {% endfor %}
-    <input type="submit" value="Save">
+    <div class="row">
+        <div class="col-md-1">  
+            <input type="submit" value="Save">
+        </div>
+        {% if message %}
+            <div  class="col-md-11 pull-left">{{ message }}</div>
+        {% endif %}
+    </div>
+    
 </form>
 
 {% endblock %}

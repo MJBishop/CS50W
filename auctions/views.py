@@ -4,6 +4,7 @@ from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -28,10 +29,16 @@ class NewCommentForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment'}), label='')
 
 
-class NewListingForm(ModelForm):
+class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         exclude = ['watching', 'date_created', 'active']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['starting_bid'].widget.attrs['min'] = 0.01
+        
 
 
 
@@ -65,6 +72,11 @@ def createListing(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/new.html", {
+                "form": NewListingForm(),
+                "message": "Invalid Form" # more details
+            })
 
     return render(request, "auctions/new.html", {
         "form": NewListingForm()
