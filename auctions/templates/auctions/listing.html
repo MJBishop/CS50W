@@ -1,14 +1,14 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h3>{{ listing.title }}</h3>
-    
-    {% include "auctions/listingdata.html" %}
+    <div class="card" style="margin-bottom: 20px">
+        {% include "auctions/listingdata.html" %}
+    </div>
 
     {% if user.is_authenticated %}
         
-        <div class="card-deck">
-            <div class="card bg-light">
+        <div class="card-deck" style="margin-bottom: 20px">
+            <div class="card bg-transparent border-danger">
                 <div class="card-body">
                     {% if listing.active %}
                         {% if user == bid_or_None.user %}
@@ -56,7 +56,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="card bg-light">
+            <div class="card bg-transparent border-primary">
                 <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
                     {% csrf_token %}
 
@@ -92,14 +92,14 @@
     {% endif %}
 
     {% if user.is_authenticated %}
-        <div class="card bg-light border-success ">
+        <div class="card  bg-transparent border-success" style="margin-bottom: 20px">
             <form action="{% url 'addComment' listing.id %}" method="post">
                 <h5 class="card-header bg-transparent">Add Comment</h5>
                 <div class="card-body">
                     {% csrf_token %}
                     {{ comment_form }}
                 </div>
-                <div class="card-footer bg-transparent">
+                <div class="card-footer  border-success bg-transparent">
                     <div class="text-right">
                         <button type="submit" class="btn btn-success">Save</button>
                     </div>
@@ -111,8 +111,8 @@
 
     <h4>Comments</h4>
     {% for comment in comments %}
-        <div class="card bg-light ">
-            <h5 class="card-header">{{ comment.user_name }}</h5>
+        <div class="card bg-light border-success" style="margin-bottom: 20px">
+            <h5 class="card-header border-success">{{ comment.user_name }}</h5>
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">{{ comment.date_created }}</h6>
                 <p class="card-text">{{ comment.comment }}</p>

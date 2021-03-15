@@ -1,23 +1,25 @@
-<div class="row">
-    <div class="col-md-6 order-md-12 col-lg-5">
-        <img itemprop="image" src="{{  listing.img_url }}" alt="" height="180">
+<div class="card-body row">
+    <div class="col-md-6 order-md-12 col-lg-5 text-center">
+        <img class="card-img img-fluid rounded w-75" style="padding: 20px;" itemprop="image" src="{{  listing.img_url }}" alt="" height="180" alt="Card image">
     </div>
     <div class="col-md-6 order-md-1 col-lg-7">
-        <span>Created {{ listing.date_created }}</span>
-        <p>{{ listing.description }}</p> 
-        <!-- <h5>{{ listing.category }}</h5> -->
+        <h4 class="card-title">{{ listing.title }}</h4>
+
         {% if listing.category %}
-            <a href="{% url 'category' listing.category %}">{{ listing.category }}</a>
+            <label class="card-subtitle"><label class="text-muted">Listed in category: </label> {{ listing.category }}</label>
         {% endif %}
-        <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
+
+        <p class="card-text">{{ listing.description }}</p>
+        <h4><small>Price: </small>£{{ listing.max_bid | default:listing.starting_bid }}</h4>
 
         {% if listing.bid_count == 0 %}
-            <p>No bids.</p>
+            <label>No bids.</label>
         {% elif listing.bid_count == 1 %}
-            <p>1 bid.</p>
+            <label>1 bid.</label>
         {% else %}
-            <p>{{ listing.bid_count }} bids.</p>
+            <label>{{ listing.bid_count }} bids.</label>
         {% endif %}
+        <!-- listing date -->
     </div>
 </div>
 
