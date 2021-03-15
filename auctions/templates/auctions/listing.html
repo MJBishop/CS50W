@@ -60,7 +60,25 @@
                 <!-- watchlist -->
                 <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
                     {% csrf_token %}
-                    <label for="all">{{ listing.watching.count }} watching this auction.</label>
+                    {% if listing in user.watchlist.all %}
+                        {% if listing.watching.count > 2 %}
+                            <label for="all">You and {{ listing.watching.count|add:"-1" }} other users are watching this auction.</label>
+                        {% elif listing.watching.count > 1 %}
+                            <label for="all">You and {{ listing.watching.count|add:"-1" }} other user are watching this auction.</label>
+                        {% else %}
+                            <label for="all">You are the only user watching this auction.</label>
+                        {% endif %}
+                    {% else %}
+                        {% if listing.watching.count > 1 %}
+                            <label for="all">{{ listing.watching.count }} users are watching this auction.</label>
+                        {% elif listing.watching.count == 1 %}
+                            <label for="all">{{ listing.watching.count }} user is watching this auction.</label>
+                        {% else %}
+                            <label for="all">No-one is watching this auction.</label>
+                        {% endif %}
+                        <!-- <label for="all">{{ listing.watching.count }} watching this auction.</label> -->
+                    {% endif %}
+
                     {% if listing in user.watchlist.all %}
                         <button type="submit" class="btn btn-primary">Remove from Watchlist</button>
                     {% else %}
