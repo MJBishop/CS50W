@@ -4,8 +4,11 @@
     </div>
     <div class="col-md-6 order-md-1 col-lg-7">
         <span>Created {{ listing.date_created }}</span>
-        <h5>{{ listing.category }}</h5>
         <p>{{ listing.description }}</p> 
+        <!-- <h5>{{ listing.category }}</h5> -->
+        {% if listing.category %}
+            <a href="{% url 'category' listing.category %}">{{ listing.category }}</a>
+        {% endif %}
         <p>Curent Price: £{{ listing.max_bid | default:listing.starting_bid }}</p>
 
         {% if listing.bid_count == 0 %}
