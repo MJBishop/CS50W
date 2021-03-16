@@ -13,7 +13,7 @@ from .models import User, Listing, Bid, Comment
 
 # Forms
 class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control'}), label='', min_value=1)
+    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=1)
 
     def __init__(self, *args, **kwargs):
         initial_arguments = kwargs.get('initial', None)
@@ -26,7 +26,7 @@ class NewBidForm(forms.Form):
 
 
 class NewCommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment'}), label='')
+    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-auto'}), label='')
 
 
 class NewListingForm(forms.ModelForm):

@@ -1,33 +1,30 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class="card" style="margin-bottom: 20px">
+    <div class="card mb-4">
         {% include "auctions/listingdata.html" %}
     </div>
 
     {% if user.is_authenticated %}
-        
-        <div class="card-deck" style="margin-bottom: 20px">
-            <div class="card bg-transparent border-danger">
-                <div class="card-body">
-                    {% if listing.active %}
+        {% if listing.active %}
+            <div class="card-deck mb-4">
+                <div class="card bg-transparent border-primary">
+                    <div class="card-body">
                         {% if user == bid_or_None.user %}
-                            <p class="text-muted">You are the highest bidder.</p>
+                            <label class="card-text">You are the highest bidder.</p>
                         {% elif bid_or_None %}
-                            <p class="text-muted">{{ bid_or_None.user }} is the highest bidder.</p>
+                            <p class="card-text"><strong>{{ bid_or_None.user }}</strong> is the highest bidder.</p>
+                        {% else %}
+                            <p class="card-text">No bids yet.</p>
                         {% endif %}
-                    {% else %}
-                        <p class="text-muted">Auction is closed.</p>
-                    {% endif %}
-                </div>
-                <div class="card-footer bg-transparent">
-                    {% if listing.active %}
+                    </div>
+                    <div class="card-footer bg-transparent text-center">
                         {% if listing.owner == user %}
 
                             <!-- close auction -->
                             <form action="{% url 'closeAuction' listing.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Close Auction</button>
+                                <button type="submit" class="btn btn-danger px-4">Close Auction</button>
                             </form>
                         {% else %}
 
@@ -37,81 +34,98 @@
                             {% endif %}
 
                             <!-- place bid -->
-                            <form class="form-inline" action="{% url 'placeBid' listing.id %}" method="post">
-                                <div class="form-group input-icon">
+                            <form class="row text-center" action="{% url 'placeBid' listing.id %}" method="post">
+                                <div class="col-0 col-xs-1 col-sm-0 col-md-1 col-lg-2 col-xl-3 "></div>
+                                <div class="col-12 col-xs-5 col-sm-12 col-md-5 col-lg-4 col-xl-3 input-icon">
                                     {% csrf_token %}
-                                    {{ bid_form }}
+                                    {{ bid_form.newbid }}
                                     <i>£</i>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Place Bid</button>
+                                <div class="col-12 col-xs-5 col-sm-12 col-md-5 col-lg-4 col-xl-3">
+                                    <button type="submit" class="btn btn-primary form-control mx-auto my-1">Place Bid</button>
+                                </div>
+                                <div class="col-0 col-xs-1 col-sm-0 col-md-1 col-lg-2 col-xl-3 "></div>
                             </form>
                         {% endif %}
+                    </div>
+                </div>
+                <div class="card bg-transparent border-primary">
+                    <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
+                        {% csrf_token %}
 
+                        <div class="card-body">
+                            {% if listing in user.watchlist.all %}
+                                {% if listing.watching.count > 2 %}
+                                    <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other users are watching this auction.</p>
+                                {% elif listing.watching.count > 1 %}
+                                    <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other user are watching this auction.</p>
+                                {% else %}
+                                    <p class="card-text">You are the only user watching this auction.</p>
+                                {% endif %}
+                            {% else %}
+                                {% if listing.watching.count > 1 %}
+                                    <p class="card-text">{{ listing.watching.count }} users are watching this auction.</p>
+                                {% elif listing.watching.count == 1 %}
+                                    <p class="card-text">{{ listing.watching.count }} user is watching this auction.</p>
+                                {% else %}
+                                    <p class="card-text">No-one is watching this auction.</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="row card-footer bg-transparent text-center">
+                            <div class="col-0 col-lg-2 col-xl-3"></div>
+                            <div class="col-12 col-lg-8 col-xl-6">
+                                {% if listing in user.watchlist.all %}
+                                    <button type="submit" class="btn btn-light border-primary text-primary form-control mx-auto my-1">Remove from Watchlist</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-light border-primary text-primary form-control mx-auto my-1">Add to Watchlist</button>
+                                {% endif %}
+                            </div>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="card mb-4 bg-transparent border-danger text-center">
+                <div class="card-header">
+                    <h3>Auction Closed.</h3>
+                    {% if bid_or_None == NoneType %}
+                        <h5>Unsold - There were no bids on this auction.</h5>
+                    {% elif user == bid_or_None.user %}
+                        <h5><strong>YOU</strong> won this auction!</h5>
                     {% else %}
-                        {% if user == bid_or_None.user %}
-                            <div>YOU won this auction!</div>
-                        {% else %}
-                            <div>{{ bid_or_None.user }} won this auction.</div>
-                        {% endif %}
+                        <h5><strong>{{ bid_or_None.user }}</strong> won this auction.</h5>
                     {% endif %}
                 </div>
             </div>
-            <div class="card bg-transparent border-primary">
-                <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
-                    {% csrf_token %}
-
-                    <div class="card-body">
-                        {% if listing in user.watchlist.all %}
-                            {% if listing.watching.count > 2 %}
-                                <p class="text-muted">You and {{ listing.watching.count|add:"-1" }} other users are watching this auction.</p>
-                            {% elif listing.watching.count > 1 %}
-                                <p class="text-muted">You and {{ listing.watching.count|add:"-1" }} other user are watching this auction.</p>
-                            {% else %}
-                                <p class="text-muted">You are the only user watching this auction.</p>
-                            {% endif %}
-                        {% else %}
-                            {% if listing.watching.count > 1 %}
-                                <p class="text-muted">{{ listing.watching.count }} users are watching this auction.</p>
-                            {% elif listing.watching.count == 1 %}
-                                <p class="text-muted">{{ listing.watching.count }} user is watching this auction.</p>
-                            {% else %}
-                                <p class="text-muted">No-one is watching this auction.</p>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        {% if listing in user.watchlist.all %}
-                            <button type="submit" class="btn btn-light border-primary text-primary">Remove from Watchlist</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-light border-primary text-primary">Add to Watchlist</button>
-                        {% endif %}
-                    </div>
-                </form>
-            </div>
-        </div>
+                
+        {% endif %}
     {% endif %}
 
     {% if user.is_authenticated %}
-        <div class="card  bg-transparent border-success" style="margin-bottom: 20px">
+        <div class="card mb-4 bg-transparent">
             <form action="{% url 'addComment' listing.id %}" method="post">
-                <h5 class="card-header bg-transparent">Add Comment</h5>
+                <p class="card-header bg-transparent">Comment on this listing.</p>
                 <div class="card-body">
                     {% csrf_token %}
                     {{ comment_form }}
                 </div>
-                <div class="card-footer  border-success bg-transparent">
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-success">Save</button>
+                <div class="row card-footer bg-transparent text-center">
+                    <div class="col-0 col-sm-3 col-md-3 col-lg-4 col-xl-5"></div>
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-2">
+                        <button type="submit" class="btn btn-light border-success text-success form-control mx-auto my-1">Post Comment</button>
                     </div>
                 </div>
-                
             </form>
         </div>
     {% endif %}
 
-    <h4>Comments</h4>
+    {% if comments.count > 0 %}
+        <h4>Comments</h4>
+    {% endif %}
     {% for comment in comments %}
-        <div class="card bg-light border-success" style="margin-bottom: 20px">
+        <div class="card mb-4 bg-light border-success">
             <h5 class="card-header border-success">{{ comment.user_name }}</h5>
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">{{ comment.date_created }}</h6>
