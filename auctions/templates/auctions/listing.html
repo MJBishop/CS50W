@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class="card mb-4">
+    <div class="card mb-4 border-light">
         {% include "auctions/listingdata.html" %}
     </div>
 
@@ -18,13 +18,15 @@
                             <p class="card-text">No bids yet.</p>
                         {% endif %}
                     </div>
-                    <div class="card-footer bg-transparent text-center">
+                    <div class="card-footer bg-transparent">
                         {% if listing.owner == user %}
 
                             <!-- close auction -->
-                            <form action="{% url 'closeAuction' listing.id %}" method="post">
+                            <form class="row d-flex justify-content-center" action="{% url 'closeAuction' listing.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger px-4">Close Auction</button>
+                                <div class="col-12 col-lg-6 col-xl-5">
+                                    <button type="submit" class="btn btn-danger form-control px-4">Close Auction</button>
+                                </div>
                             </form>
                         {% else %}
 
@@ -34,56 +36,51 @@
                             {% endif %}
 
                             <!-- place bid -->
-                            <form class="row text-center" action="{% url 'placeBid' listing.id %}" method="post">
-                                <div class="col-0 col-xs-1 col-sm-0 col-md-1 col-lg-2 col-xl-3 "></div>
-                                <div class="col-12 col-xs-5 col-sm-12 col-md-5 col-lg-4 col-xl-3 input-icon">
+                            <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">
+                                <div class="input-icon col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                                     {% csrf_token %}
                                     {{ bid_form.newbid }}
                                     <i>£</i>
                                 </div>
-                                <div class="col-12 col-xs-5 col-sm-12 col-md-5 col-lg-4 col-xl-3">
+                                <div class="col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                                     <button type="submit" class="btn btn-primary form-control mx-auto my-1">Place Bid</button>
                                 </div>
-                                <div class="col-0 col-xs-1 col-sm-0 col-md-1 col-lg-2 col-xl-3 "></div>
                             </form>
                         {% endif %}
                     </div>
                 </div>
                 <div class="card bg-transparent border-primary">
-                    <form action="{% url 'toggleWatchlist' listing.id %}" method="post">
-                        {% csrf_token %}
-
-                        <div class="card-body">
-                            {% if listing in user.watchlist.all %}
-                                {% if listing.watching.count > 2 %}
-                                    <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other users are watching this auction.</p>
-                                {% elif listing.watching.count > 1 %}
-                                    <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other user are watching this auction.</p>
-                                {% else %}
-                                    <p class="card-text">You are the only user watching this auction.</p>
-                                {% endif %}
+                    <div class="card-body">
+                        {% if listing in user.watchlist.all %}
+                            {% if listing.watching.count > 2 %}
+                                <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other users are watching this auction.</p>
+                            {% elif listing.watching.count > 1 %}
+                                <p class="card-text">You and {{ listing.watching.count|add:"-1" }} other user are watching this auction.</p>
                             {% else %}
-                                {% if listing.watching.count > 1 %}
-                                    <p class="card-text">{{ listing.watching.count }} users are watching this auction.</p>
-                                {% elif listing.watching.count == 1 %}
-                                    <p class="card-text">{{ listing.watching.count }} user is watching this auction.</p>
-                                {% else %}
-                                    <p class="card-text">No-one is watching this auction.</p>
-                                {% endif %}
+                                <p class="card-text">You are the only user watching this auction.</p>
                             {% endif %}
-                        </div>
-                        <div class="row card-footer bg-transparent text-center">
-                            <div class="col-0 col-lg-2 col-xl-3"></div>
-                            <div class="col-12 col-lg-8 col-xl-6">
+                        {% else %}
+                            {% if listing.watching.count > 1 %}
+                                <p class="card-text">{{ listing.watching.count }} users are watching this auction.</p>
+                            {% elif listing.watching.count == 1 %}
+                                <p class="card-text">{{ listing.watching.count }} user is watching this auction.</p>
+                            {% else %}
+                                <p class="card-text">No-one is watching this auction.</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <form class="row d-flex justify-content-center" action="{% url 'toggleWatchlist' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="col-12 col-lg-7 col-xl-6">
                                 {% if listing in user.watchlist.all %}
                                     <button type="submit" class="btn btn-light border-primary text-primary form-control mx-auto my-1">Remove from Watchlist</button>
                                 {% else %}
                                     <button type="submit" class="btn btn-light border-primary text-primary form-control mx-auto my-1">Add to Watchlist</button>
                                 {% endif %}
                             </div>
-                            
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         {% else %}
@@ -105,16 +102,17 @@
 
     {% if user.is_authenticated %}
         <div class="card mb-4 bg-transparent">
+            <!-- <p class="card-header bg-transparent">Comment on this listing.</p> -->
             <form action="{% url 'addComment' listing.id %}" method="post">
-                <p class="card-header bg-transparent">Comment on this listing.</p>
-                <div class="card-body">
+                <div class="row card-body">
                     {% csrf_token %}
                     {{ comment_form }}
                 </div>
-                <div class="row card-footer bg-transparent text-center">
-                    <div class="col-0 col-sm-3 col-md-3 col-lg-4 col-xl-5"></div>
-                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-2">
-                        <button type="submit" class="btn btn-light border-success text-success form-control mx-auto my-1">Post Comment</button>
+                <div class="card-footer bg-transparent">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-12 col-sm-7 col-md-6 col-lg-4 col-xl-3">
+                            <button type="submit" class="btn btn-light border-success text-success form-control mx-auto my-1">Post Comment</button>
+                        </div>
                     </div>
                 </div>
             </form>

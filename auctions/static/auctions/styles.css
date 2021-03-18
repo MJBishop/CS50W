@@ -21,7 +21,10 @@
 
 #id_newbid {
     min-width: 115px;
-    
+}
+
+#id_comment {
+    height: 120px;
 }
 
 

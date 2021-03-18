@@ -26,7 +26,7 @@ class NewBidForm(forms.Form):
 
 
 class NewCommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-auto'}), label='')
+    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-3'}), label='')
 
 
 class NewListingForm(forms.ModelForm):

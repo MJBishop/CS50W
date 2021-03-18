@@ -1,7 +1,7 @@
 {% for listing in listings %}
-    <div class="card mb-4">
+    <div class="card mb-4 border-light">
         {% include "auctions/listingdata.html" %}
-        <div class="card-footer text-center bg-transparent">
+        <div class="card-footer text-center bg-transparent border-light">
             <a href="{% url 'listing' listing.id %}" class="btn btn-light border-primary text-primary stretched-link">View listing</a>
         </div>
     </div>
