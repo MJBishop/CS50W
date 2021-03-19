@@ -109,7 +109,7 @@ def listing(request, listing_id):
     
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
+        "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
         "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
         "comment_form": NewCommentForm(),
         "bid_or_None": bid

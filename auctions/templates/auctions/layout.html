@@ -21,14 +21,14 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item {{ listings_page }}">
-                                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+                                <a class="nav-link" href="{% url 'index' %}">Active Listings <span class="badge bg-info text-light">{{ active_listings_count }}</span></a>
                             </li>
                             <li class="nav-item {{ categories_page }}">
-                                <a class="nav-link" href="{% url 'categories' %}">Categories</a>
+                                <a class="nav-link" href="{% url 'categories' %}">Categories <span class="badge bg-info text-light">{{ categories_count }}</span></a>
                             </li>
                             {% if user.is_authenticated %}
                                 <li class="nav-item {{ watchlist_page }}">
-                                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+                                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist <span class="badge bg-info text-light">{{ user.watchlist.count }}</span></a>
                                 </li>
                                 <li class="nav-item {{ new_listing_page }}">
                                     <a class="nav-link" href="{% url 'createListing' %}">Create Listing</a>

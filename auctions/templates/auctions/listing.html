@@ -120,7 +120,7 @@
     {% endif %}
 
     {% if comments.count > 0 %}
-        <h4>Comments</h4>
+        <h4>Comments ({{ comments.count }})</h4>
     {% endif %}
     {% for comment in comments %}
         <div class="card mb-4 bg-light border-success">
