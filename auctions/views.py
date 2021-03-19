@@ -47,19 +47,27 @@ class NewListingForm(forms.ModelForm):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).order_by('-date_created'),
+        "listings": Listing.objects.filter(active=True)
+                                   .annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
+                                   .order_by('-date_created'),
         "listings_page": "active"
     })
 
 def categories(request):
     return render(request, "auctions/categories.html", {
-        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct().exclude(category__exact='').order_by('category'),
+        "categories": Listing.objects.filter(active=True)
+                                     .values('category')
+                                     .order_by('category')
+                                     .distinct()
+                                     .annotate(count=Count('category'))
+                                     .exclude(category__exact=''),
         "categories_page": "active"
     })
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
+        "listings": Listing.objects.filter(category=category, active=True)
+                                   .annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
         "category": category
     })
 

@@ -4,8 +4,13 @@
     <h2>Categories</h2>
     <ul class="list-group">
         {% for category in categories %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a class="stretched-link" href="{% url 'category' category %}">{{ category }}</a>
+        <li class="list-group-item d-flex justify-content-between align-items-center" style="max-width: 500px">
+                <a class="stretched-link text-secondary" href="{% url 'category' category.category %}">{{ category.category }}</a>
+                {% if category.count > 1 %}
+                    <span class="badge bg-info text-light">{{ category.count }} items</span>
+                {% else %}
+                    <span class="badge bg-info text-light">{{ category.count }} item</span>
+                {% endif %}
             </li>
         {% empty %}
             <li>No Categories</li>
