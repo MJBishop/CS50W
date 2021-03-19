@@ -8,7 +8,7 @@
     {% if user.is_authenticated %}
         {% if listing.active %}
             <div class="card-deck mb-4">
-                <div class="card bg-transparent border-primary">
+                <div class="card bg-transparent  text-center ">
                     <div class="card-body">
                         {% if user == bid_or_None.user %}
                             <label class="card-text">You are the highest bidder.</p>
@@ -25,7 +25,7 @@
                             <form class="row d-flex justify-content-center" action="{% url 'closeAuction' listing.id %}" method="post">
                                 {% csrf_token %}
                                 <div class="col-12 col-lg-6 col-xl-5">
-                                    <button type="submit" class="btn btn-danger form-control px-4">Close Auction</button>
+                                    <button type="submit" class="btn btn-danger form-control  mx-auto my-1">Close Auction</button>
                                 </div>
                             </form>
                         {% else %}
@@ -49,7 +49,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="card bg-transparent border-primary">
+                <div class="card bg-transparent   text-center ">
                     <div class="card-body">
                         {% if listing in user.watchlist.all %}
                             {% if listing.watching.count > 2 %}

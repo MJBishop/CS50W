@@ -47,23 +47,26 @@ class NewListingForm(forms.ModelForm):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).order_by('-date_created')
+        "listings": Listing.objects.filter(active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).order_by('-date_created'),
+        "listings_page": "active"
     })
 
 def categories(request):
     return render(request, "auctions/categories.html", {
-        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct().exclude(category__exact='').order_by('category')
+        "categories": Listing.objects.order_by().values_list('category', flat=True).distinct().exclude(category__exact='').order_by('category'),
+        "categories_page": "active"
     })
 
 def category(request, category):
     return render(request, "auctions/category.html", {
-        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')), 
+        "listings": Listing.objects.filter(category=category, active=True).annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
         "category": category
     })
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html", {
-        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
+        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
+        "watchlist_page" :"active"
     })
 
 @login_required
@@ -78,11 +81,13 @@ def createListing(request):
         else:
             return render(request, "auctions/new.html", {
                 "form": NewListingForm(),
-                "message": "Invalid Form" # more details
+                "message": "Invalid Form", # more details,
+                "new_listing_page" :"active"
             })
 
     return render(request, "auctions/new.html", {
-        "form": NewListingForm()
+        "form": NewListingForm(),
+        "new_listing_page" :"active"
     })
 
 def listing(request, listing_id):
@@ -193,10 +198,13 @@ def login_view(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
+                "message": "Invalid username and/or password.",
+                "login_page": "active"
             })
     else:
-        return render(request, "auctions/login.html")
+        return render(request, "auctions/login.html", {
+            "login_page": "active"
+        })
 
 
 def logout_view(request):
@@ -214,7 +222,8 @@ def register(request):
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
+                "message": "Passwords must match.",
+                "register_page" :"active"
             })
 
         # Attempt to create new user
@@ -223,9 +232,12 @@ def register(request):
             user.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
-                "message": "Username already taken."
+                "message": "Username already taken.",
+                "register_page" :"active"
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "auctions/register.html")
+        return render(request, "auctions/register.html", {
+            "register_page" :"active"
+        })
