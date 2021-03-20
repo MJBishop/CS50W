@@ -4,7 +4,7 @@
 
 <h2>Create Listing</h2>
 
-<form method="post">
+<form class="mb-5" method="post">
     {% csrf_token %}
     {% for field in form %}
         <div class="row">
@@ -32,7 +32,7 @@
 
     <div class="row">
         <div class="col-md-2">  
-            <button type="submit" class="btn btn-info">Save</button>
+            <button type="submit" class="btn btn-info form-control">Save</button>
         </div>
         {% if message %}
             <div  class="col-md-10 pull-left">{{ message }}</div>

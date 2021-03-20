@@ -13,7 +13,7 @@ from .models import User, Listing, Bid, Comment
 
 # Forms
 class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=1)
+    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=5.00, max_value=100000.00)
 
     def __init__(self, *args, **kwargs):
         initial_arguments = kwargs.get('initial', None)
@@ -33,14 +33,13 @@ class NewListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         exclude = ['watching', 'date_created', 'active']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['starting_bid'].widget.attrs['min'] = 0.01
-        self.fields['starting_bid'].widget.attrs['placeholder'] = "0.00"
-        self.fields['img_url'].widget.attrs['placeholder'] = "optional"
-        self.fields['category'].widget.attrs['placeholder'] = "optional"
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control' }),
+            'description': forms.Textarea(attrs={'class': 'form-control' }),
+            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'min': 5.00, 'max': 10000.00, 'placeholder': "0.00" }),
+            'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "optional" }),
+            'img_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': "optional" })
+        }
         
 
 
@@ -89,7 +88,7 @@ def createListing(request):
         else:
             return render(request, "auctions/new.html", {
                 "form": NewListingForm(),
-                "message": "Invalid Form", # more details,
+                "message": "Invalid Form", # more details, why? starting bid too low/high?
                 "new_listing_page" :"active"
             })
 

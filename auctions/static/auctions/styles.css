@@ -25,7 +25,6 @@ html {
       border-bottom:1px solid rgba(22,162, 181, 0.74);
   }
 
-
 /* Input icon styles
 --------------------------------------------------- */
 .input-icon {
@@ -46,12 +45,21 @@ html {
     padding-right: 0;
 }
 
-/* ModelForm input styles
+/* Listing ModelForm input styles
 --------------------------------------------------- */
 #id_newbid {
     min-width: 115px;
 }
 #id_comment {
     height: 120px;
+}
+
+/* Create Listing ModelForm input styles
+--------------------------------------------------- */
+#id_starting_bid {
+    min-width: 115px;
+}
+#id_title, #id_description, #id_category, #id_img_url {
+    min-width: 470px;
 }
 
