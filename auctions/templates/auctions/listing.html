@@ -102,7 +102,6 @@
 
     {% if user.is_authenticated %}
         <div class="card mb-4 bg-transparent">
-            <!-- <p class="card-header bg-transparent">Comment on this listing.</p> -->
             <form action="{% url 'addComment' listing.id %}" method="post">
                 <div class="row card-body">
                     {% csrf_token %}
