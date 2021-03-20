@@ -4,12 +4,14 @@
     </div>
     <div class="col-md-6 order-md-1 col-lg-7">
         <h4 class="card-title">{{ listing.title }}</h4>
-
-        {% if listing.category %}
-            <label class="card-subtitle"><label class="text-muted">Listed in category: </label> {{ listing.category }}</label>
-        {% endif %}
-
         <p class="card-text">{{ listing.description }}</p>
+
+        <label class="text-muted">Listed </label>
+        {% if listing.category %}
+            <label><label class="text-muted">in category: </label> {{ listing.category }}  </label>
+        {% endif %}
+        <label><label class="text-muted"> on </label> {{ listing.date_created }}</label>
+
         <h4><small>Price: </small>£{{ listing.max_bid | default:listing.starting_bid }}</h4>
 
         {% if listing.bid_count == 0 %}
@@ -19,7 +21,6 @@
         {% else %}
             <label>{{ listing.bid_count }} bids.</label>
         {% endif %}
-        <!-- listing date -->
     </div>
 </div>
 
