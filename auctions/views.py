@@ -36,7 +36,8 @@ class NewListingForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control' }),
             'description': forms.Textarea(attrs={'class': 'form-control' }),
-            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'min': 5.00, 'max': 10000.00, 'placeholder': "0.00" }),
+            # 'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'min': 5.00, 'max': 10000.00, 'placeholder': "0.00" }),
+            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "0.00" }),
             'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "optional" }),
             'img_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': "optional" })
         }
@@ -87,8 +88,7 @@ def createListing(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "auctions/new.html", {
-                "form": NewListingForm(),
-                "message": "Invalid Form", # more details, why? starting bid too low/high?
+                "form": form,
                 "new_listing_page" :"active"
             })
 
@@ -104,14 +104,12 @@ def listing(request, listing_id):
     if listing.max_bid is not None:
         min_bid = listing.max_bid + 1
 
-    bid = Bid.objects.filter(listing=listing).order_by('-bid').first()
-    
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
         "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
         "comment_form": NewCommentForm(),
-        "bid_or_None": bid
+        "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
     })
 
 def toggleWatchlist(request, listing_id):
@@ -138,7 +136,7 @@ def placeBid(request, listing_id):
             new_bid_amount = form.cleaned_data["newbid"]
             listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
-            if (listing.max_bid is None and new_bid_amount >= listing.starting_bid or new_bid_amount > listing.max_bid):
+            if ((listing.max_bid is None and new_bid_amount >= listing.starting_bid) or new_bid_amount > listing.max_bid):
 
                 # Create & Save a new listing bid
                 new_bid = Bid(listing=listing, user=request.user, bid=new_bid_amount)
@@ -154,10 +152,11 @@ def placeBid(request, listing_id):
                 # notify user by returning a new form and a message
                 return render(request, "auctions/listing.html", {
                     "listing": listing,
-                    "comments": Comment.objects.filter(listing_id=listing_id), # TODO - most recent first
+                    "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
                     "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
-                    "comment_form": NewCommentForm(),
-                    "message": "Your bid was below the new minimum bid."
+                    "comment_form": form, #NewCommentForm(),
+                    "message": "The price has changed. Your bid was below the new minimum bid.",
+                    "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
                 })
         
 

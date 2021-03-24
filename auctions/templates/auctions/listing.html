@@ -17,6 +17,12 @@
                         {% else %}
                             <p class="card-text">No bids yet.</p>
                         {% endif %}
+
+
+                        <!-- bid changed message -->
+                        {% if message %}
+                            <div class="error mt-2">{{ message }}</div>
+                        {% endif %}
                     </div>
                     <div class="card-footer bg-transparent">
                         {% if listing.owner == user %}
@@ -29,11 +35,6 @@
                                 </div>
                             </form>
                         {% else %}
-
-                            <!-- bid changed message -->
-                            {% if message %}
-                                <div>{{ message }}</div>
-                            {% endif %}
 
                             <!-- place bid -->
                             <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">

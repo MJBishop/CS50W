@@ -16,7 +16,6 @@
                     <sup>{{ field.help_text }}</sup>
                 {% endif %}
 
-                {{ field.errors }}
             </div>
             <div class="col-md-10 pull-left">
                 {% if field.name == "starting_bid" %}
@@ -29,6 +28,8 @@
                         {{ field }}
                     </div>
                 {% endif %}
+
+                {{ field.errors }}
             </div>
         </div>
     {% endfor %}
