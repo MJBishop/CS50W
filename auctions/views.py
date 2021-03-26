@@ -25,9 +25,16 @@ class NewBidForm(forms.Form):
             self.fields['newbid'].widget.attrs['min'] = min_bid
 
 
-class NewCommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-3'}), label='')
-    # max length check?
+class NewCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ['listing', 'user_name', 'date_created']
+        widgets = {
+            'comment': forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-3'})
+        }
+        labels = {
+            'comment': ''
+        }
 
 class NewListingForm(forms.ModelForm):
     class Meta:
@@ -36,7 +43,6 @@ class NewListingForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control' }),
             'description': forms.Textarea(attrs={'class': 'form-control' }),
-            # 'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'min': 5.00, 'max': 10000.00, 'placeholder': "0.00" }),
             'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "0.00" }),
             'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "optional" }),
             'img_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': "optional" })
@@ -106,6 +112,7 @@ def listing(request, listing_id):
         min_bid = listing.max_bid + 1
 
     # bid form or None
+    # 
     bid_form_or_None = None 
     if min_bid <= system_max_bid:
         bid_form_or_None = NewBidForm(initial={ 'min_bid':min_bid })
