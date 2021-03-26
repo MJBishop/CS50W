@@ -11,7 +11,7 @@
                 <div class="card bg-transparent  text-center ">
                     <div class="card-body">
                         {% if user == bid_or_None.user %}
-                            <label class="card-text">You are the highest bidder.</p>
+                            <p class="card-text">You are the highest bidder.</p>
                         {% elif bid_or_None %}
                             <p class="card-text"><strong>{{ bid_or_None.user }}</strong> is the highest bidder.</p>
                         {% else %}
@@ -36,17 +36,26 @@
                             </form>
                         {% else %}
 
-                            <!-- place bid -->
-                            <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">
-                                <div class="input-icon col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                                    {% csrf_token %}
-                                    {{ bid_form.newbid }}
-                                    <i>£</i>
+                            {% if bid_form_or_None %}
+
+                                <!-- place bid -->
+                                <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">
+                                    <div class="input-icon col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                                        {% csrf_token %}
+                                        {{ bid_form_or_None.newbid }}
+                                        <i>£</i>
+                                    </div>
+                                    <div class="col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                                        <button type="submit" class="btn btn-info form-control mx-auto my-1">Place Bid</button>
+                                    </div>
+                                </form>
+                            {% else %}
+
+                                <!-- Maximum Bid Reached -->
+                                <div>
+                                    <p>The maximum bid has been reached.</p>
                                 </div>
-                                <div class="col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                                    <button type="submit" class="btn btn-info form-control mx-auto my-1">Place Bid</button>
-                                </div>
-                            </form>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

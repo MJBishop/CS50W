@@ -11,9 +11,12 @@ from django.contrib.auth.decorators import login_required
 
 from .models import User, Listing, Bid, Comment
 
+system_max_bid = 10000
+system_min_bid = 5
+
 # Forms
 class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=5.00, max_value=100000.00)
+    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=system_min_bid, max_value=system_max_bid)
 
     def __init__(self, *args, **kwargs):
         initial_arguments = kwargs.get('initial', None)
@@ -27,7 +30,7 @@ class NewBidForm(forms.Form):
 
 class NewCommentForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class':'form-control mx-3'}), label='')
-
+    # max length check?
 
 class NewListingForm(forms.ModelForm):
     class Meta:
@@ -104,10 +107,14 @@ def listing(request, listing_id):
     if listing.max_bid is not None:
         min_bid = listing.max_bid + 1
 
+    bid_form_or_None = None 
+    if min_bid < system_max_bid:
+        bid_form_or_None = NewBidForm(initial={ 'min_bid':min_bid })
+
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
-        "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
+        "bid_form_or_None": bid_form_or_None,
         "comment_form": NewCommentForm(),
         "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
     })
