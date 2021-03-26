@@ -9,10 +9,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid, Comment
-
-system_max_bid = 10000
-system_min_bid = 5
+from .models import User, Listing, Bid, Comment, system_max_bid, system_min_bid
 
 # Forms
 class NewBidForm(forms.Form):
@@ -102,13 +99,15 @@ def createListing(request):
 
 def listing(request, listing_id):
     listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
-    min_bid = listing.starting_bid
 
+    # minimum bid
+    min_bid = listing.starting_bid
     if listing.max_bid is not None:
         min_bid = listing.max_bid + 1
 
+    # bid form or None
     bid_form_or_None = None 
-    if min_bid < system_max_bid:
+    if min_bid <= system_max_bid:
         bid_form_or_None = NewBidForm(initial={ 'min_bid':min_bid })
 
     return render(request, "auctions/listing.html", {
