@@ -4,6 +4,8 @@ from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 from django.forms import ModelForm
+from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
 from django.urls import reverse
@@ -12,9 +14,17 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Listing, Bid, Comment, system_max_bid, system_min_bid
 
 # Forms
-class NewBidForm(forms.Form):
-    newbid = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': '0.00', 'class':'form-control mx-auto my-1'}), label='', min_value=system_min_bid, max_value=system_max_bid)
-
+class NewBidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        exclude = ['listing', 'user', 'date_created']
+        widgets = {
+            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': "0.00" }),
+        }
+        labels = {
+            'bid': ''
+        }
+    
     def __init__(self, *args, **kwargs):
         initial_arguments = kwargs.get('initial', None)
 
@@ -22,8 +32,7 @@ class NewBidForm(forms.Form):
 
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
-            self.fields['newbid'].widget.attrs['min'] = min_bid
-
+            self.fields['bid'].widget.attrs['min'] = min_bid
 
 class NewCommentForm(forms.ModelForm):
     class Meta:
@@ -83,6 +92,7 @@ def watchlist(request):
         "watchlist_page" :"active"
     })
 
+
 @login_required
 def createListing(request):
     if request.method == "POST":
@@ -103,6 +113,7 @@ def createListing(request):
         "new_listing_page" :"active"
     })
 
+
 def listing(request, listing_id):
     listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
 
@@ -119,11 +130,12 @@ def listing(request, listing_id):
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
+        "comment_form": NewCommentForm(),
         "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
         "bid_form_or_None": bid_form_or_None,
-        "comment_form": NewCommentForm(),
         "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
     })
+
 
 def toggleWatchlist(request, listing_id):
     # TODO - Inform user if un-watching an auction the user has won
@@ -141,12 +153,13 @@ def toggleWatchlist(request, listing_id):
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
+
 def placeBid(request, listing_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
 
         if form.is_valid():
-            new_bid_amount = form.cleaned_data["newbid"]
+            new_bid_amount = form.cleaned_data["bid"]
             listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
             if ((listing.max_bid is None and new_bid_amount >= listing.starting_bid) or new_bid_amount > listing.max_bid):
@@ -165,13 +178,23 @@ def placeBid(request, listing_id):
                 # notify user by returning a new form and a message
                 return render(request, "auctions/listing.html", {
                     "listing": listing,
+                    "comment_form": NewCommentForm(),
                     "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
-                    "bid_form": NewBidForm(initial={ 'min_bid':min_bid }),
-                    "comment_form": form, #NewCommentForm(),
+                    "bid_form_or_None": NewBidForm(initial={ 'min_bid':min_bid }),
                     "message": "The price has changed. Your bid was below the new minimum bid.",
                     "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
                 })
-        
+        else:
+            # model form validation failed: system_min_bid > bid > system_max_bid
+            listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
+            return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "comment_form": NewCommentForm(),
+                    "comments": Comment.objects.filter(listing_id=listing_id).order_by('-date_created'),
+                    "bid_form_or_None": form,
+                    "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
+            })
+
 
 def addComment(request, listing_id):
     if request.method == "POST":
@@ -184,6 +207,8 @@ def addComment(request, listing_id):
             # Create & Save the new comment
             new_comment = Comment(comment=comment, user_name=request.user, listing=listing)
             new_comment.save()
+        
+        # Else return to listing
 
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 

@@ -18,11 +18,6 @@
                             <p class="card-text">No bids yet.</p>
                         {% endif %}
 
-
-                        <!-- bid changed message -->
-                        {% if message %}
-                            <div class="error mt-2">{{ message }}</div>
-                        {% endif %}
                     </div>
                     <div class="card-footer bg-transparent">
                         {% if listing.owner == user %}
@@ -31,7 +26,7 @@
                             <form class="row d-flex justify-content-center" action="{% url 'closeAuction' listing.id %}" method="post">
                                 {% csrf_token %}
                                 <div class="col-12 col-lg-6 col-xl-5">
-                                    <button type="submit" class="btn btn-danger form-control  mx-auto my-1">Close Auction</button>
+                                    <button type="submit" class="btn btn-danger form-control mx-auto my-1">Close Auction</button>
                                 </div>
                             </form>
                         {% else %}
@@ -42,7 +37,7 @@
                                 <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">
                                     <div class="input-icon col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                                         {% csrf_token %}
-                                        {{ bid_form_or_None.newbid }}
+                                        {{ bid_form_or_None.bid }}
                                         <i>£</i>
                                     </div>
                                     <div class="col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
@@ -58,7 +53,14 @@
                             {% endif %}
                         {% endif %}
                     </div>
+                    <!-- bid changed message -->
+                    {% if message %}
+                        <div class="error mt-2">{{ message }}</div>
+                    {% endif %}
+                    <!-- model form errors -->
+                    {{ bid_form_or_None.bid.errors }}
                 </div>
+
                 <div class="card bg-transparent   text-center ">
                     <div class="card-body">
                         {% if listing in user.watchlist.all %}
