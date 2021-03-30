@@ -2,7 +2,8 @@
 <html lang="en">
     <head>
         <title>Google Image Search</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="styles.css">
         <link rel="stylesheet" href="search-styles.css">
     </head>
@@ -16,7 +17,10 @@
             <div class="search">
                 <div class="wrapper">
                     <form action="https://google.com/search">
-                        <input type="text" name="q" autocomplete="off"><br>
+                        <div class="input-icon">
+                            <input type="text" name="q" autocomplete="off">
+                            <i class="material-icons">search</i>
+                        </div>
                         <input type="submit" value="Image Search">
                         <input type="hidden" name="tbm" value="isch">
                     </form>
