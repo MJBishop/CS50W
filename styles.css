@@ -4,6 +4,7 @@ body {
   font-size: small;
   background: #fff;
   color: #202124;
+  font-family: arial, sans-serif;
 }
 
 div {
@@ -30,7 +31,6 @@ nav {
 }
 
 a {
-  font-family: arial, sans-serif;
   background-color: transparent;
   text-decoration: none;
   padding-right: 15px;
@@ -47,29 +47,8 @@ a:hover {
 }
 
 input[type=submit] {
-  font-size: 14px;
-  line-height: 27px;
-  height: 36px;
-  min-width: 54px;
-  background-color: #f8f9fa;
-  color: #3c4043;
   border: 1px solid transparent;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
   user-select: none;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-top: 15px;
-  margin-right: 4px;
-  margin-bottom: 11px;
-  margin-left: 4px;
-}
-input[type=submit]:hover {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  background-color: #f8f9fa;
-  border: 1px solid #dadce0;
-  color: #202124;
 }
 input[type=submit]:focus {
   border: 1px solid #4f91f6;

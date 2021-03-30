@@ -3,21 +3,19 @@
   min-width: 400px;
   width: 96%;
   margin-top: 6px;
-  top: 159px;
+  top: 152px;
   position: relative;
 }
 
-.subheading {
-  display: inline-block;
-  min-width: 167px;
-  width: 16%;
+#subheading {
   font-size: 16px;
-  height: 300px;
   font-weight: 500;
   color: #333;
   vertical-align: middle;
   font-style: inherit;
-  vertical-align: middle;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
 }
 
 #grid {
@@ -31,7 +29,6 @@
 }
 
 .grid-item {
-  text-align: left;
   font-weight: inherit;
   font-style: inherit;
   font-size: 100%;
@@ -45,16 +42,35 @@
   height: 42px;
   color: #222;
   font-size: 13px;
-  line-height: 16px;
-  vertical-align: middle;
+  line-height: 42px;
+  display: flex;
+  align-items: center;
 }
 
 .in {
+  background-color: purple;
   display: inline-block;
   min-width: 230px;
   min-height: 41px;
   vertical-align: middle;
   width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.go {
+  text-align: right;
+  display: flex;
+  justify-content: right;
+  background-color: purple;
+  min-width: 230px;
+  min-height: 41px;
+  vertical-align: middle;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 input[type=text] {
@@ -63,6 +79,31 @@ input[type=text] {
   height: 25px;
   border-color: #d9d9d9;
   border-width: 1px;
+}
+
+input[type=submit] {
+  line-height: 100%;
+  background-color: #4b8bea;
+  border: 1px solid #3079ed;
+  border-radius: 2px;
+  color: white;
+  cursor: default;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  outline: 0;
+  height: 30px;
+  min-width: 120px;
+  float: right;
+  margin: 10px 0;
+  padding: 0 12px;
+}
+input[type=submit]:hover {
+  background-color: #4d90fe;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  border: 1px solid #3079ed;
+  color: #fff;
 }
 
 /*# sourceMappingURL=adv-search-styles.css.map */
