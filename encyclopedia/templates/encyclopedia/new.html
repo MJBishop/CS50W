@@ -9,8 +9,10 @@
         {% csrf_token %}
         <div class="col-12">
             <div class="input-group">
-                <!-- <h1 style="padding-right: 40px">??</h1> -->
                 <h1 style="padding-right: 40px">{{ form.titleField }}</h1> 
+                {% if message %}
+                    <div style="color: red; margin-top: 30px; padding-left: 40px;">{{ message }}</div>
+                {% endif%}
                 <input style="margin-top: 25px; height: 40px" class="btn btn-primary" type="submit" value="Save"></submit>
             </div>
         </div>

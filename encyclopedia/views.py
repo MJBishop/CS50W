@@ -11,6 +11,7 @@ from . import util
 #Form Class
 class TextAreaForm(forms.Form):
     entryField = forms.CharField(widget=forms.Textarea, label='')
+
 class TitleAndTextAreaForm(forms.Form):
     titleField = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title'}), label = '')
     entryField = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Entry'}), label='')
@@ -63,7 +64,6 @@ def randomEntry(request):
     title = entryList[0]
     if title == None:
         raise Http404("Entry not found")
-    # entry = util.get_entry(title)
     return HttpResponseRedirect(reverse("encyclopedia:entry", args=(title,)))
 
 def edit(request, title):
@@ -90,9 +90,14 @@ def add(request):
         form = TitleAndTextAreaForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["titleField"]
-            entry = util.get_entry(title)
-            if entry != None:
-                raise Http404("Entry not found")
+            currentEntry = util.get_entry(title)
+            if currentEntry != None:
+                # raise Http404("Page already exists")
+                return render(request, "encyclopedia/new.html", {
+                    "title": "",
+                    "form": form,
+                    "message": "This Page already exists!"
+                })
             else:
                 entry = form.cleaned_data["entryField"]
                 util.save_entry(title, entry) 
