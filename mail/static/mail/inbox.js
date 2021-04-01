@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
 
   // Show compose view and hide other views
+  document.querySelector('#select-email-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
@@ -55,6 +56,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#select-email-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -76,10 +78,20 @@ function load_mailbox(mailbox) {
         div.style.borderRadius = '2px';
         div.style.margin = '10px';
         div.style.padding = '10px';
-        // div.id = 'emails'; ?
         if (emails[i].read) {
+          // read emails have grey background
           div.style.backgroundColor = 'lightgrey';
         }
+
+        // add email_id to div dataset
+        div.dataset.email_id = emails[i].id;
+
+        // add div selection function
+        div.style.cursor = 'pointer';
+        div.onclick = function () {
+          // pass the email_id to view_email() 
+          view_email(this.dataset.email_id);
+        };
 
         // create and append sender
         const sender = document.createElement('span');
@@ -104,6 +116,36 @@ function load_mailbox(mailbox) {
         // append div
         document.querySelector('#emails-view').append(div);
       };
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+    console.log('Error:', error);
+  });
+  // Prevent default submission
+  return false;;
+}
+
+function view_email(id) {
+  console.log('VIEW_EMAIL ID:');
+  console.log(id);
+
+  // Show the email and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#select-email-view').style.display = 'block';
+
+  // Show the mailbox name
+  // document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+
+  const path = '/emails/' + id;
+  fetch(path)
+  .then(response => response.json())
+  .then(email => {
+      // Print email
+      console.log(email);
+
+      // ... do something else with email ...
   })
   // Catch any errors and log them to the console
   .catch(error => {

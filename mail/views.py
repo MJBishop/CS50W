@@ -99,6 +99,7 @@ def mailbox(request, mailbox):
 @csrf_exempt
 @login_required
 def email(request, email_id):
+    print('VIEW EMAIL')
 
     # Query for requested email
     try:
