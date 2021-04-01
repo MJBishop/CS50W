@@ -41,6 +41,13 @@ function send_email() {
   .then(result => {
       // Print result
       console.log(result);
+
+      // Show compose view and hide other views
+      document.querySelector('#select-email-view').style.display = 'none';
+      document.querySelector('#emails-view').style.display = 'block';
+      document.querySelector('#compose-view').style.display = 'none';
+
+      load_mailbox('sent')
   })
   // Catch any errors and log them to the console
   .catch(error => {
