@@ -72,19 +72,11 @@ function load_mailbox(mailbox) {
       // add emails ...
       for(var i = 0; i < emails.length; i++) {
 
-        // create and style div
-        const div = document.createElement('div');
-        div.style.border = '1px solid lightgrey';
-        div.style.borderRadius = '2px';
-        div.style.margin = '10px';
-        div.style.padding = '10px';
-        if (emails[i].read) {
-          // read emails have grey background
-          div.style.backgroundColor = 'lightgrey';
-        }
+        email = emails[i];
+        const div = self.display_email(email);
 
         // add email_id to div dataset
-        div.dataset.email_id = emails[i].id;
+        div.dataset.email_id = email.id;
 
         // add div selection function
         div.style.cursor = 'pointer';
@@ -93,26 +85,6 @@ function load_mailbox(mailbox) {
           view_email(this.dataset.email_id);
         };
 
-        // create and append sender
-        const sender = document.createElement('span');
-        sender.innerHTML = emails[i].sender;
-        div.append(sender);
-
-        // create and append timestamp
-        const timestamp = document.createElement('span');
-        timestamp.innerHTML = emails[i].timestamp;
-        timestamp.style.float= 'right';
-        div.append(timestamp);
-
-        // break
-        const br = document.createElement('br');
-        div.append(br);
-
-        // create and append subject
-        const subject = document.createElement('strong');
-        subject.innerHTML = emails[i].subject ? emails[i].subject : 'No Subject.';
-        div.append(subject);
-        
         // append div
         document.querySelector('#emails-view').append(div);
       };
@@ -145,7 +117,44 @@ function view_email(id) {
       // Print email
       console.log(email);
 
-      // ... do something else with email ...
+      // add the email html
+
+      // email header
+      const div = self.display_email(email);
+
+      // create and prepend sender prefix
+      const from = document.createElement('span');
+      from.innerHTML = 'From: ';
+      div.prepend(from); // no div!
+
+      // create and insert recipients before lastChild
+      const to = document.createElement('span');
+      to.innerHTML = 'To: ' + email.recipients;
+      div.insertBefore(to, div.lastChild);
+
+      // insert break before lastChild
+      const br = document.createElement('br');
+      div.insertBefore(br, div.lastChild);
+
+      // append header div
+      document.querySelector('#select-email-view').append(div);
+
+
+      // email body
+      // create and style div
+      const body_div = document.createElement('div');
+      body_div.style.border = '1px solid lightgrey';
+      body_div.style.borderRadius = '2px';
+      body_div.style.margin = '10px';
+      body_div.style.padding = '10px';
+
+      // create and append body
+      const body = document.createElement('p');
+      body.innerHTML = email.body ? email.body : 'No body.';
+      body_div.append(body);
+
+      // append body div
+      document.querySelector('#select-email-view').append(body_div);
   })
   // Catch any errors and log them to the console
   .catch(error => {
@@ -153,4 +162,39 @@ function view_email(id) {
   });
   // Prevent default submission
   return false;;
+}
+
+function display_email(email) {
+  // create and style div
+  const div = document.createElement('div');
+  div.style.border = '1px solid lightgrey';
+  div.style.borderRadius = '2px';
+  div.style.margin = '10px';
+  div.style.padding = '10px';
+  if (email.read) {
+    // read emails have grey background
+    div.style.backgroundColor = 'lightgrey';
+  }
+
+  // create and append sender
+  const sender = document.createElement('span');
+  sender.innerHTML = email.sender;
+  div.append(sender);
+
+  // create and append timestamp
+  const timestamp = document.createElement('span');
+  timestamp.innerHTML = email.timestamp;
+  timestamp.style.float= 'right';
+  div.append(timestamp);
+
+  // break
+  const br = document.createElement('br');
+  div.append(br);
+
+  // create and append subject
+  const subject = document.createElement('strong');
+  subject.innerHTML = email.subject ? email.subject : 'No Subject.';
+  div.append(subject);
+  
+  return div;
 }
