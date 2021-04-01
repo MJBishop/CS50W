@@ -75,6 +75,11 @@ function load_mailbox(mailbox) {
         email = emails[i];
         const header_div = self.email_header_div(email);
 
+        if (email.read) {
+          // read emails have grey background
+          header_div.style.backgroundColor = 'lightgrey';
+        }
+
         // add email_id to div dataset
         header_div.dataset.email_id = email.id;
 
@@ -111,6 +116,8 @@ function view_email(id) {
 
 
   const path = '/emails/' + id;
+
+  // fetch
   fetch(path)
   .then(response => response.json())
   .then(email => {
@@ -155,13 +162,35 @@ function view_email(id) {
 
       // append body div
       document.querySelector('#select-email-view').append(body_div);
+
+      
+      
+      if (!email.read) {
+
+        // set read to true
+        fetch(path, {
+          method: 'PUT',
+          body: JSON.stringify({
+              read: true
+          })
+        })
+        // Catch any errors and log them to the console
+        .catch(error => {
+          console.log('Error:', error);
+        });
+        // Prevent default submission
+        return false;
+      }
+      
+
   })
   // Catch any errors and log them to the console
   .catch(error => {
     console.log('Error:', error);
   });
   // Prevent default submission
-  return false;;
+  return false;
+  
 }
 
 function email_header_div(email) {
@@ -171,10 +200,6 @@ function email_header_div(email) {
   header_div.style.borderRadius = '2px';
   header_div.style.margin = '10px';
   header_div.style.padding = '10px';
-  if (email.read) {
-    // read emails have grey background
-    header_div.style.backgroundColor = 'lightgrey';
-  }
 
   // create and append sender
   const sender = document.createElement('span');
