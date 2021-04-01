@@ -73,20 +73,20 @@ function load_mailbox(mailbox) {
       for(var i = 0; i < emails.length; i++) {
 
         email = emails[i];
-        const div = self.display_email(email);
+        const header_div = self.email_header_div(email);
 
         // add email_id to div dataset
-        div.dataset.email_id = email.id;
+        header_div.dataset.email_id = email.id;
 
         // add div selection function
-        div.style.cursor = 'pointer';
-        div.onclick = function () {
+        header_div.style.cursor = 'pointer';
+        header_div.onclick = function () {
           // pass the email_id to view_email() 
           view_email(this.dataset.email_id);
         };
 
         // append div
-        document.querySelector('#emails-view').append(div);
+        document.querySelector('#emails-view').append(header_div);
       };
   })
   // Catch any errors and log them to the console
@@ -119,28 +119,28 @@ function view_email(id) {
 
       // add the email html
 
-      // email header
-      const div = self.display_email(email);
+      /// email header
+      const header_div = self.email_header_div(email);
 
       // create and prepend sender prefix
       const from = document.createElement('span');
       from.innerHTML = 'From: ';
-      div.prepend(from); // no div!
+      header_div.prepend(from);
 
       // create and insert recipients before lastChild
       const to = document.createElement('span');
       to.innerHTML = 'To: ' + email.recipients;
-      div.insertBefore(to, div.lastChild);
+      header_div.insertBefore(to, header_div.lastChild);
 
       // insert break before lastChild
       const br = document.createElement('br');
-      div.insertBefore(br, div.lastChild);
+      header_div.insertBefore(br, header_div.lastChild);
 
       // append header div
-      document.querySelector('#select-email-view').append(div);
+      document.querySelector('#select-email-view').append(header_div);
 
 
-      // email body
+      /// email body
       // create and style div
       const body_div = document.createElement('div');
       body_div.style.border = '1px solid lightgrey';
@@ -164,37 +164,37 @@ function view_email(id) {
   return false;;
 }
 
-function display_email(email) {
+function email_header_div(email) {
   // create and style div
-  const div = document.createElement('div');
-  div.style.border = '1px solid lightgrey';
-  div.style.borderRadius = '2px';
-  div.style.margin = '10px';
-  div.style.padding = '10px';
+  const header_div = document.createElement('div');
+  header_div.style.border = '1px solid lightgrey';
+  header_div.style.borderRadius = '2px';
+  header_div.style.margin = '10px';
+  header_div.style.padding = '10px';
   if (email.read) {
     // read emails have grey background
-    div.style.backgroundColor = 'lightgrey';
+    header_div.style.backgroundColor = 'lightgrey';
   }
 
   // create and append sender
   const sender = document.createElement('span');
   sender.innerHTML = email.sender;
-  div.append(sender);
+  header_div.append(sender);
 
   // create and append timestamp
   const timestamp = document.createElement('span');
   timestamp.innerHTML = email.timestamp;
   timestamp.style.float= 'right';
-  div.append(timestamp);
+  header_div.append(timestamp);
 
   // break
   const br = document.createElement('br');
-  div.append(br);
+  header_div.append(br);
 
   // create and append subject
   const subject = document.createElement('strong');
   subject.innerHTML = email.subject ? email.subject : 'No Subject.';
-  div.append(subject);
+  header_div.append(subject);
   
-  return div;
+  return header_div;
 }
