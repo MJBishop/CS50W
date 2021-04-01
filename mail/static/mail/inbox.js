@@ -103,21 +103,19 @@ function load_mailbox(mailbox) {
 }
 
 function view_email(id) {
-  console.log('VIEW_EMAIL ID:');
-  console.log(id);
 
   // Show the email and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#select-email-view').style.display = 'block';
 
-  // Show the mailbox name
-  // document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  // clear email
+  document.querySelector('#select-email-view').innerHTML = '';
 
 
   const path = '/emails/' + id;
 
-  // fetch
+  // fetch email
   fetch(path)
   .then(response => response.json())
   .then(email => {
@@ -194,6 +192,7 @@ function view_email(id) {
 }
 
 function email_header_div(email) {
+
   // create and style div
   const header_div = document.createElement('div');
   header_div.style.border = '1px solid lightgrey';
