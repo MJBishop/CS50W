@@ -68,23 +68,40 @@ function load_mailbox(mailbox) {
       console.log(emails);
 
       // add emails ...
-      // emails.forEach(obj => {
       for(var i = 0; i < emails.length; i++) {
 
+        // create and style div
         const div = document.createElement('div');
+        div.style.border = '1px solid lightgrey';
+        div.style.borderRadius = '2px';
+        div.style.margin = '10px';
+        div.style.padding = '10px';
+        // div.id = 'emails'; ?
+        if (emails[i].read) {
+          div.style.backgroundColor = 'lightgrey';
+        }
 
-        const header = document.createElement('h3');
-        header.innerHTML = emails[i].sender;
-        div.append(header);
+        // create and append sender
+        const sender = document.createElement('span');
+        sender.innerHTML = emails[i].sender;
+        div.append(sender);
 
-        const label = document.createElement('label');
-        label.innerHTML = emails[i].subject;
-        div.append(label);
+        // create and append timestamp
+        const timestamp = document.createElement('span');
+        timestamp.innerHTML = emails[i].timestamp;
+        timestamp.style.float= 'right';
+        div.append(timestamp);
+
+        // break
+        const br = document.createElement('br');
+        div.append(br);
+
+        // create and append subject
+        const subject = document.createElement('strong');
+        subject.innerHTML = emails[i].subject ? emails[i].subject : 'No Subject.';
+        div.append(subject);
         
-        const span = document.createElement('span');
-        span.innerHTML = emails[i].timestamp;
-        div.append(span);
-
+        // append div
         document.querySelector('#emails-view').append(div);
       };
   })
