@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // By default, load the inbox
   load_mailbox('inbox');
 
-  /// 
+  // compose form submission
   document.querySelector('form').onsubmit = send_email;
 });
+
 
 function compose_email() {
 
@@ -26,25 +27,29 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+
 function reply_email() {
 
   // show compose view and clear form
   self.compose_email();
 
-  // populate form
+  // Change heading
   document.querySelector('h3').innerText = 'Reply Email';
 
+  // add 'Re: ' to subject
   var subject = document.querySelector('#subject').innerHTML;
   const re = 'Re: ';
   if (subject.substr(0, 4) !== re) {
     subject = re + subject;
   }
 
+  // construct body text
   const sender = document.querySelector('#sender').innerHTML;
   const timestamp = document.querySelector('#timestamp').innerHTML;
   const body = document.querySelector('#email_body').innerText;
   const message = '\n\n\n' + 'On ' + timestamp + ' ' + sender + ' wrote:';
 
+  // populate form
   document.querySelector('#compose-recipients').value = sender;
   document.querySelector('#compose-subject').value = subject;
   document.querySelector('#compose-body').value = message + '\n' + body;
@@ -55,8 +60,10 @@ function reply_email() {
   document.querySelector('#compose-body').scrollTop;
 }
 
+
 function send_email() {
 
+  // 
   fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
@@ -85,6 +92,7 @@ function send_email() {
   return false;
   
 }
+
 
 function load_mailbox(mailbox) {
   
@@ -150,11 +158,8 @@ function view_email(id) {
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#select-email-view').style.display = 'block';
 
-  // clear mailbox
+  // clear mailbox and email
   document.querySelector('#emails-view').innerHTML = '';
-  //// best way? or pass parameters...
-
-  // clear email
   document.querySelector('#select-email-view').innerHTML = '';
 
   // fetch email
@@ -188,20 +193,7 @@ function view_email(id) {
 
       /// set email as read
       if (!email.read) {
-
-        // set read to true
-        fetch(path, {
-          method: 'PUT',
-          body: JSON.stringify({
-              read: true
-          })
-        })
-        // Catch any errors and log them to the console
-        .catch(error => {
-          console.log('Error:', error);
-        });
-        // Prevent default submission
-        return false;
+        self.set_read_email(path);
       }
 
   })
@@ -212,6 +204,25 @@ function view_email(id) {
   // Prevent default submission
   return false;
   
+}
+
+
+function set_read_email(path) {
+
+  // set read to true
+  fetch(path, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+    console.log('Error:', error);
+  });
+
+  // Prevent default submission
+  return false;
 }
 
 
@@ -231,6 +242,7 @@ function email_reply_button() {
   return button;
 }
 
+
 function email_archive_button(archived, path) {
 
   const button = document.createElement('button');
@@ -245,6 +257,7 @@ function email_archive_button(archived, path) {
   
   return button;
 }
+
 
 async function toggle_archive(archived, path) {
 
@@ -263,6 +276,7 @@ async function toggle_archive(archived, path) {
   return false;
 }
 
+
 function email_body_div(email) {
   
   // create and style div
@@ -277,6 +291,7 @@ function email_body_div(email) {
 
   return body_div;
 }
+
 
 function select_email_header_div(email) {
 
@@ -294,7 +309,6 @@ function select_email_header_div(email) {
 
   // create and insert recipients before lastChild
   const recipients = document.createElement('span');
-  // recipients.setAttribute('id', 'recipients');
   recipients.innerHTML = email.recipients;
   header_div.insertBefore(recipients, header_div.lastChild);
 
@@ -304,6 +318,7 @@ function select_email_header_div(email) {
 
   return header_div;
 }
+
 
 function email_header_div(email) {
 
