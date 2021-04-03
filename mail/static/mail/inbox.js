@@ -28,18 +28,30 @@ function compose_email() {
 
 function reply_email() {
 
+  // show compose view and clear form
   self.compose_email();
 
   // populate form
   document.querySelector('h3').innerText = 'Reply Email';
 
-  const recipients = '';
-  const subject = '';
-  const body = 'Hello World';
+  var subject = document.querySelector('#subject').innerHTML;
+  const re = 'Re: ';
+  if (subject.substr(0, 4) !== re) {
+    subject = re + subject;
+  }
 
-  document.querySelector('#compose-recipients').value = recipients;
+  const sender = document.querySelector('#sender').innerHTML;
+  const timestamp = document.querySelector('#timestamp').innerHTML;
+  const body = document.querySelector('#email_body').innerText;
+  const message = '\n\n\n' + 'On ' + timestamp + ' ' + sender + ' wrote:';
+
+  document.querySelector('#compose-recipients').value = sender;
   document.querySelector('#compose-subject').value = subject;
-  document.querySelector('#compose-body').value = body;
+  document.querySelector('#compose-body').value = message + '\n' + body;
+
+  // focus on email body
+  document.querySelector('#compose-body').focus();
+  document.querySelector('#compose-body').setSelectionRange(0, 0);
 }
 
 function send_email() {
@@ -136,6 +148,10 @@ function view_email(id) {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#select-email-view').style.display = 'block';
+
+  // clear mailbox
+  document.querySelector('#emails-view').innerHTML = '';
+  //// best way? or pass parameters...
 
   // clear email
   document.querySelector('#select-email-view').innerHTML = '';
@@ -301,7 +317,7 @@ function email_header_div(email) {
 
   // create and append timestamp
   const timestamp = document.createElement('span');
-  timestamp.classList.add('timestamp');
+  timestamp.setAttribute('id', 'timestamp');
   timestamp.innerHTML = email.timestamp;
   header_div.append(timestamp);
 
