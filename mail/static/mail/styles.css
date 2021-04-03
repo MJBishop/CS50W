@@ -21,16 +21,16 @@ textarea {
     background-color: lightgrey;
 }
 
-#subject {
-    line-height: 200%;
-}
-
 .timestamp {
     float: right;
     font-size: 15px;
 }
 
-.email_body {
+#subject {
+    line-height: 200%;
+}
+
+#email_body {
     min-height: 500px;
 }
 

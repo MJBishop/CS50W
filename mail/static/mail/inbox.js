@@ -241,7 +241,7 @@ async function toggle_archive(archived, path) {
   .catch(error => {
     console.log('Error:', error);
   });
-  
+
   // Prevent default submission
   return false;
 }
@@ -251,7 +251,7 @@ function email_body_div(email) {
   // create and style div
   const body_div = document.createElement('div');
   body_div.classList.add('section');
-  body_div.classList.add('email_body');
+  body_div.setAttribute('id', 'email_body');
 
   // create and append body
   const body = document.createElement('p');
@@ -295,7 +295,7 @@ function email_header_div(email) {
 
   // create and append sender
   const sender = document.createElement('span');
-  sender.classList.add('sender');
+  sender.setAttribute('id', 'sender');
   sender.innerHTML = email.sender;
   header_div.append(sender);
 
@@ -311,8 +311,7 @@ function email_header_div(email) {
 
   // create and append subject
   const subject = document.createElement('strong');
-  // subject.setAttribute('id', 'subject');
-  subject.classList.add('subject');
+  subject.setAttribute('id', 'subject');
   subject.innerHTML = email.subject ? email.subject : 'No Subject.';
   header_div.append(subject);
   
