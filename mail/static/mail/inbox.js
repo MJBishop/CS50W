@@ -309,7 +309,7 @@ function select_email_header_div(email) {
 
   // create and insert recipients before lastChild
   const recipients = document.createElement('span');
-  recipients.innerHTML = email.recipients;
+  recipients.innerHTML = email.recipients.join(', ');
   header_div.insertBefore(recipients, header_div.lastChild);
 
   // insert break before lastChild
