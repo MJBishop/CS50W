@@ -160,7 +160,7 @@ function view_email(id) {
       if (document.querySelector('#emails-view').dataset.mailbox != 'sent') {
 
         // create and append archive/unarchive button
-        const button = self.email_archive_button(email.archived);
+        const button = self.email_archive_button(email.archived, path);
         document.querySelector('#select-email-view').append(button);
       }
       
@@ -214,30 +214,36 @@ function email_reply_button() {
   return button;
 }
 
-function email_archive_button(archived) {
+function email_archive_button(archived, path) {
 
   const button = document.createElement('button');
   button.classList.add('btn');
   button.classList.add('btn-outline-primary');
   button.textContent = archived ? 'Unarchive' : 'Archive';
 
-  button.onclick = function () {
-    fetch(path, {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: !archived
-      })
-    })
-    // .then(self.load_mailbox('inbox'))///TODO! not loading updated inbox...
-    // Catch any errors and log them to the console
-    .catch(error => {
-      console.log('Error:', error);
-    });
-    // Prevent default submission
-    return false;
-  }
+  button.addEventListener('click', async function() {
+    const complete = await self.toggle_archive(archived, path);
+    self.load_mailbox('inbox')
+  });
   
   return button;
+}
+
+async function toggle_archive(archived, path) {
+
+  return fetch(path, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: !archived
+    })
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+    console.log('Error:', error);
+  });
+  
+  // Prevent default submission
+  return false;
 }
 
 function email_body_div(email) {
