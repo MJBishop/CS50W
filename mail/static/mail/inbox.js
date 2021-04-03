@@ -111,11 +111,11 @@ function load_mailbox(mailbox) {
 
         // add div selection function
         header_div.style.cursor = 'pointer';
-        header_div.onclick = function () {
+        header_div.addEventListener('click', function() {
 
-          // pass the email_id to view_email() 
+          // pass the email_id to view_email() function
           view_email(this.dataset.email_id);
-        };
+        });
 
         // append div
         document.querySelector('#emails-view').append(header_div);
