@@ -32,6 +32,7 @@ textarea {
 
 #email_body {
     min-height: 500px;
+    white-space: pre-wrap;
 }
 
 .reply {

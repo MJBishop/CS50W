@@ -52,6 +52,7 @@ function reply_email() {
   // focus on email body
   document.querySelector('#compose-body').focus();
   document.querySelector('#compose-body').setSelectionRange(0, 0);
+  document.querySelector('#compose-body').scrollTop;
 }
 
 function send_email() {
@@ -293,6 +294,7 @@ function select_email_header_div(email) {
 
   // create and insert recipients before lastChild
   const recipients = document.createElement('span');
+  // recipients.setAttribute('id', 'recipients');
   recipients.innerHTML = email.recipients;
   header_div.insertBefore(recipients, header_div.lastChild);
 
