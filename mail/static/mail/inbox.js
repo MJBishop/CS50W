@@ -35,7 +35,7 @@ function reply_email() {
 
   const recipients = '';
   const subject = '';
-  const body = '';
+  const body = 'Hello World';
 
   document.querySelector('#compose-recipients').value = recipients;
   document.querySelector('#compose-subject').value = subject;
@@ -207,7 +207,9 @@ function email_reply_button() {
   button.classList.add('btn');
   button.classList.add('btn-primary');
 
-  // button.onclick = reply_email();
+  button.addEventListener('click', function() {
+    reply_email();
+  });
 
   return button;
 }
