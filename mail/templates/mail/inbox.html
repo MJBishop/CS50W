@@ -8,7 +8,7 @@
     <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
     <button class="btn btn-sm btn-outline-primary" id="sent">Sent</button>
     <button class="btn btn-sm btn-outline-primary" id="archived">Archived</button>
-    <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
+    <a class="btn btn-sm btn-outline-primary" id="logout" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
     <div id="emails-view">
@@ -36,5 +36,8 @@
 {% endblock %}
 
 {% block script %}
+    <script type="text/javascript"> 
+        var user = "{{user}}";
+    </script>
     <script src="{% static 'mail/inbox.js' %}"></script>
 {% endblock %}
