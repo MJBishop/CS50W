@@ -1,4 +1,5 @@
-/* inbox.html */
+/* inbox.html 
+********************************/
 textarea {
     min-height: 355px;
     margin: 0 0 10px 0;
@@ -8,8 +9,14 @@ textarea {
     float: right;
 }
 
+#user {
+    margin: 15px 0 0 0;
+    padding: 5px;
+}
 
-/* inbox.js */
+
+/* inbox.js 
+********************************/
 .section {
     border: 1px solid lightgrey;
     border-radius: 2px;
@@ -40,3 +47,18 @@ textarea {
 }
 
 
+/* media queries 
+********************************/
+@media only screen and (min-width : 992px) {
+    .container { max-width: 800px; }
+}
+
+@media only screen and (max-width : 450px) {
+    #logout {
+        float: left;
+    }
+
+    #user {
+        font-size: 20px;
+    }
+}
