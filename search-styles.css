@@ -48,6 +48,8 @@ input[type=submit] {
   background-color: #f8f9fa;
   color: #3c4043;
   cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
   border-radius: 5px;
   text-align: center;
   padding-left: 16px;
@@ -62,6 +64,9 @@ input[type=submit]:hover {
   background-color: #f8f9fa;
   border: 1px solid #dadce0;
   color: #202124;
+}
+input[type=submit]:focus {
+  border: 1px solid #4f91f6;
 }
 
 .input-icon {

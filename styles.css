@@ -28,6 +28,7 @@ nav {
   display: flex;
   position: fixed;
   right: 20px;
+  top: 15px;
 }
 
 a {
@@ -44,14 +45,6 @@ a:-webkit-any-link {
 }
 a:hover {
   text-decoration: underline;
-}
-
-input[type=submit] {
-  border: 1px solid transparent;
-  user-select: none;
-}
-input[type=submit]:focus {
-  border: 1px solid #4f91f6;
 }
 
 input, textarea, select {
