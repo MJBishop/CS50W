@@ -1,0 +1,15 @@
+#header {
+    margin-left: 30px;
+}
+#grid {
+    display: grid;
+    grid-auto-flow:row;
+    grid-template-columns: 75% auto;
+    position: relative;
+    margin: 20px;
+}
+button {
+    width: 90%;
+    margin-bottom: 20px;
+    text-align: left;
+}
