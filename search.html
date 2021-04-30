@@ -3,37 +3,8 @@
     <head>
         <title>CS50 Web Project 0 | Search</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-
-                var video = document.getElementById('video')
-                var buttons = document.querySelectorAll('#buttons button')
-            
-                Array.from(buttons).forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        video.currentTime = button.dataset.timestamp
-                        video.play()
-                    })
-                })
-            });
-        </script>
-        <style>
-            #header {
-                margin-left: 30px;
-            }
-            #grid {
-                display: grid;
-                grid-auto-flow:row;
-                grid-template-columns: 75% auto;
-                position: relative;
-                margin: 20px;
-            }
-            button {
-                width: 90%;
-                margin-bottom: 20px;
-                text-align: left;
-            }
-        </style>
+        <link rel="stylesheet" href="styles.css">
+        <script src="time-stamp.js"></script>
     </head>
     <body>
         <div id="header">
@@ -54,7 +25,7 @@
                     <button data-timestamp="74">1:14 - Appearance</button>
                     <button data-timestamp="102">1:42 - Lucky</button>
                     <button data-timestamp="117">1:57 - Aesthetics</button>
-                    </div>
+                </div>
             </div>
         </div>
     </body>
