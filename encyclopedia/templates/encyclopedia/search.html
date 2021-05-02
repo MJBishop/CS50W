@@ -5,7 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Search Results for '{{ search }}' </h1>
+    {% if entries %}
+        <h1>Search Results for '{{ search }}'</h1>
+    {% else %}
+        <h1>No Search Results for '{{ search }}'</h1>
+    {% endif %}
 
     <ul>
         {% for entry in entries %}

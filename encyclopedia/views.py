@@ -17,39 +17,45 @@ class TitleAndTextAreaForm(forms.Form):
     entryField = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Entry'}), label='')
 
 
+'''
+Returns the entry of an exact match, or a list of partial matches.
+'''
 def search(request):
     search_string = request.GET.get("q")
     if len(search_string) > 0:
         partial_matches = []
         for title in util.list_entries():
             if title == search_string:
+                # return the matching entry
                 return render(request, "encyclopedia/entry.html", {
                     "entry": markdown2.markdown(util.get_entry(title)),
                     "title": title
             })
             elif search_string in title:
+                # add to partial matches
                 partial_matches += [title]
-        if len(partial_matches) > 0:
-            return render(request, "encyclopedia/search.html", {
-                "entries": partial_matches,
-                "search": search_string
-            })
-        else:
-            return render(request, "encyclopedia/index.html", {
-                "entries": util.list_entries()
+        # return partial matches
+        return render(request, "encyclopedia/search.html", {
+            "entries": partial_matches,
+            "search": search_string
         })
     else:
         return HttpResponseRedirect(reverse("encyclopedia:index"))
 
 
+'''
+Returns all entries.
+'''
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
 
-# Entry View
-# Returns the entry of a given title
+'''
+Returns the entry of a given title.
+Raises HTTP404 if entry not found.
+'''
 def entry(request, title):
     entry = util.get_entry(title)
     if entry == None:
@@ -59,6 +65,9 @@ def entry(request, title):
         "title": title
     })
 
+'''
+Returns a random entry
+'''
 def randomEntry(request):
     entryList = random.sample(util.list_entries(), 1)
     title = entryList[0]
@@ -66,6 +75,10 @@ def randomEntry(request):
         raise Http404("Entry not found")
     return HttpResponseRedirect(reverse("encyclopedia:entry", args=(title,)))
 
+'''
+Returns the edit view of an entry with form populated with the entry.
+POST saves the valid form
+'''
 def edit(request, title):
     if request.method == "POST":
         form = TextAreaForm(request.POST)
@@ -73,10 +86,6 @@ def edit(request, title):
             # Save the edited Entry
             entry = form.cleaned_data["entryField"]
             util.save_entry(title, entry)
-            # Redirect back to entry page
-            # return HttpResponseRedirect(reverse("encyclopedia:entry", args=(title,)))
-        # else:
-            # Throw exception?
         return HttpResponseRedirect(reverse("encyclopedia:entry", args=(title,)))
 
     entry = util.get_entry(title)
@@ -85,6 +94,10 @@ def edit(request, title):
         "form": TextAreaForm(initial={'entryField': entry})
     })
 
+'''
+Returns the edit view with an empty form.
+POST saves the valid form data as an entry. Display a  message if the entry already exists.
+'''
 def add(request):
     if request.method == "POST":
         form = TitleAndTextAreaForm(request.POST)
@@ -92,7 +105,6 @@ def add(request):
             title = form.cleaned_data["titleField"]
             currentEntry = util.get_entry(title)
             if currentEntry != None:
-                # raise Http404("Page already exists")
                 return render(request, "encyclopedia/new.html", {
                     "title": "",
                     "form": form,
