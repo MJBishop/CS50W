@@ -8,10 +8,15 @@ from django.shortcuts import render
 
 from . import util
 
-#Form Class
+'''
+TextAreaForm for editing an entry
+'''
 class TextAreaForm(forms.Form):
     entryField = forms.CharField(widget=forms.Textarea, label='')
 
+'''
+TitleAndTextAreaForm for adding an entry
+'''
 class TitleAndTextAreaForm(forms.Form):
     titleField = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title'}), label = '')
     entryField = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Entry'}), label='')
