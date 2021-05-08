@@ -19,7 +19,7 @@ class NewBidForm(forms.ModelForm):
         model = Bid
         exclude = ['listing', 'user', 'date_created']
         widgets = {
-            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': "0.00" }),
+            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': system_min_bid }),
         }
         labels = {
             'bid': ''
@@ -33,6 +33,8 @@ class NewBidForm(forms.ModelForm):
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
             self.fields['bid'].widget.attrs['min'] = min_bid
+            self.fields['bid'].widget.attrs['placeholder'] = min_bid
+
 
 class NewCommentForm(forms.ModelForm):
     class Meta:
@@ -52,7 +54,7 @@ class NewListingForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control' }),
             'description': forms.Textarea(attrs={'class': 'form-control' }),
-            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "0.00" }),
+            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': system_min_bid }),
             'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "optional" }),
             'img_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': "optional" })
         }
@@ -120,7 +122,7 @@ def listing(request, listing_id):
     # minimum bid
     min_bid = listing.starting_bid
     if listing.max_bid is not None:
-        min_bid = listing.max_bid + 1
+        min_bid = listing.max_bid + 1.00
 
     # bid form or None
     # 
@@ -162,6 +164,7 @@ def placeBid(request, listing_id):
             new_bid_amount = form.cleaned_data["bid"]
             listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
+            # check bid is valid
             if ((listing.max_bid is None and new_bid_amount >= listing.starting_bid) or new_bid_amount > listing.max_bid):
 
                 # Create & Save a new listing bid
