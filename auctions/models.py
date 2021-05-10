@@ -4,8 +4,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 
-system_max_bid = 10000
-system_min_bid = 5
+# Max & Min Bids
+SYSTEM_MAX_BID = Decimal('10000.00')
+SYSTEM_MIN_BID = Decimal('5.00')
+
 
 class User(AbstractUser):
     pass
@@ -16,7 +18,7 @@ class Listing(models.Model):
     description = models.TextField(max_length=500)
     starting_bid = models.DecimalField(max_digits=7, 
                                        decimal_places=2, 
-                                       validators=[MinValueValidator(Decimal(system_min_bid)), MaxValueValidator(Decimal(system_max_bid))], 
+                                       validators=[MinValueValidator(SYSTEM_MIN_BID), MaxValueValidator(SYSTEM_MAX_BID)], 
                                        verbose_name='Starting Bid')
     category = models.CharField(max_length=30, blank=True, default='')
     img_url = models.URLField(blank=True, default='', verbose_name='Image URL')
@@ -29,7 +31,7 @@ class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
     bid = models.DecimalField(max_digits=7, 
                               decimal_places=2, 
-                              validators=[MinValueValidator(Decimal(system_min_bid)), MaxValueValidator(Decimal(system_max_bid))])
+                              validators=[MinValueValidator(SYSTEM_MIN_BID), MaxValueValidator(SYSTEM_MAX_BID)])
     date_created = models.DateTimeField(auto_now_add=True)
 
 class Comment(models.Model):

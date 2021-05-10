@@ -12,7 +12,7 @@
         {% endif %}
         <label><label class="text-muted"> on </label> {{ listing.date_created }}</label>
 
-        <h4><small>Price: </small>£{{ listing.max_bid | default:listing.starting_bid }}</h4>
+        <h4><small>Price: </small>£{{ listing.max_bid | floatformat:2 | default:listing.starting_bid }}</h4>
 
         {% if listing.bid_count == 0 %}
             <label>No bids.</label>

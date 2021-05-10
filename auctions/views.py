@@ -11,7 +11,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid, Comment, system_max_bid, system_min_bid
+from django.db.models import FloatField
+from django.db.models.functions import Cast
+
+from .models import User, Listing, Bid, Comment, SYSTEM_MAX_BID, SYSTEM_MIN_BID
 
 # Forms
 class NewBidForm(forms.ModelForm):
@@ -19,7 +22,7 @@ class NewBidForm(forms.ModelForm):
         model = Bid
         exclude = ['listing', 'user', 'date_created']
         widgets = {
-            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': system_min_bid }),
+            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': round(SYSTEM_MIN_BID, 2) }),
         }
         labels = {
             'bid': ''
@@ -32,8 +35,8 @@ class NewBidForm(forms.ModelForm):
 
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
-            self.fields['bid'].widget.attrs['min'] = min_bid
-            self.fields['bid'].widget.attrs['placeholder'] = min_bid
+            self.fields['bid'].widget.attrs['min'] = round(min_bid, 2)
+            self.fields['bid'].widget.attrs['placeholder'] = round(min_bid, 2)
 
 
 class NewCommentForm(forms.ModelForm):
@@ -54,14 +57,14 @@ class NewListingForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control' }),
             'description': forms.Textarea(attrs={'class': 'form-control' }),
-            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': system_min_bid }),
+            'starting_bid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': round(SYSTEM_MIN_BID, 2) }),
             'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "optional" }),
             'img_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': "optional" })
         }
         
 
 
-
+# Views
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.filter(active=True)
@@ -122,12 +125,12 @@ def listing(request, listing_id):
     # minimum bid
     min_bid = listing.starting_bid
     if listing.max_bid is not None:
-        min_bid = listing.max_bid + 1.00
+        min_bid = listing.max_bid + Decimal('1')
 
     # bid form or None
     # 
     bid_form_or_None = None 
-    if min_bid <= system_max_bid:
+    if min_bid <= SYSTEM_MAX_BID:
         bid_form_or_None = NewBidForm(initial={ 'min_bid':min_bid })
 
     return render(request, "auctions/listing.html", {
@@ -188,7 +191,7 @@ def placeBid(request, listing_id):
                     "bid_or_None": Bid.objects.filter(listing=listing).order_by('-bid').first()
                 })
         else:
-            # model form validation failed: system_min_bid > bid > system_max_bid
+            # model form validation failed: SYSTEM_MIN_BID > bid > SYSTEM_MAX_BID
             listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
             return render(request, "auctions/listing.html", {
                     "listing": listing,
