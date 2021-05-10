@@ -26,6 +26,9 @@ class Listing(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{self.title}. Posted by: {self.owner}. Status: {'Active' if self.active else 'Closed'}"
+
 class Bid(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
@@ -34,8 +37,14 @@ class Bid(models.Model):
                               validators=[MinValueValidator(SYSTEM_MIN_BID), MaxValueValidator(SYSTEM_MAX_BID)])
     date_created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Bid: {self.bid} Date: {self.date_created}"
+
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
     user_name = models.ForeignKey(User, to_field="username", on_delete=models.CASCADE, related_name="comments")
     comment = models.TextField(max_length=400)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_name}, {self.comment}, {self.date_created}"
