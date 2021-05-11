@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 # Max & Min Bids
 SYSTEM_MAX_BID = Decimal('10000.00')
 SYSTEM_MIN_BID = Decimal('5.00')
+SYSTEM_MIN_BID_INCREMENT = Decimal('1.00')
 
 
 class User(AbstractUser):
