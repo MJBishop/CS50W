@@ -4,6 +4,7 @@
 
 <h2>Create Listing</h2>
 
+<!-- new listing form -->
 <form class="mb-5 mt-3" method="post">
     {% csrf_token %}
 
@@ -34,6 +35,7 @@
         </div>
     {% endfor %}
 
+    <!-- submit -->
     <div class="row">
         <div class="col-md-2">  
             <button type="submit" class="btn btn-info form-control">Save</button>

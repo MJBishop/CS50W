@@ -1,13 +1,16 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    <!-- listing data -->
     <div class="card mb-4 border-light">
         {% include "auctions/listingdata.html" %}
     </div>
 
+    <!-- listing actions -->
     {% if user.is_authenticated %}
         {% if listing.active %}
             <div class="card-deck mb-4">
+                <!-- bid -->
                 <div class="card bg-transparent  text-center ">
                     <div class="card-body">
                         {% if user == bid_or_None.user %}
@@ -17,11 +20,9 @@
                         {% else %}
                             <p class="card-text">No bids yet.</p>
                         {% endif %}
-
                     </div>
                     <div class="card-footer bg-transparent">
                         {% if listing.owner == user %}
-
                             <!-- close auction -->
                             <form class="row d-flex justify-content-center" action="{% url 'closeAuction' listing.id %}" method="post">
                                 {% csrf_token %}
@@ -30,9 +31,7 @@
                                 </div>
                             </form>
                         {% else %}
-
                             {% if bid_form_or_None %}
-
                                 <!-- place bid -->
                                 <form class="row d-flex justify-content-center" action="{% url 'placeBid' listing.id %}" method="post">
                                     <div class="input-icon col-12 col-xs-5 col-sm-12 col-md-6 col-lg-4 col-xl-3">
@@ -45,7 +44,6 @@
                                     </div>
                                 </form>
                             {% else %}
-
                                 <!-- Maximum Bid Reached -->
                                 <div>
                                     <p>The maximum bid has been reached.</p>
@@ -53,14 +51,15 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <!-- bid changed message -->
                     {% if message %}
+                        <!-- bid changed message -->
                         <div class="error mt-2">{{ message }}</div>
                     {% endif %}
                     <!-- model form errors -->
                     {{ bid_form_or_None.bid.errors }}
                 </div>
 
+                <!-- watchlist -->
                 <div class="card bg-transparent   text-center ">
                     <div class="card-body">
                         {% if listing in user.watchlist.all %}
@@ -81,6 +80,7 @@
                             {% endif %}
                         {% endif %}
                     </div>
+                    <!-- toggle watchlist -->
                     <div class="card-footer bg-transparent">
                         <form class="row d-flex justify-content-center" action="{% url 'toggleWatchlist' listing.id %}" method="post">
                             {% csrf_token %}
@@ -96,6 +96,7 @@
                 </div>
             </div>
         {% else %}
+            <!-- auction closed -->
             <div class="card mb-4 bg-transparent border-danger text-center">
                 <div class="card-header">
                     <h3>Auction Closed.</h3>
@@ -113,6 +114,7 @@
     {% endif %}
 
     {% if user.is_authenticated %}
+        <!-- add comment -->
         <div class="card mb-4 bg-transparent">
             <form action="{% url 'addComment' listing.id %}" method="post">
                 <div class="row card-body">
@@ -131,9 +133,11 @@
     {% endif %}
 
     {% if comments.count > 0 %}
+        <!-- comments count -->
         <h4>Comments ({{ comments.count }})</h4>
     {% endif %}
     {% for comment in comments %}
+        <!-- comments -->
         <div class="card mb-4 bg-light border-info">
             <h5 class="card-header border-info">{{ comment.user_name }}</h5>
             <div class="card-body">

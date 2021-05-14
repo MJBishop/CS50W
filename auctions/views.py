@@ -7,9 +7,9 @@ from django.shortcuts import render
 from django import forms
 from django.forms import ModelForm
 from django.core.validators import MinValueValidator, MaxValueValidator
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 
-from django.db.models import Max, Count
+from django.db.models import Max, Count, ExpressionWrapper, DecimalField
 # from django.db.models.functions import Cast
 
 from .models import User, Listing, Bid, Comment, SYSTEM_MAX_BID, SYSTEM_MIN_BID, SYSTEM_MIN_BID_INCREMENT
@@ -20,7 +20,7 @@ class NewBidForm(forms.ModelForm):
         model = Bid
         exclude = ['listing', 'user', 'date_created']
         widgets = {
-            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': SYSTEM_MIN_BID }),
+            'bid': forms.NumberInput(attrs={'class': 'form-control mx-auto my-1', 'placeholder': SYSTEM_MIN_BID, 'step': 1.00 }),
         }
         labels = {
             'bid': ''
@@ -31,11 +31,12 @@ class NewBidForm(forms.ModelForm):
 
         super(NewBidForm, self).__init__(*args, **kwargs)
 
-        # 
+        # set 'bid' placeholder and min validator value
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
-            self.fields['bid'].widget.attrs['min'] = min_bid
-            self.fields['bid'].widget.attrs['placeholder'] = round(min_bid, 2)
+            if min_bid:
+                self.fields['bid'].widget.attrs['min'] = min_bid
+                self.fields['bid'].widget.attrs['placeholder'] = min_bid
 
 class NewCommentForm(forms.ModelForm):
     class Meta:
@@ -66,7 +67,10 @@ class NewListingForm(forms.ModelForm):
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.filter(active=True)
-                                   .annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid'))
+                                   .annotate(
+                                       max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                       bid_count=Count('bids__bid')
+                                    )
                                    .order_by('-date_created'),
         "listings_page": "active"
     })
@@ -85,13 +89,20 @@ def categories(request):
 def category(request, category):
     return render(request, "auctions/category.html", {
         "listings": Listing.objects.filter(category=category, active=True)
-                                   .annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
+                                   .annotate(
+                                       max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()), 
+                                       bid_count=Count('bids__bid')
+                                    ),
         "category": category
     })
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html", {
-        "listings": request.user.watchlist.all().annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')),
+        "listings": request.user.watchlist.all()
+                                          .annotate(
+                                              max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()), 
+                                              bid_count=Count('bids__bid')
+                                           ),
         "watchlist_page" :"active"
     })
 
@@ -102,6 +113,7 @@ def createListing(request):
         listing = Listing(owner=request.user) 
         form = NewListingForm(request.POST, instance=listing)
 
+        # validate form
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("index"))
@@ -118,12 +130,15 @@ def createListing(request):
 
 
 def listing(request, listing_id):
-    listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
+    listing = Listing.objects.annotate(
+                                max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                bid_count=Count('bids__bid')
+                              ).get(pk=listing_id)
 
     # minimum bid: £{SYSTEM_MIN_BID_INCREMENT} greater than current bid
     min_bid = listing.starting_bid
     if listing.max_bid is not None:
-        min_bid = listing.max_bid + SYSTEM_MIN_BID_INCREMENT
+        min_bid = (listing.max_bid + SYSTEM_MIN_BID_INCREMENT).quantize(Decimal('0.01'), ROUND_DOWN)
 
     # bid form or None: 
     bid_form_or_None = None 
@@ -144,6 +159,7 @@ def toggleWatchlist(request, listing_id):
         current_user = request.user
         listing = Listing.objects.get(pk=listing_id)
         
+        # toggle watchlist
         if current_user in listing.watching.all():
             # remove user from watchlist
             listing.watching.remove(current_user)
@@ -157,10 +173,15 @@ def toggleWatchlist(request, listing_id):
 def placeBid(request, listing_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
+        listing = Listing.objects.annotate(
+                                max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                bid_count=Count('bids__bid')
+                              ).get(pk=listing_id)
 
+        # validate form
         if form.is_valid():
             new_bid_amount = form.cleaned_data["bid"]
-            listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
+            # listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
             # check new_bid_amount is still > max_bid
             if ((listing.max_bid is None and new_bid_amount >= listing.starting_bid) or new_bid_amount > listing.max_bid):
@@ -175,7 +196,7 @@ def placeBid(request, listing_id):
                 # min_bid has changed since loading the page (by another user)
                 min_bid = listing.starting_bid
                 if listing.max_bid is not None:
-                    min_bid = listing.max_bid + SYSTEM_MIN_BID_INCREMENT
+                    min_bid = (listing.max_bid + SYSTEM_MIN_BID_INCREMENT).quantize(Decimal('0.01'), ROUND_DOWN)
 
                 # notify user by returning a new form and a message
                 return render(request, "auctions/listing.html", {
@@ -188,7 +209,7 @@ def placeBid(request, listing_id):
                 })
         else:
             # model form validation failed: bid < SYSTEM_MIN_BID || bid > SYSTEM_MAX_BID
-            listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
+            # listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
             return render(request, "auctions/listing.html", {
                     "listing": listing,
                     "comment_form": NewCommentForm(),
@@ -202,6 +223,7 @@ def addComment(request, listing_id):
     if request.method == "POST":
         form = NewCommentForm(request.POST)
 
+        # validate form
         if form.is_valid():
             comment = form.cleaned_data["comment"]
             listing = Listing.objects.get(pk=listing_id)

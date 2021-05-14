@@ -1,6 +1,10 @@
 {% for listing in listings %}
+
+    <!-- listing data -->
     <div class="card mb-4">
+
         {% include "auctions/listingdata.html" %}
+        <!-- view listing button -->
         <div class="card-footer text-center bg-transparent border-light">
             <a href="{% url 'listing' listing.id %}" class="btn btn-light border-info text-info stretched-link">View listing</a>
         </div>

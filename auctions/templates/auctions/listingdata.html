@@ -1,19 +1,25 @@
+<!-- listing data -->
 <div class="card-body row">
+    <!-- image url -->
     <div class="col-md-6 order-md-12 col-lg-5 text-center">
         <img class="card-img img-fluid rounded w-75 p-4" itemprop="image" src="{{  listing.img_url }}">
     </div>
     <div class="col-md-6 order-md-1 col-lg-7">
+        <!-- title & description -->
         <h4 class="card-title">{{ listing.title }}</h4>
         <p class="card-text">{{ listing.description }}</p>
 
+        <!-- date & category -->
         <label class="text-muted">Listed </label>
         {% if listing.category %}
             <label><label class="text-muted">in category: </label> {{ listing.category }}  </label>
         {% endif %}
         <label><label class="text-muted"> on </label> {{ listing.date_created }}</label>
 
+        <!-- price -->
         <h4><small>Price: </small>£{{ listing.max_bid | floatformat:2 | default:listing.starting_bid }}</h4>
 
+        <!-- bid count -->
         {% if listing.bid_count == 0 %}
             <label>No bids.</label>
         {% elif listing.bid_count == 1 %}
