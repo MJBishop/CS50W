@@ -8,9 +8,7 @@ from django import forms
 from django.forms import ModelForm
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal, ROUND_DOWN
-
-from django.db.models import Max, Count, ExpressionWrapper, DecimalField
-# from django.db.models.functions import Cast
+from django.db.models import Max, Count
 
 from .models import User, Listing, Bid, Comment, SYSTEM_MAX_BID, SYSTEM_MIN_BID, SYSTEM_MIN_BID_INCREMENT
 
@@ -31,7 +29,7 @@ class NewBidForm(forms.ModelForm):
 
         super(NewBidForm, self).__init__(*args, **kwargs)
 
-        # set 'bid' placeholder and min validator value
+        # set 'bid' placeholder and validator min value
         if initial_arguments:
             min_bid = initial_arguments.get('min_bid', None)
             if min_bid:
@@ -68,7 +66,7 @@ def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.filter(active=True)
                                    .annotate(
-                                       max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                       max_bid=Max('bids__bid'),
                                        bid_count=Count('bids__bid')
                                     )
                                    .order_by('-date_created'),
@@ -90,7 +88,7 @@ def category(request, category):
     return render(request, "auctions/category.html", {
         "listings": Listing.objects.filter(category=category, active=True)
                                    .annotate(
-                                       max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()), 
+                                       max_bid=Max('bids__bid'), 
                                        bid_count=Count('bids__bid')
                                     ),
         "category": category
@@ -100,7 +98,7 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": request.user.watchlist.all()
                                           .annotate(
-                                              max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()), 
+                                              max_bid=Max('bids__bid'), 
                                               bid_count=Count('bids__bid')
                                            ),
         "watchlist_page" :"active"
@@ -131,7 +129,7 @@ def createListing(request):
 
 def listing(request, listing_id):
     listing = Listing.objects.annotate(
-                                max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                max_bid=Max('bids__bid'),
                                 bid_count=Count('bids__bid')
                               ).get(pk=listing_id)
 
@@ -174,14 +172,13 @@ def placeBid(request, listing_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
         listing = Listing.objects.annotate(
-                                max_bid=ExpressionWrapper(Max('bids__bid'), output_field=DecimalField()),
+                                max_bid=Max('bids__bid'),
                                 bid_count=Count('bids__bid')
                               ).get(pk=listing_id)
 
         # validate form
         if form.is_valid():
             new_bid_amount = form.cleaned_data["bid"]
-            # listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
     
             # check new_bid_amount is still > max_bid
             if ((listing.max_bid is None and new_bid_amount >= listing.starting_bid) or new_bid_amount > listing.max_bid):
@@ -209,7 +206,6 @@ def placeBid(request, listing_id):
                 })
         else:
             # model form validation failed: bid < SYSTEM_MIN_BID || bid > SYSTEM_MAX_BID
-            # listing = Listing.objects.annotate(max_bid=Max('bids__bid'), bid_count=Count('bids__bid')).get(pk=listing_id)
             return render(request, "auctions/listing.html", {
                     "listing": listing,
                     "comment_form": NewCommentForm(),
