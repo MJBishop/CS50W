@@ -325,6 +325,7 @@ function email_header_div(email) {
   // create and style div
   const header_div = document.createElement('div');
   header_div.classList.add('section');
+  // header_div.classList.add('row');
 
   // create and append sender
   const sender = document.createElement('span');
