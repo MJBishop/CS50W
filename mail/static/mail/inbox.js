@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function compose_email() {
 
+  // Set heading
+  document.querySelector('h3').innerText = 'New Email';
+
   // Show compose view and hide other views
   document.querySelector('#selected-email-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
@@ -33,8 +36,8 @@ function reply_email() {
   // show compose view and clear form
   self.compose_email();
 
-  // Change heading
-  document.querySelector('h3').innerText = 'Reply Email';
+  // Set heading
+  document.querySelector('h3').innerText = 'Reply';
 
   // add 'Re: ' to subject
   var subject = document.querySelector('#subject').innerHTML;
