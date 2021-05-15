@@ -1,3 +1,4 @@
+/*  */
 #header {
     margin-left: 30px;
 }
@@ -12,4 +13,12 @@ button {
     width: 90%;
     margin-bottom: 20px;
     text-align: left;
+}
+
+/* index.html */
+li {
+    margin-bottom: 10px;
+}
+#list {
+    margin-left: 10px;
 }
