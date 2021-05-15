@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
 
   // Show compose view and hide other views
-  document.querySelector('#select-email-view').style.display = 'none';
+  document.querySelector('#selected-email-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
@@ -78,7 +78,7 @@ function send_email() {
       console.log(result);
 
       // Show compose view and hide other views
-      document.querySelector('#select-email-view').style.display = 'none';
+      document.querySelector('#selected-email-view').style.display = 'none';
       document.querySelector('#emails-view').style.display = 'block';
       document.querySelector('#compose-view').style.display = 'none';
 
@@ -99,7 +99,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
-  document.querySelector('#select-email-view').style.display = 'none';
+  document.querySelector('#selected-email-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -120,6 +120,8 @@ function load_mailbox(mailbox) {
       for(var i = 0; i < emails.length; i++) {
 
         email = emails[i];
+
+        // create header div
         const header_div = self.email_header_div(email);
 
         // read emails have grey background
@@ -156,11 +158,11 @@ function view_email(id) {
   // Show the email and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
-  document.querySelector('#select-email-view').style.display = 'block';
+  document.querySelector('#selected-email-view').style.display = 'block';
 
   // clear mailbox and email
   document.querySelector('#emails-view').innerHTML = '';
-  document.querySelector('#select-email-view').innerHTML = '';
+  document.querySelector('#selected-email-view').innerHTML = '';
 
   // fetch email
   const path = '/emails/' + id;
@@ -171,25 +173,24 @@ function view_email(id) {
       /// add the email html
 
       // create and append email header div
-      const header_div = self.select_email_header_div(email);
-      document.querySelector('#select-email-view').append(header_div);
+      const header_div = self.selected_email_header_div(email);
+      document.querySelector('#selected-email-view').append(header_div);
 
       // create and append email body div
       const body_div = self.email_body_div(email);
-      document.querySelector('#select-email-view').append(body_div);
+      document.querySelector('#selected-email-view').append(body_div);
 
       // archive / unarchive email
       if (document.querySelector('#emails-view').dataset.mailbox != 'sent') {
 
         // create and append archive/unarchive button
         const button = self.email_archive_button(email.archived, path);
-        document.querySelector('#select-email-view').append(button);
+        document.querySelector('#selected-email-view').append(button);
       }
       
       // create and append email reply button
       const button = self.email_reply_button();
-      document.querySelector('#select-email-view').append(button);
-
+      document.querySelector('#selected-email-view').append(button);
 
       /// set email as read
       if (!email.read) {
@@ -293,7 +294,7 @@ function email_body_div(email) {
 }
 
 
-function select_email_header_div(email) {
+function selected_email_header_div(email) {
 
   const header_div = self.email_header_div(email);
 
