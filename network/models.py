@@ -53,3 +53,5 @@ class Post(models.Model):
     def like(self, user):
         if not user.liked_posts.filter(pk=self.id).exists():
             self.likes.add(user)
+
+#exceptions?

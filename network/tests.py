@@ -1,11 +1,10 @@
-from django.test import TestCase
+from django.test import Client,TestCase
 
 from .models import User, Follow, Post
 
 
 # Create your tests here.
 class NetworkModelTestCase(TestCase):
-
     def setUp(self):
 
         # create Users
@@ -45,7 +44,7 @@ class NetworkModelTestCase(TestCase):
         follow = Follow.objects.create_follow(u2, u1)
         self.assertEqual(follow.__str__(), "James is following Mike")
 
-    #Post tests
+    # Post tests
     def test_post_string(self):
         u1 = User.objects.get(username='Mike')
         post = Post.objects.get(user=u1)
@@ -96,6 +95,16 @@ class NetworkModelTestCase(TestCase):
         post.like(u1)
         self.assertEqual(post.likes.count(), 2)
 
+
+class NetworkViewTestCase(TestCase):
+    def setUp(self):
+        pass
+
+    def test_index(self):
+        c = Client()
+        response = c.get("//")
+        print(response)
+        self.assertEqual(response.status_code, 200)
 
 
 
