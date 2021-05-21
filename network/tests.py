@@ -88,6 +88,14 @@ class NetworkModelTestCase(TestCase):
         post.like(u2)
         self.assertEqual(post.likes.count(), 1)
 
+    def test_two_users_like_post_count(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        post = Post.objects.get(user=u1)
+        post.like(u2)
+        post.like(u1)
+        self.assertEqual(post.likes.count(), 2)
+
 
 
 
