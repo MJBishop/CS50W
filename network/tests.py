@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from .models import User, Follow, Post
 
+
 # Create your tests here.
 class NetworkModelTestCase(TestCase):
 
@@ -49,3 +50,9 @@ class NetworkModelTestCase(TestCase):
         u1 = User.objects.get(username='Mike')
         post = Post.objects.get(user=u1)
         self.assertEqual(post.__str__(), "Mike, MY FIRST POST. 0 likes.")
+
+    def test_create_post(self):
+        u2 = User.objects.get(username='James')
+        test_post_string = "MY SECOND POST"
+        post = Post.objects.create_post(u2, text="MY SECOND POST")
+        self.assertEqual(post.text, test_post_string)

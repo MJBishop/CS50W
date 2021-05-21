@@ -24,11 +24,19 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.from_user.username} is following {self.to_user.username}"
 
+class PostManager(models.Manager):
+    def create_post(self, user, text):
+        post = Post(user=user, text=text)
+        post.save()
+        return post
+
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=200)
+
+    objects = PostManager()
 
     def __str__(self):
         return f"{self.user.username}, {self.text}. {self.likes.count()} likes."
