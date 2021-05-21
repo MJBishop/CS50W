@@ -4,7 +4,19 @@ from .models import User, Follow, Post
 
 
 # Create your tests here.
-class NetworkModelTestCase(TestCase):
+class NetworkViewsTestCase(TestCase):
+    def setUp(self):
+        pass
+
+    # index tests
+    def test_index(self):
+        c = Client()
+        response = c.get("//")
+        print(response)
+        self.assertEqual(response.status_code, 200)
+
+        
+class NetworkModelsTestCase(TestCase):
     def setUp(self):
 
         # create Users
@@ -25,7 +37,15 @@ class NetworkModelTestCase(TestCase):
     def test_follower_count_one(self):
         u2 = User.objects.get(username='James')
         self.assertEqual(u2.followers.count(), 1)
-        
+
+    def test_following_count_zero(self):
+        u2 = User.objects.get(username='James')
+        self.assertEqual(u2.following.count(), 0)
+
+    def test_following_count_one(self):
+        u1 = User.objects.get(username='Mike')
+        self.assertEqual(u1.following.count(), 1)
+
     def test_create_follow(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
@@ -95,16 +115,6 @@ class NetworkModelTestCase(TestCase):
         post.like(u1)
         self.assertEqual(post.likes.count(), 2)
 
-
-class NetworkViewTestCase(TestCase):
-    def setUp(self):
-        pass
-
-    def test_index(self):
-        c = Client()
-        response = c.get("//")
-        print(response)
-        self.assertEqual(response.status_code, 200)
 
 
 
