@@ -21,6 +21,9 @@ class Follow(models.Model):
 
     objects = FollowManager()
 
+    def __str__(self):
+        return f"{self.from_user.username} is following {self.to_user.username}"
+
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')

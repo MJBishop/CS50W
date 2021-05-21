@@ -35,3 +35,9 @@ class NetworkModelTestCase(TestCase):
         follow = Follow.objects.delete_follow(u1, u2)
         self.assertEqual(u2.followers.count(), 0)
 
+    def test_follow_string(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        follow = Follow.objects.create_follow(u2, u1)
+        self.assertEqual(follow.__str__(), "James is following Mike")
+
