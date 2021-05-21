@@ -14,6 +14,9 @@ class NetworkModelTestCase(TestCase):
         # create Follow
         f1 = Follow.objects.create(from_user=user1, to_user=user2)
 
+        # create Post
+        p1 = Post.objects.create(user=user1, text='MY FIRST POST')
+
     # Follow tests
     def test_follower_count_zero(self):
         u1 = User.objects.get(username='Mike')
@@ -41,3 +44,8 @@ class NetworkModelTestCase(TestCase):
         follow = Follow.objects.create_follow(u2, u1)
         self.assertEqual(follow.__str__(), "James is following Mike")
 
+    #Post tests
+    def test_post_string(self):
+        u1 = User.objects.get(username='Mike')
+        post = Post.objects.get(user=u1)
+        self.assertEqual(post.__str__(), "Mike, MY FIRST POST. 0 likes.")

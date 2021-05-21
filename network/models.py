@@ -29,3 +29,6 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.user.username}, {self.text}. {self.likes.count()} likes."
