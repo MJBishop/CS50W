@@ -32,13 +32,6 @@ class PostManager(models.Manager):
         post.save()
         return post
 
-    def edit_post(self, user, post, new_text):
-        if user == post.user:
-            post.text = new_text
-            post.save()
-            return post
-        return None
-
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
@@ -49,3 +42,14 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.user.username}, {self.text}. {self.likes.count()} likes."
+
+    def update(self, user, new_text):
+        if user == self.user:
+            self.text = new_text
+            self.save()
+            return self
+        return None
+    
+    def like(self, user):
+        if not user.liked_posts.filter(pk=self.id).exists():
+            self.likes.add(user)

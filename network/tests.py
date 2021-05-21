@@ -61,14 +61,33 @@ class NetworkModelTestCase(TestCase):
         u1 = User.objects.get(username='Mike')
         post = Post.objects.get(user=u1)
         u2 = User.objects.get(username='James')
-        post2 = Post.objects.edit_post(u2, post, "UPDATED POST")
-        self.assertEqual(post2, None)
+        test_post_string = "UPDATED POST"
+        updated_post = post.update(u2, test_post_string)
+        self.assertEqual(updated_post, None)
         
     def test_edit_post_updates_for_valid_user(self):
         u1 = User.objects.get(username='Mike')
         post = Post.objects.get(user=u1)
         test_post_string = "UPDATED POST"
-        post2 = Post.objects.edit_post(u1, post, test_post_string)
-        self.assertEqual(post2.text, test_post_string)
+        updated_post = post.update(u1, test_post_string)
+        self.assertEqual(updated_post.text, test_post_string)
+
+    def test_post_likes_count(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        post = Post.objects.get(user=u1)
+        post.like(u2)
+        self.assertEqual(post.likes.count(), 1)
+        
+    def test_post_likes_one_per_user(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        post = Post.objects.get(user=u1)
+        post.like(u2)
+        post.like(u2)
+        post.like(u2)
+        self.assertEqual(post.likes.count(), 1)
+
+
 
 
