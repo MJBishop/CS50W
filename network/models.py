@@ -5,6 +5,7 @@ from django.db import models
 class User(AbstractUser):
     pass
 
+
 class FollowManager(models.Manager):
     def create_follow(self, from_user, to_user):
         follow = Follow(from_user=from_user, to_user=to_user)
@@ -24,11 +25,19 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.from_user.username} is following {self.to_user.username}"
 
+
 class PostManager(models.Manager):
     def create_post(self, user, text):
         post = Post(user=user, text=text)
         post.save()
         return post
+
+    def edit_post(self, user, post, new_text):
+        if user == post.user:
+            post.text = new_text
+            post.save()
+            return post
+        return None
 
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')

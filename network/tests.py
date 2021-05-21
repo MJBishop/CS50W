@@ -56,3 +56,11 @@ class NetworkModelTestCase(TestCase):
         test_post_string = "MY SECOND POST"
         post = Post.objects.create_post(u2, text="MY SECOND POST")
         self.assertEqual(post.text, test_post_string)
+
+    def test_edit_post_returns_None_for_invalid_user(self):
+        u1 = User.objects.get(username='Mike')
+        post = Post.objects.get(user=u1)
+        u2 = User.objects.get(username='James')
+        post2 = Post.objects.edit_post(u2, post, "UPDATED POST")
+        self.assertEqual(post2, None)
+
