@@ -123,6 +123,16 @@ class NetworkModelsTestCase(TestCase):
         post.toggle_like(u1)
         self.assertEqual(post.likes.count(), 2)
 
+    def test_posts_for_all_users_returns_one_post(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        all_posts = Post.objects.posts_for_users((u1, u2))
+        self.assertEqual(all_posts.count(), 1)
+
+    
+        
+
+
 
 
 

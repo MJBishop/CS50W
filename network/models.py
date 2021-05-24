@@ -55,7 +55,18 @@ class PostManager(models.Manager):
         post = Post(user=user, text=text)
         post.save()
         return post
-        #exception? text length
+        #exception? text length?
+
+    def posts_for_users(self, user_list):
+        if len(user_list) == 0:
+            # fetch all posts
+            return self.all()
+        elif len(user_list) == 1:
+            return self.filter(user=user_list[0])
+        else:
+            # fetch all posts where user in user_list
+            return self.filter(user__in=user_list)
+
 
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
