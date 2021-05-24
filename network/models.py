@@ -8,7 +8,7 @@ class User(AbstractUser):
 class FollowManager(models.Manager):
     def create_follow(self, from_user, to_user):
         '''
-        Creates a new Follow object
+        Creates a new Follow object (Follow User)
 
         from_user (User): The User initiating the follow
         to_user (User): The User being followed
@@ -24,7 +24,7 @@ class FollowManager(models.Manager):
 
     def delete_follow(self, from_user, to_user):
         '''
-        Deletes Follow object 
+        Deletes Follow object (Unfollow User)
         
         from_user (User): The User unfollowing
         to_user (User): The User being unfollowed
@@ -75,7 +75,7 @@ class Post(models.Model):
         user (User): The User editing the Post
         new_text (string): The edited Post text
 
-        Return: Updated Post if user is the post owner, None otherwise
+        Return: Updated Post if user is the post owner, otherwise raises an exception
         '''
         if user == self.user:
             self.text = new_text
@@ -84,17 +84,19 @@ class Post(models.Model):
         else:
             raise Exception(f'Error: {user} is not the Post owner')
     
-    def like(self, user): # add to likes, return count?
+    def toggle_like(self, user): 
         '''
-        Adds the user to the Post 'likes'.
+        Toggles status of User liking Post
 
-        user (User): The User liking the Post
+        If User hasn't liked the post yet: Adds the user to the Post 'likes'.
+        If User has already liked the post: Removes the user from the Post 'likes'.
 
-        Return: Post if user hasn't already liked the post, None otherwise
+        user (User): The User liking/unliking the Post
+
+        Return: Post
         '''
         if not user.liked_posts.filter(pk=self.id).exists():
             self.likes.add(user)
-            return self
-        return None#exception?
-
-#exceptions?
+        else:
+            self.likes.remove(user)
+        return self # return post.likes.count or post?

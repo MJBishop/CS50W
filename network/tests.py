@@ -100,29 +100,29 @@ class NetworkModelsTestCase(TestCase):
         updated_post = post.update(u1, test_post_string)
         self.assertEqual(updated_post.text, test_post_string)
 
-    def test_post_likes_count(self):
+    def test_post_likes_count_like(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         post = Post.objects.get(user=u1)
-        post.like(u2)
+        post.toggle_like(u2)
         self.assertEqual(post.likes.count(), 1)
         
-    def test_post_likes_one_per_user(self):
+    def test_post_likes_count_unlike(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         post = Post.objects.get(user=u1)
-        post.like(u2)
-        post.like(u2)
-        post.like(u2)
-        self.assertEqual(post.likes.count(), 1)
+        post.toggle_like(u2)
+        post.toggle_like(u2)
+        self.assertEqual(post.likes.count(), 0)
 
     def test_two_users_like_post_count(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         post = Post.objects.get(user=u1)
-        post.like(u2)
-        post.like(u1)
+        post.toggle_like(u2)
+        post.toggle_like(u1)
         self.assertEqual(post.likes.count(), 2)
+
 
 
 
