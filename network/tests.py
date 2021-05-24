@@ -15,7 +15,7 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 200)
 
-        
+
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
 
@@ -52,6 +52,17 @@ class NetworkModelsTestCase(TestCase):
         follow = Follow.objects.create_follow(u2, u1)
         self.assertEqual(u1.followers.count(), 1)
 
+    # def test_invalid_create_follow_returns_None(self):
+    #     u1 = User.objects.get(username='Mike')
+    #     u2 = User.objects.get(username='James')
+    #     follow = Follow.objects.create_follow(u1, u2)
+    #     self.assertEqual(follow, None)
+
+    def test_invalid_create_follow_raises_exception(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        self.assertRaises(Exception, Follow.objects.create_follow, u1,u2)
+
     def test_delete_follow(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
@@ -73,7 +84,7 @@ class NetworkModelsTestCase(TestCase):
     def test_create_post(self):
         u2 = User.objects.get(username='James')
         test_post_string = "MY SECOND POST"
-        post = Post.objects.create_post(u2, text="MY SECOND POST")
+        post = Post.objects.create_post(u2, text=test_post_string)
         self.assertEqual(post.text, test_post_string)
 
     def test_edit_post_returns_None_for_invalid_user(self):

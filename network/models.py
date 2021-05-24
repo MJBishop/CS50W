@@ -5,23 +5,34 @@ from django.db import models
 class User(AbstractUser):
     pass
 
-
 class FollowManager(models.Manager):
     def create_follow(self, from_user, to_user):
         '''
-        Creates a new Follow with Users: from_user and to_user.
-        Return: Follow.
+        Creates a new Follow object
+
+        from_user (User): The User initiating the follow
+        to_user (User): The User being followed
+
+        Return: Follow if not a duplicate, None otherwise
         '''
-        follow = Follow(from_user=from_user, to_user=to_user)
-        follow.save()
-        return follow
+        if not self.filter(from_user=from_user, to_user=to_user).exists():#test
+            follow = Follow(from_user=from_user, to_user=to_user)
+            follow.save()
+            return follow
+        else:
+            raise Exception(f'Error: {from_user} is already following {to_user}')
 
     def delete_follow(self, from_user, to_user):
         '''
-        Deletes Follow from_user to_user.
+        Deletes Follow object 
+        
+        from_user (User): The User unfollowing
+        to_user (User): The User being unfollowed
         '''
-        unfollow = self.filter(from_user=from_user, to_user=to_user)
-        unfollow.delete()
+        if self.filter(from_user=from_user, to_user=to_user).exists():#test
+            unfollow = self.filter(from_user=from_user, to_user=to_user)
+            unfollow.delete()
+        #exception?
 
 class Follow(models.Model):
     from_user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='following')
@@ -32,20 +43,22 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.from_user.username} is following {self.to_user.username}"
 
-
 class PostManager(models.Manager):
     def create_post(self, user, text):
         '''
-        Creates a new Post with User and text.
-        Return: Post.
+        user (User): The User making the Post
+        text (string): The Post text
+
+        Return: Post
         '''
         post = Post(user=user, text=text)
         post.save()
         return post
+        #exception? text length
 
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
-    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
+    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')#test
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=200)
 
@@ -56,25 +69,30 @@ class Post(models.Model):
 
     def update(self, user, new_text):
         '''
-        Updates the Post with new_text.
-        Return: Post with new_text.
-                None if user is not post owner.
+        Updates the Post
+        
+        user (User): The User editing the Post
+        new_text (string): The edited Post text
+
+        Return: Updated Post if user is the post owner, None otherwise
         '''
         if user == self.user:
             self.text = new_text
             self.save()
             return self
-        return None
+        return None#exception? Permission!
     
-    def like(self, user):
+    def like(self, user): # add to likes, return count?
         '''
         Adds the user to the Post 'likes'.
-        Return: Post.
-                None if user has already liked the post.
+
+        user (User): The User liking the Post
+
+        Return: Post if user hasn't already liked the post, None otherwise
         '''
         if not user.liked_posts.filter(pk=self.id).exists():
             self.likes.add(user)
             return self
-        return None
+        return None#exception?
 
 #exceptions?
