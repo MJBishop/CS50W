@@ -52,22 +52,21 @@ class NetworkModelsTestCase(TestCase):
         follow = Follow.objects.create_follow(u2, u1)
         self.assertEqual(u1.followers.count(), 1)
 
-    # def test_invalid_create_follow_returns_None(self):
-    #     u1 = User.objects.get(username='Mike')
-    #     u2 = User.objects.get(username='James')
-    #     follow = Follow.objects.create_follow(u1, u2)
-    #     self.assertEqual(follow, None)
-
     def test_invalid_create_follow_raises_exception(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
-        self.assertRaises(Exception, Follow.objects.create_follow, u1,u2)
+        self.assertRaises(Exception, Follow.objects.create_follow, u1, u2)
 
     def test_delete_follow(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         follow = Follow.objects.delete_follow(u1, u2)
         self.assertEqual(u2.followers.count(), 0)
+
+    def test_invalid_delete_follow_raises_exception(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        self.assertRaises(Exception, Follow.objects.delete_follow, u2, u1)
 
     def test_follow_string(self):
         u1 = User.objects.get(username='Mike')

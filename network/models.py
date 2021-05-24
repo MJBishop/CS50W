@@ -13,9 +13,9 @@ class FollowManager(models.Manager):
         from_user (User): The User initiating the follow
         to_user (User): The User being followed
 
-        Return: Follow if not a duplicate, None otherwise
+        Return: Follow if not a duplicate, otherwise raises an Exception
         '''
-        if not self.filter(from_user=from_user, to_user=to_user).exists():#test
+        if not self.filter(from_user=from_user, to_user=to_user).exists():
             follow = Follow(from_user=from_user, to_user=to_user)
             follow.save()
             return follow
@@ -29,10 +29,11 @@ class FollowManager(models.Manager):
         from_user (User): The User unfollowing
         to_user (User): The User being unfollowed
         '''
-        if self.filter(from_user=from_user, to_user=to_user).exists():#test
+        if self.filter(from_user=from_user, to_user=to_user).exists():
             unfollow = self.filter(from_user=from_user, to_user=to_user)
             unfollow.delete()
-        #exception?
+        else:
+            raise Exception(f'Error: {from_user} is not following {to_user}')
 
 class Follow(models.Model):
     from_user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='following')
