@@ -129,7 +129,12 @@ class NetworkModelsTestCase(TestCase):
         all_posts = Post.objects.posts_for_users((u1, u2))
         self.assertEqual(all_posts.count(), 1)
 
-    
+    def test_posts_for_user2_returns_no_posts(self):
+        u2 = User.objects.get(username='James')
+        all_posts = Post.objects.posts_for_users((u2, ))
+        self.assertEqual(all_posts.count(), 0)
+
+    def test_posts_for_single_user_call_missing_comma_throws_exception(self):
         
 
 
