@@ -81,7 +81,8 @@ class Post(models.Model):
             self.text = new_text
             self.save()
             return self
-        return None#exception? Permission!
+        else:
+            raise Exception(f'Error: {user} is not the Post owner')
     
     def like(self, user): # add to likes, return count?
         '''
