@@ -176,6 +176,12 @@ class NetworkModelsTestCase(TestCase):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         posts = Post.objects.posts_from_user(u1)
-        # posts[0].toggle_like(u2)
         self.assertEqual(posts[0].like_count, 0)
+
+    def test_annotate_like_count_one(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        posts = Post.objects.posts_from_user(u1)
+        posts[0].toggle_like(u2)
+        self.assertEqual(posts[0].like_count, 1)
         
