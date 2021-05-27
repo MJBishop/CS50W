@@ -5,7 +5,7 @@ from django.db.models import Count
 class User(AbstractUser):
     pass
 
-#user manager - annotate #following/followers
+#user manager - annotate #following/followers?
 
 class FollowManager(models.Manager):
     def create_follow(self, from_user, to_user):
@@ -18,9 +18,7 @@ class FollowManager(models.Manager):
         Return: Follow if not a duplicate, otherwise raises an Exception
         '''
         if not self.filter(from_user=from_user, to_user=to_user).exists():
-            follow = Follow(from_user=from_user, to_user=to_user)
-            follow.save()
-            return follow
+            return self.create(from_user=from_user, to_user=to_user)
         else:
             raise Exception(f'Error: {from_user} is already following {to_user}')
 
@@ -59,8 +57,7 @@ class PostManager(models.Manager):
         return post
         #exception? text length?
 
-# TEST:
-    # most recent Post first, annotate # likes
+    # most recent Post first, annotate like_count
     def get_queryset(self):
         return super().get_queryset().annotate(
                                        like_count=Count('likes')
