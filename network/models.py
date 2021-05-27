@@ -64,8 +64,7 @@ class PostManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
                                        like_count=Count('likes')
-                                    )
-                                    # .order_by('-date_created')
+                                    ).order_by('-date_created')
 
     def posts_from_all_users(self):
         return self.all()

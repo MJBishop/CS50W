@@ -172,16 +172,24 @@ class NetworkModelsTestCase(TestCase):
 
         self.assertEqual(all_posts.count(), 4)
 
-    def test_annotate_like_count_zero(self):
+    def test_posts_annotate_like_count_zero(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         posts = Post.objects.posts_from_user(u1)
         self.assertEqual(posts[0].like_count, 0)
 
-    def test_annotate_like_count_one(self):
+    def test_posts_annotate_like_count_one(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         posts = Post.objects.posts_from_user(u1)
         posts[0].toggle_like(u2)
         self.assertEqual(posts[0].like_count, 1)
-        
+
+    def test_posts_annotate_order_by(self):
+        u1 = User.objects.get(username='Mike')
+        p1 = Post.objects.create_post(u1, 'MY SECOND POST')
+        p1 = Post.objects.create_post(u1, 'MY THIRD POST')
+        posts = Post.objects.posts_from_user(u1)
+        self.assertEqual(posts[0], p1)
+
+
