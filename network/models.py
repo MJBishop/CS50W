@@ -2,10 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Count
 
+
 class User(AbstractUser):
     pass
-
-#user manager - annotate #following/followers?
 
 class FollowManager(models.Manager):
     def create_follow(self, from_user, to_user):
@@ -47,29 +46,51 @@ class Follow(models.Model):
 class PostManager(models.Manager):
     def create_post(self, user, text):
         '''
+        Creates a new Post object
+
         user (User): The User making the Post
         text (string): The Post text
 
         Return: Post
         '''
-        post = Post(user=user, text=text)  #or return Post.create()
-        post.save()
-        return post
-        #exception? text length?
+        return self.create(user=user, text=text)
 
-    # most recent Post first, annotate like_count
     def get_queryset(self):
+        '''
+        Annotates like_count & orders queryset by date_created (newest first)
+
+        Return: QuerySet
+        '''
         return super().get_queryset().annotate(
                                        like_count=Count('likes')
                                     ).order_by('-date_created')
 
     def posts_from_all_users(self):
+        '''
+        Returns all posts
+
+        Return: QuerySet
+        '''
         return self.all()
         
     def posts_from_user(self, user):
+        '''
+        Returns all posts from user
+
+        user (User): The User to filter Posts
+
+        Return: QuerySet
+        '''
         return self.filter(user=user)
 
     def posts_from_users_followed_by_user(self, user):
+        '''
+        Reurns All posts from users that User follows
+
+        user (User): The User to filter following user Posts
+
+        Return: QuerySet
+        '''
         return self.filter(user__followers__from_user=user)
 
 
