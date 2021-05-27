@@ -156,13 +156,12 @@ class NetworkModelsTestCase(TestCase):
     def test_posts_from_users_followed_by_user_one_returns_four_posts(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
-        u3 = User.objects.create_user('Paul')
 
         test_post_string = "JAMES' POST"
         post1 = Post.objects.create_post(u2, text=test_post_string)
         post2 = Post.objects.create_post(u2, text=test_post_string)
 
-        # create Follow
+        u3 = User.objects.create_user('Paul')
         f1 = Follow.objects.create(from_user=u1, to_user=u3)
 
         test_post_string = "PAUL'S POST"
@@ -171,16 +170,12 @@ class NetworkModelsTestCase(TestCase):
 
         all_posts = Post.objects.posts_from_users_followed_by_user(u1)
 
-        # print(all_posts.count())
-        # print(all_posts)
-
         self.assertEqual(all_posts.count(), 4)
 
-'''
-    todo - test like_count, order_by
-
-'''
-
-
-
-
+    def test_annotate_like_count_zero(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        posts = Post.objects.posts_from_user(u1)
+        # posts[0].toggle_like(u2)
+        self.assertEqual(posts[0].like_count, 0)
+        
