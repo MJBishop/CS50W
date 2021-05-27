@@ -1,3 +1,4 @@
+from django.db.models.query import Prefetch
 from django.test import Client,TestCase
 
 from .models import User, Follow, Post
@@ -126,18 +127,59 @@ class NetworkModelsTestCase(TestCase):
     def test_posts_for_all_users_returns_one_post(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
-        all_posts = Post.objects.posts_for_users((u1, u2))
+        all_posts = Post.objects.posts_from_all_users()
         self.assertEqual(all_posts.count(), 1)
 
     def test_posts_for_user2_returns_no_posts(self):
         u2 = User.objects.get(username='James')
-        all_posts = Post.objects.posts_for_users((u2, ))
+        u2_posts = Post.objects.posts_from_user(u2)
+        self.assertEqual(u2_posts.count(), 0)
+
+    def test_posts_for_user1_returns_one_post(self):
+        u1 = User.objects.get(username='Mike')
+        u1_posts = Post.objects.posts_from_user(u1)
+        self.assertEqual(u1_posts.count(), 1)
+
+    def test_posts_from_users_followed_by_user_two_returns_no_posts(self):
+        u2 = User.objects.get(username='James')
+        all_posts = Post.objects.posts_from_users_followed_by_user(u2)
         self.assertEqual(all_posts.count(), 0)
 
-    def test_posts_for_single_user_call_missing_comma_throws_exception(self):
-        
+    def test_posts_from_users_followed_by_user_one_returns_one_post(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        test_post_string = "JAMES' POST"
+        post1 = Post.objects.create_post(u2, text=test_post_string)
+        all_posts = Post.objects.posts_from_users_followed_by_user(u1)
+        self.assertEqual(all_posts.count(), 1)
 
+    def test_posts_from_users_followed_by_user_one_returns_four_posts(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        u3 = User.objects.create_user('Paul')
 
+        test_post_string = "JAMES' POST"
+        post1 = Post.objects.create_post(u2, text=test_post_string)
+        post2 = Post.objects.create_post(u2, text=test_post_string)
+
+        # create Follow
+        f1 = Follow.objects.create(from_user=u1, to_user=u3)
+
+        test_post_string = "PAUL'S POST"
+        post3 = Post.objects.create_post(u3, text=test_post_string)
+        post4 = Post.objects.create_post(u3, text=test_post_string)
+
+        all_posts = Post.objects.posts_from_users_followed_by_user(u1)
+
+        # print(all_posts.count())
+        # print(all_posts)
+
+        self.assertEqual(all_posts.count(), 4)
+
+'''
+    todo - test like_count, order_by
+
+'''
 
 
 
