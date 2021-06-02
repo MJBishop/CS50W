@@ -17,17 +17,17 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 200)
 
-    def test_new_post_fails(self):
+    def test_new_post_fails_for_get(self):
         c = Client()
         response = c.get(reverse("new_post"))
         print(response)
         self.assertEqual(response.status_code, 400)
 
-    # def test_new_post(self):
-    #     c = Client()
-    #     response = c.post(reverse("new_post")) # not complaining about wrong url here, but does for index...??
-    #     print(response)
-    #     self.assertEqual(response.status_code, 200)
+    def test_new_post(self):
+        c = Client()
+        response = c.post(reverse("new_post"))
+        print(response)
+        self.assertEqual(response.status_code, 201)
 
 
 

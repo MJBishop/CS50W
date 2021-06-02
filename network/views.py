@@ -17,8 +17,6 @@ def new_post(request):
 
     # Creating a new post must be via POST
     if request.method != "POST":
-        print("request.method != POST")
-        # raise HttpResponseBadRequest("POST request required.")
         return JsonResponse({"error": "POST request required."}, status=400)
     
     # text = request.text
@@ -28,6 +26,8 @@ def new_post(request):
     #     Post.objects.create_post(request.user, text)
     # except:
     #     return HttpResponseBadRequest("Error")
+
+    return JsonResponse({"message": "New Post successful."}, status=201)
     
 
 
