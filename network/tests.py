@@ -1,5 +1,6 @@
 from django.db.models.query import Prefetch
-from django.test import Client,TestCase
+from django.test import Client, TestCase
+from django.urls import reverse
 
 from .models import User, Follow, Post
 
@@ -15,6 +16,19 @@ class NetworkViewsTestCase(TestCase):
         response = c.get("//")
         print(response)
         self.assertEqual(response.status_code, 200)
+
+    def test_new_post_fails(self):
+        c = Client()
+        response = c.get(reverse("new_post"))
+        print(response)
+        self.assertEqual(response.status_code, 400)
+
+    # def test_new_post(self):
+    #     c = Client()
+    #     response = c.post(reverse("new_post")) # not complaining about wrong url here, but does for index...??
+    #     print(response)
+    #     self.assertEqual(response.status_code, 200)
+
 
 
 class NetworkModelsTestCase(TestCase):

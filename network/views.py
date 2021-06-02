@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -9,6 +11,24 @@ from .models import User
 
 def index(request):
     return render(request, "network/index.html")
+
+# @login_required
+def new_post(request):
+
+    # Creating a new post must be via POST
+    if request.method != "POST":
+        print("request.method != POST")
+        # raise HttpResponseBadRequest("POST request required.")
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    # text = request.text
+    # print(f"TEST TEXT: {text}")
+
+    # try:
+    #     Post.objects.create_post(request.user, text)
+    # except:
+    #     return HttpResponseBadRequest("Error")
+    
 
 
 def login_view(request):
