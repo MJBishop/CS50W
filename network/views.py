@@ -1,33 +1,33 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post, Follow
 
 
 def index(request):
     return render(request, "network/index.html")
 
-# @login_required
-def new_post(request):
+@login_required
+def new_post(request, text):
 
     # Creating a new post must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
-    
-    # text = request.text
-    # print(f"TEST TEXT: {text}")
 
-    # try:
-    #     Post.objects.create_post(request.user, text)
-    # except:
-    #     return HttpResponseBadRequest("Error")
-
-    return JsonResponse({"message": "New Post successful."}, status=201)
+    try:
+        Post.objects.create(user=request.user, text=text)
+        # Post.objects.create_post(request.user, text)
+    except ValidationError:
+        # log the exception here
+        return JsonResponse({"error": "Validation Error."}, status=400)
+    else:
+        return JsonResponse({"message": "New Post successful."}, status=201)
     
 
 

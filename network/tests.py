@@ -8,24 +8,32 @@ from .models import User, Follow, Post
 # Create your tests here.
 class NetworkViewsTestCase(TestCase):
     def setUp(self):
-        pass
+        # create a test user
+        user = User.objects.create(username='testuser')
+        user.set_password('12345')
+        user.save()
 
     # index tests
     def test_index(self):
         c = Client()
+
         response = c.get("//")
         print(response)
         self.assertEqual(response.status_code, 200)
 
     def test_new_post_fails_for_get(self):
         c = Client()
-        response = c.get(reverse("new_post"))
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.get(reverse("new_post", args={"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 400)
 
     def test_new_post(self):
         c = Client()
-        response = c.post(reverse("new_post"))
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.post(reverse("new_post", args={"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 201)
 
