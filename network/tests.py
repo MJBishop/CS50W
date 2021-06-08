@@ -21,6 +21,14 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 200)
 
+    def test_index_new_post_form(self):
+        c = Client()
+
+        response = c.get("//")
+        print(response)
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response)
+
     def test_new_post_fails_for_get(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
@@ -37,6 +45,11 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 201)
 
+    def test_new_post_redirects_when_not_signed_in(self):
+        c = Client()
+        response = c.post(reverse("new_post", args={"New Post Test Text"}))
+        print(response)
+        self.assertEqual(response.status_code, 302)
 
 
 class NetworkModelsTestCase(TestCase):

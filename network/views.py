@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
@@ -10,8 +11,17 @@ from django.urls import reverse
 from .models import User, Post, Follow
 
 
+'''
+TextAreaForm for creating/editing a Post
+'''
+class TextAreaForm(forms.Form):
+    entryField = forms.CharField(widget=forms.Textarea, label='')
+
+
 def index(request):
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", {
+        "new_post_form":TextAreaForm()
+    })
 
 @login_required
 def new_post(request, text):
@@ -21,8 +31,8 @@ def new_post(request, text):
         return JsonResponse({"error": "POST request required."}, status=400)
 
     try:
-        Post.objects.create(user=request.user, text=text)
-        # Post.objects.create_post(request.user, text)
+        post = Post.objects.create_post(request.user, text)
+        print(post)
     except ValidationError:
         # log the exception here
         return JsonResponse({"error": "Validation Error."}, status=400)
