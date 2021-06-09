@@ -1,3 +1,4 @@
+import json
 from django.db.models.query import Prefetch
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -17,14 +18,14 @@ class NetworkViewsTestCase(TestCase):
     def test_index(self):
         c = Client()
 
-        response = c.get("//")
+        response = c.get("/network/")
         print(response)
         self.assertEqual(response.status_code, 200)
 
     def test_index_new_post_form(self):
         c = Client()
 
-        response = c.get("//")
+        response = c.get("/network/")
         print(response)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(response)
@@ -33,7 +34,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.get(reverse("new_post", args={"New Post Test Text"}))
+        response = c.generic('GET', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -41,15 +42,21 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.post(reverse("new_post", args={"New Post Test Text"}))
+        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 201)
 
+        u1 = User.objects.get(username='testuser')
+        self.assertEqual(u1.posts.count(), 1)
+        
+
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
-        response = c.post(reverse("new_post", args={"New Post Test Text"}))
+
+        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/network/new_post")
 
 
 class NetworkModelsTestCase(TestCase):

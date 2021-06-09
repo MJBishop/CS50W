@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django import forms
@@ -24,17 +25,20 @@ def index(request):
     })
 
 @login_required
-def new_post(request, text):
+def new_post(request):
 
     # Creating a new post must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
+    # Unpack Post text from request.body
+    data = json.loads(request.body)
+    post_text = data.get("text", "")
+    # print(f"POST_TEXT: {post_text}")
+
     try:
-        post = Post.objects.create_post(request.user, text)
-        print(post)
+        Post.objects.create_post(request.user, post_text)
     except ValidationError:
-        # log the exception here
         return JsonResponse({"error": "Validation Error."}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
