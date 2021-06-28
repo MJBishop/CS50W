@@ -22,13 +22,13 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 200)
 
-    def test_index_new_post_form(self):
-        c = Client()
+    # def test_index_new_post_form(self):
+    #     c = Client()
 
-        response = c.get("/network/")
-        print(response)
-        self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response)
+    #     response = c.get("/network/")
+    #     print(response)
+    #     self.assertEqual(response.status_code, 200)
+    #     # self.assertEqual(response)
 
     def test_new_post_fails_for_get(self):
         c = Client()
@@ -42,13 +42,23 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
+        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
         print(response)
         self.assertEqual(response.status_code, 201)
 
         u1 = User.objects.get(username='testuser')
         self.assertEqual(u1.posts.count(), 1)
-        
+
+    def test_new_post_fails_for_post_text_greater_than_200_char(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
+        print(response)
+        self.assertEqual(response.status_code, 400)
+
+        u1 = User.objects.get(username='testuser')
+        self.assertEqual(u1.posts.count(), 0)
 
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
@@ -56,7 +66,7 @@ class NetworkViewsTestCase(TestCase):
         response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
         print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/network/new_post")
+        self.assertEqual(response.url, "/login/?next=/network/new_post") # todo - check: calls again after login?
 
 
 class NetworkModelsTestCase(TestCase):

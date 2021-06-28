@@ -21,7 +21,7 @@ class TextAreaForm(forms.Form):
 
 def index(request):
     return render(request, "network/index.html", {
-        "new_post_form":TextAreaForm()
+        # "new_post_form":TextAreaForm()
     })
 
 @login_required
@@ -34,12 +34,14 @@ def new_post(request):
     # Unpack Post text from request.body
     data = json.loads(request.body)
     post_text = data.get("text", "")
-    # print(f"POST_TEXT: {post_text}")
 
+    post = Post(user=request.user, text=post_text)
     try:
-        Post.objects.create_post(request.user, post_text)
+        post.full_clean()
+        post.save()
+        # Post.objects.create_post(request.user, post_text)
     except ValidationError:
-        return JsonResponse({"error": "Validation Error."}, status=400)
+        return JsonResponse({"error": "Validation Error: Post should be 200 characters or less"}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
