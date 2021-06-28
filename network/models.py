@@ -1,7 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Count
+from django.core.exceptions import ValidationError
 
+
+MAX_POST_LENGTH = 200
 
 class User(AbstractUser):
     pass
@@ -51,9 +54,17 @@ class PostManager(models.Manager):
         user (User): The User making the Post
         text (string): The Post text
 
-        Return: Post
+        Return: Post if text length is less than MAX_POST_LENGTH, otherwise raises a ValidationError exception
         '''
-        return self.create(user=user, text=text)
+        post = Post(user=user, text=text)
+        try:
+            post.full_clean()
+            post.save()
+        except ValidationError as e:
+            raise e
+        else:
+            return post
+        
 
     def get_queryset(self):
         '''
@@ -98,7 +109,7 @@ class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')#test
     date_created = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=200)
+    text = models.CharField(max_length=MAX_POST_LENGTH)
 
     objects = PostManager()
 

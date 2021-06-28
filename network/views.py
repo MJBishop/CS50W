@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post, Follow
+from .models import User, Post, Follow, MAX_POST_LENGTH
 
 
 '''
@@ -35,13 +35,11 @@ def new_post(request):
     data = json.loads(request.body)
     post_text = data.get("text", "")
 
-    post = Post(user=request.user, text=post_text)
+    # Create the Post
     try:
-        post.full_clean()
-        post.save()
-        # Post.objects.create_post(request.user, post_text)
+        Post.objects.create_post(request.user, post_text)
     except ValidationError:
-        return JsonResponse({"error": "Validation Error: Post should be 200 characters or less"}, status=400)
+        return JsonResponse({"error": "Validation Error: Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
