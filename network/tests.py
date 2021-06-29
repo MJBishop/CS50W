@@ -20,7 +20,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
 
         response = c.get("/network/")
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 200)
 
     # new_post
@@ -29,7 +29,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         response = c.generic('GET', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 400)
 
     def test_new_post(self):
@@ -37,7 +37,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 201)
 
         u1 = User.objects.get(username='testuser')
@@ -48,7 +48,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 400)
 
         u1 = User.objects.get(username='testuser')
@@ -58,20 +58,37 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
 
         response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/network/new_post") # todo - check: calls again after login?
 
     # update_post
-    def test_new_post_returns_an_error_for_post_that_does_not_exist(self):
+    def test_update_post_returns_an_error_for_post_that_does_not_exist(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
         post_id = '100'
         path = '/network/update_post/' + post_id
         response = c.generic('GET', path, json.dumps({"text":"Updated Post Text"}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 404)
+
+    def test_update_post(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        new_post_text = "New Post Test Text!!"
+        c.generic('POST', '/network/new_post', json.dumps({"text":new_post_text}))
+        u1 = User.objects.get(username='testuser')
+        u1_posts = Post.objects.posts_from_user(u1)
+        post = u1_posts[0]
+
+        post_id = str(post.id)
+        path = '/network/update_post/' + post_id
+        response = c.generic('GET', path, json.dumps({"text":"Updated Post Text!!"}))
+        print(response)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(post.text, new_post_text)
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):

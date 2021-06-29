@@ -38,11 +38,25 @@ def new_post(request):
     
 @login_required
 def update_post(request, post_id):
-    # Query for requested email
+
+    # Query for requested Post
     try:
-        email = Post.objects.get(user=request.user, pk=post_id)
+        post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Unpack Post text from request.body
+    data = json.loads(request.body)
+    post_text = data.get("text", "")
+
+    # Update the Post
+    try:
+        post.update(request.user, post_text)
+    except ValidationError:
+        return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+    else:
+        return JsonResponse({"message": "Post update successful."}, status=201)
+
 
 def login_view(request):
     if request.method == "POST":
