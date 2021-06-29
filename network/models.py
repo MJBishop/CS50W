@@ -130,7 +130,7 @@ class Post(models.Model):
             try:
                 self.full_clean()
                 self.save()
-            except ValidationError as e:          # test!        
+            except ValidationError as e:    
                 raise e
             else:
                 return self

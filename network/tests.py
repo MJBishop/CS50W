@@ -23,14 +23,7 @@ class NetworkViewsTestCase(TestCase):
         print(response)
         self.assertEqual(response.status_code, 200)
 
-    # def test_index_new_post_form(self):
-    #     c = Client()
-
-    #     response = c.get("/network/")
-    #     print(response)
-    #     self.assertEqual(response.status_code, 200)
-    #     # self.assertEqual(response)
-
+    # new_post
     def test_new_post_fails_for_get(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
@@ -50,11 +43,11 @@ class NetworkViewsTestCase(TestCase):
         u1 = User.objects.get(username='testuser')
         self.assertEqual(u1.posts.count(), 1)
 
-    def test_new_post_fails_for_post_text_greater_than_200_char(self):
+    def test_new_post_fails_for_post_text_greater_than_MAX_POST_LENGTH(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
+        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
         print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -69,6 +62,16 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/network/new_post") # todo - check: calls again after login?
 
+    # update_post
+    def test_new_post_returns_an_error_for_post_that_does_not_exist(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        post_id = '100'
+        path = '/network/update_post/' + post_id
+        response = c.generic('GET', path, json.dumps({"text":"Updated Post Text"}))
+        print(response)
+        self.assertEqual(response.status_code, 404)
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
@@ -140,7 +143,7 @@ class NetworkModelsTestCase(TestCase):
         post = Post.objects.create_post(u2, text=test_post_string)
         self.assertEqual(post.text, test_post_string)
 
-    def test_create_post_raises_exception_for_post_length_greater_than_200(self):
+    def test_create_post_raises_exception_for_post_length_greater_than_MAX_POST_LENGTH(self):
         u2 = User.objects.get(username='James')
         test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "
         with self.assertRaises(ValidationError):
@@ -153,7 +156,7 @@ class NetworkModelsTestCase(TestCase):
         test_post_string = "UPDATED POST"
         self.assertRaises(Exception, post.update, u2, test_post_string)
 
-    def test_edit_post_raises_exception_for_for_post_length_greater_than_200(self):
+    def test_edit_post_raises_exception_for_for_post_length_greater_than_MAX_POST_LENGTH(self):
         u1 = User.objects.get(username='Mike')
         post = Post.objects.get(user=u1)
         test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "

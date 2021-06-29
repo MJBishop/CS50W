@@ -36,7 +36,13 @@ def new_post(request):
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
-
+@login_required
+def update_post(request, post_id):
+    # Query for requested email
+    try:
+        email = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
 
 def login_view(request):
     if request.method == "POST":
