@@ -87,13 +87,32 @@ class NetworkViewsTestCase(TestCase):
         path = '/network/update_post/' + post_id
         updated_post_text = "Updated Post Text!!"
         response = c.generic('GET', path, json.dumps({"text":updated_post_text}))
-        print(response)
+        # print(response)
         self.assertEqual(response.status_code, 201)
 
         # check Post text
         u1_posts = Post.objects.posts_from_user(u1)
         post = u1_posts[0]
         self.assertEqual(post.text, updated_post_text)
+
+    def test_update_post_fails_for_post_text_greater_than_MAX_POST_LENGTH(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        # create a post, and retrieve it
+        c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
+        u1 = User.objects.get(username='testuser')
+        u1_posts = Post.objects.posts_from_user(u1)
+
+        # update the post text
+        post_id = str(u1_posts[0].id)
+        path = '/network/update_post/' + post_id
+        updated_post_text = "Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!"
+        response = c.generic('GET', path, json.dumps({"text":updated_post_text}))
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+        
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
