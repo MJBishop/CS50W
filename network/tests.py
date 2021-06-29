@@ -77,18 +77,23 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        new_post_text = "New Post Test Text!!"
-        c.generic('POST', '/network/new_post', json.dumps({"text":new_post_text}))
+        # create a post, and retrieve it
+        c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
-        post = u1_posts[0]
 
-        post_id = str(post.id)
+        # update the post text
+        post_id = str(u1_posts[0].id)
         path = '/network/update_post/' + post_id
-        response = c.generic('GET', path, json.dumps({"text":"Updated Post Text!!"}))
+        updated_post_text = "Updated Post Text!!"
+        response = c.generic('GET', path, json.dumps({"text":updated_post_text}))
         print(response)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(post.text, new_post_text)
+
+        # check Post text
+        u1_posts = Post.objects.posts_from_user(u1)
+        post = u1_posts[0]
+        self.assertEqual(post.text, updated_post_text)
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
