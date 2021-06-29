@@ -128,7 +128,7 @@ class Post(models.Model):
         if user == self.user:
             self.text = new_text
             try:
-                # self.full_clean()
+                self.full_clean()
                 self.save()
             except ValidationError as e:          # test!        
                 raise e

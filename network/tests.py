@@ -152,6 +152,13 @@ class NetworkModelsTestCase(TestCase):
         u2 = User.objects.get(username='James')
         test_post_string = "UPDATED POST"
         self.assertRaises(Exception, post.update, u2, test_post_string)
+
+    def test_edit_post_raises_exception_for_for_post_length_greater_than_200(self):
+        u1 = User.objects.get(username='Mike')
+        post = Post.objects.get(user=u1)
+        test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "
+        with self.assertRaises(ValidationError):
+            post.update(u1, test_post_string)
         
     def test_edit_post_updates_for_valid_user(self):
         u1 = User.objects.get(username='Mike')
