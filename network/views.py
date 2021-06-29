@@ -45,17 +45,22 @@ def update_post(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
-    # Unpack Post text from request.body
-    data = json.loads(request.body)
-    post_text = data.get("text", "")
+    if request.method == "PUT":
+        # Unpack Post text from request.body
+        data = json.loads(request.body)
+        post_text = data.get("text", "")
 
-    # Update the Post
-    try:
-        post.update(request.user, post_text)
-    except ValidationError:
-        return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        # Update the Post
+        try:
+            post.update(request.user, post_text)
+        except ValidationError:
+            return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        else:
+            return JsonResponse({"message": "Post update successful."}, status=201)
+    
+    # Update must be via PUT
     else:
-        return JsonResponse({"message": "Post update successful."}, status=201)
+        return JsonResponse({"error": "PUT request required."}, status=400)
 
 
 def login_view(request):
