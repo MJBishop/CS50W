@@ -2,6 +2,7 @@ import json
 from django.db.models.query import Prefetch
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from .models import User, Follow, Post
 
@@ -138,6 +139,12 @@ class NetworkModelsTestCase(TestCase):
         test_post_string = "MY SECOND POST"
         post = Post.objects.create_post(u2, text=test_post_string)
         self.assertEqual(post.text, test_post_string)
+
+    def test_create_post_raises_exception_for_post_length_greater_than_200(self):
+        u2 = User.objects.get(username='James')
+        test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "
+        with self.assertRaises(ValidationError):
+            Post.objects.create_post(u2, text=test_post_string)
 
     def test_edit_post_raises_exception_for_invalid_user(self):
         u1 = User.objects.get(username='Mike')

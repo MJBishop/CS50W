@@ -12,16 +12,9 @@ from django.urls import reverse
 from .models import User, Post, Follow, MAX_POST_LENGTH
 
 
-'''
-TextAreaForm for creating/editing a Post
-'''
-class TextAreaForm(forms.Form):
-    entryField = forms.CharField(widget=forms.Textarea, label='')
-
-
 def index(request):
     return render(request, "network/index.html", {
-        # "new_post_form":TextAreaForm()
+        
     })
 
 @login_required
@@ -39,7 +32,7 @@ def new_post(request):
     try:
         Post.objects.create_post(request.user, post_text)
     except ValidationError:
-        return JsonResponse({"error": "Validation Error: Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     

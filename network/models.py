@@ -68,7 +68,7 @@ class PostManager(models.Manager):
 
     def get_queryset(self):
         '''
-        Annotates like_count & orders queryset by date_created (newest first)
+        Annotates like_count & orders the queryset by date_created (newest first)
 
         Return: QuerySet
         '''
@@ -127,8 +127,13 @@ class Post(models.Model):
         '''
         if user == self.user:
             self.text = new_text
-            self.save()
-            return self
+            try:
+                # self.full_clean()
+                self.save()
+            except ValidationError as e:          # test!        
+                raise e
+            else:
+                return self
         else:
             raise Exception(f'Error: {user} is not the Post owner')
     
