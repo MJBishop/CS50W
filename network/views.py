@@ -62,6 +62,10 @@ def update_post(request, post_id):
     else:
         return JsonResponse({"error": "PUT request required."}, status=400)
 
+@login_required
+def like_post(request, post_id):
+    pass
+
 
 def login_view(request):
     if request.method == "POST":

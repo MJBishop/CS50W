@@ -28,7 +28,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('GET', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
+        response = c.generic('GET', '/network/post', json.dumps({"text":"New Post Test Text"}))
         # print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -36,7 +36,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
         # print(response)
         self.assertEqual(response.status_code, 201)
 
@@ -47,7 +47,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
+        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
         # print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -57,10 +57,10 @@ class NetworkViewsTestCase(TestCase):
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
 
-        response = c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text"}))
+        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text"}))
         # print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/network/new_post") # todo - check: calls again after login?
+        self.assertEqual(response.url, "/login/?next=/network/post") # todo - check: calls again after login?
 
     # update_post
     def test_update_post_returns_an_error_for_post_that_does_not_exist(self):
@@ -68,7 +68,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         post_id = '100'
-        path = '/network/update_post/' + post_id
+        path = '/network/post/' + post_id
         response = c.generic('PUT', path, json.dumps({"text":"Updated Post Text"}))
         # print(response)
         self.assertEqual(response.status_code, 404)
@@ -78,13 +78,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/update_post/' + post_id
+        path = '/network/post/' + post_id
         updated_post_text = "Updated Post Text!!"
         response = c.generic('PUT', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -100,13 +100,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/update_post/' + post_id
+        path = '/network/post/' + post_id
         updated_post_text = "Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!"
         response = c.generic('PUT', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -117,13 +117,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/new_post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/update_post/' + post_id
+        path = '/network/post/' + post_id
         updated_post_text = "Updated Post Text!!"
         response = c.generic('GET', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -132,6 +132,9 @@ class NetworkViewsTestCase(TestCase):
         response = c.generic('POST', path, json.dumps({"text":updated_post_text}))
         # print(response)
         self.assertEqual(response.status_code, 400)
+
+    # toggle_like
+
 
 
 class NetworkModelsTestCase(TestCase):
