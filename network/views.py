@@ -98,7 +98,7 @@ def follow(request, user_id):
     try:
         Follow.objects.create_follow(from_user=request.user, to_user=user_to_follow)
     except:
-        pass
+        return JsonResponse({"error": f'{request.user} is already following {user_to_follow}'}, status=400)
     else:
         return JsonResponse({"message": "New Follow successful."}, status=201)
 
