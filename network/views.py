@@ -72,8 +72,9 @@ def like_post(request, post_id):
         return JsonResponse({"error": "Post not found."}, status=404)
 
     if request.method == "PUT":
-        pass
-    
+        post.toggle_like(user=request.user)
+        return JsonResponse({"message": "Post update successful."}, status=201)
+
     # Update must be via PUT
     else:
         return JsonResponse({"error": "PUT request required."}, status=400)

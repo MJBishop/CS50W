@@ -165,6 +165,41 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 400)
 
+    def test_like_post(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        # create a post, and retrieve it
+        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        u1 = User.objects.get(username='testuser')
+        u1_posts = Post.objects.posts_from_user(u1)
+
+        # like the post 
+        post_id = str(u1_posts[0].id)
+        path = '/network/like/' + post_id
+
+        response = c.generic('PUT', path, json.dumps({"like":True}))
+        # print(response)
+        self.assertEqual(response.status_code, 201)
+
+        # check Post text
+        u1_posts = Post.objects.posts_from_user(u1)
+        post = u1_posts[0]
+        self.assertEqual(post.likes.count(), 1)
+
+        # un-like the post 
+        post_id = str(post.id)
+        path = '/network/like/' + post_id
+
+        response = c.generic('PUT', path, json.dumps({"like":False}))
+        # print(response)
+        self.assertEqual(response.status_code, 201)
+
+        # check Post text
+        u1_posts = Post.objects.posts_from_user(u1)
+        post = u1_posts[0]
+        self.assertEqual(post.likes.count(), 0)
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
