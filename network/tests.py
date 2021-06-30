@@ -286,7 +286,16 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 400)
 
+    def test_unfollow_returns_an_error_for_user_that_does_not_exist(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
 
+        # u1 follows 
+        path = '/network/unfollow/' + '100'
+        response = c.generic('DELETE', path)
+
+        # print(response)
+        self.assertEqual(response.status_code, 404)
 
 
 
