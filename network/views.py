@@ -84,11 +84,19 @@ def like_post(request, post_id):
 @login_required
 def follow(request, user_id):
 
+    # Creating a new follow must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
     # Query for requested Post
     try:
         user_to_follow = User.objects.get(pk=user_id)
+        print(user_to_follow)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
+
+    # follow user
+
 
 @login_required
 def unfollow(request, user_id):

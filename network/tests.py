@@ -15,6 +15,11 @@ class NetworkViewsTestCase(TestCase):
         user.set_password('12345')
         user.save()
 
+        # create another test user
+        user2 = User.objects.create(username='testuser2')
+        user2.set_password('54321')
+        user2.save()
+
     # index tests
     def test_index(self):
         c = Client()
@@ -204,23 +209,29 @@ class NetworkViewsTestCase(TestCase):
     def test_follow_returns_an_error_for_user_that_does_not_exist(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
-        # u1 = User.objects.get(username='testuser')
-
-        # create another test user
-        # user = User.objects.create(username='testuser2')
-        # user.set_password('54321')
-        # user.save()
-        # u2 = User.objects.get(username='testuser2')
 
         # u1 follows 
-        path = '/network/follow' + '100'
+        path = '/network/follow/' + '100'
         response = c.generic('POST', path)
 
         # print(response)
         self.assertEqual(response.status_code, 404)
 
+    def test_follow_fails_for_GET_and_PUT(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        u2 = User.objects.get(username='testuser2')
 
+        # u1 follows u2
+        user_id = str(u2.id)
+        path = '/network/follow/' + user_id
+        response = c.generic('GET', path)
+        # print(response)
+        self.assertEqual(response.status_code, 400)
 
+        response = c.generic('PUT', path)
+        # print(response)
+        self.assertEqual(response.status_code, 400)
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
