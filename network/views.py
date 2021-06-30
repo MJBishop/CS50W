@@ -71,6 +71,7 @@ def like_post(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
+    # toggle post like for user
     if request.method == "PUT":
         post.toggle_like(user=request.user)
         return JsonResponse({"message": "Post update successful."}, status=201)
@@ -78,6 +79,20 @@ def like_post(request, post_id):
     # Update must be via PUT
     else:
         return JsonResponse({"error": "PUT request required."}, status=400)
+
+
+@login_required
+def follow(request, user_id):
+
+    # Query for requested Post
+    try:
+        user_to_follow = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+
+@login_required
+def unfollow(request, user_id):
+    pass
 
 
 def login_view(request):

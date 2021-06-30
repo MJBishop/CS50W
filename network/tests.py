@@ -200,6 +200,27 @@ class NetworkViewsTestCase(TestCase):
         post = u1_posts[0]
         self.assertEqual(post.likes.count(), 0)
 
+    # Follow / Unfollow
+    def test_follow_returns_an_error_for_user_that_does_not_exist(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        # u1 = User.objects.get(username='testuser')
+
+        # create another test user
+        # user = User.objects.create(username='testuser2')
+        # user.set_password('54321')
+        # user.save()
+        # u2 = User.objects.get(username='testuser2')
+
+        # u1 follows 
+        path = '/network/follow' + '100'
+        response = c.generic('POST', path)
+
+        # print(response)
+        self.assertEqual(response.status_code, 404)
+
+
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
