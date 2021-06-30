@@ -233,6 +233,25 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 400)
 
+    def test_follow(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        u2 = User.objects.get(username='testuser2')
+
+        # u1 follows u2
+        user_id = str(u2.id)
+        path = '/network/follow/' + user_id
+        response = c.generic('POST', path)
+        # print(response)
+        self.assertEqual(response.status_code, 201)
+
+        u1 = User.objects.get(username='testuser')
+        self.assertEqual(u1.following.count(), 1)
+
+    # def test_follow_returns_an_error_for_user_already_following_user2(self):
+
+
+
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
 

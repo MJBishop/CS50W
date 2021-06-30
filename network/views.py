@@ -91,11 +91,17 @@ def follow(request, user_id):
     # Query for requested Post
     try:
         user_to_follow = User.objects.get(pk=user_id)
-        print(user_to_follow)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
 
-    # follow user
+    # Create follow
+    try:
+        Follow.objects.create_follow(from_user=request.user, to_user=user_to_follow)
+    except:
+        pass
+    else:
+        return JsonResponse({"message": "New Follow successful."}, status=201)
+
 
 
 @login_required
