@@ -36,6 +36,7 @@ def new_post(request):
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
+
 @login_required
 def update_post(request, post_id):
 
@@ -61,6 +62,7 @@ def update_post(request, post_id):
     # Update must be via PUT
     else:
         return JsonResponse({"error": "PUT request required."}, status=400)
+
 
 @login_required
 def like_post(request, post_id):
@@ -103,10 +105,12 @@ def follow(request, user_id):
         return JsonResponse({"message": "New Follow successful."}, status=201)
 
 
-
 @login_required
 def unfollow(request, user_id):
-    pass
+    
+    # Deleting a follow must be via DELETE
+    if request.method != "DELETE":
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def login_view(request):

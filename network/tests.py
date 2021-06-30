@@ -266,6 +266,29 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 400)
 
+    def test_unfollow_fails_for_GET_and_PUT_and_POST(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        u2 = User.objects.get(username='testuser2')
+
+        # u1 follows u2
+        user_id = str(u2.id)
+        path = '/network/unfollow/' + user_id
+        response = c.generic('GET', path)
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+        response = c.generic('PUT', path)
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+        response = c.generic('POST', path)
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+
+
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
