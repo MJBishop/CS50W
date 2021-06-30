@@ -64,8 +64,12 @@ def update_post(request, post_id):
 
 @login_required
 def like_post(request, post_id):
-    pass
-
+    
+    # Query for requested Post
+    try:
+        post = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
 
 def login_view(request):
     if request.method == "POST":

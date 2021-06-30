@@ -134,7 +134,15 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     # toggle_like
+    def test_like_post_returns_an_error_for_post_that_does_not_exist(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
 
+        post_id = '100'
+        path = '/network/like/' + post_id
+        response = c.generic('PUT', path, json.dumps({"like":True}))
+        # print(response)
+        self.assertEqual(response.status_code, 404)
 
 
 class NetworkModelsTestCase(TestCase):
