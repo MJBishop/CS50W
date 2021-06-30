@@ -118,7 +118,14 @@ def unfollow(request, user_id):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
 
-
+    # Delete follow
+    try:
+        Follow.objects.delete_follow(from_user=request.user, to_user=user_to_unfollow)
+    except:
+        pass
+    else:
+        return JsonResponse({"message": "New Follow successful."}, status=201)
+        
 
 def login_view(request):
     if request.method == "POST":
