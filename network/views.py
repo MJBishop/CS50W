@@ -122,10 +122,10 @@ def unfollow(request, user_id):
     try:
         Follow.objects.delete_follow(from_user=request.user, to_user=user_to_unfollow)
     except:
-        pass
+        return JsonResponse({"error": f'{request.user} is not following {user_to_unfollow}'}, status=400)
     else:
         return JsonResponse({"message": "New Follow successful."}, status=201)
-        
+
 
 def login_view(request):
     if request.method == "POST":

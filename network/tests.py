@@ -318,6 +318,21 @@ class NetworkViewsTestCase(TestCase):
         u1 = User.objects.get(username='testuser')
         self.assertEqual(u1.following.count(), 0)
 
+    def test_unfollow_returns_an_error_for_user_not_following_user2(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        u2 = User.objects.get(username='testuser2')
+
+        # u1 unfollows u2..
+        user_id = str(u2.id)
+        path = '/network/unfollow/' + user_id
+        response = c.generic('DELETE', path)
+
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):
