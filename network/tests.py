@@ -144,6 +144,27 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 404)
 
+    def test_like_post_fails_for_GET_and_POST(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        # create a post, and retrieve it
+        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        u1 = User.objects.get(username='testuser')
+        u1_posts = Post.objects.posts_from_user(u1)
+
+        # like the post 
+        post_id = str(u1_posts[0].id)
+        path = '/network/like/' + post_id
+
+        response = c.generic('GET', path, json.dumps({"like":True}))
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+        response = c.generic('POST', path, json.dumps({"like":True}))
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
 
 class NetworkModelsTestCase(TestCase):
     def setUp(self):

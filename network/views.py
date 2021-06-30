@@ -71,6 +71,14 @@ def like_post(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
+    if request.method == "PUT":
+        pass
+    
+    # Update must be via PUT
+    else:
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+
 def login_view(request):
     if request.method == "POST":
 
