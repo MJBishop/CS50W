@@ -140,7 +140,7 @@ class NetworkViewsTestCase(TestCase):
 
         post_id = '100'
         path = '/network/like/' + post_id
-        response = c.generic('PUT', path, json.dumps({"like":True}))
+        response = c.generic('PUT', path)
         # print(response)
         self.assertEqual(response.status_code, 404)
 
@@ -157,11 +157,11 @@ class NetworkViewsTestCase(TestCase):
         post_id = str(u1_posts[0].id)
         path = '/network/like/' + post_id
 
-        response = c.generic('GET', path, json.dumps({"like":True}))
+        response = c.generic('GET', path)
         # print(response)
         self.assertEqual(response.status_code, 400)
 
-        response = c.generic('POST', path, json.dumps({"like":True}))
+        response = c.generic('POST', path)
         # print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -178,7 +178,7 @@ class NetworkViewsTestCase(TestCase):
         post_id = str(u1_posts[0].id)
         path = '/network/like/' + post_id
 
-        response = c.generic('PUT', path, json.dumps({"like":True}))
+        response = c.generic('PUT', path)
         # print(response)
         self.assertEqual(response.status_code, 201)
 
@@ -191,7 +191,7 @@ class NetworkViewsTestCase(TestCase):
         post_id = str(post.id)
         path = '/network/like/' + post_id
 
-        response = c.generic('PUT', path, json.dumps({"like":False}))
+        response = c.generic('PUT', path)
         # print(response)
         self.assertEqual(response.status_code, 201)
 
