@@ -30,6 +30,16 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
+    def test_following(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.get('/network/following')
+        # print(response)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
+        self.assertEqual(response.context['page_obj'].object_list.count(), 0)
+
 
     # new_post
     def test_new_post_fails_for_get(self):
