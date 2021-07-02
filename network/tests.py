@@ -30,6 +30,7 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
+
     # new_post
     def test_new_post_fails_for_get(self):
         c = Client()

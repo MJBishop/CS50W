@@ -17,18 +17,15 @@ def index(request):
 
     # fetch all posts
     posts = Post.objects.posts_from_all_users()
-    page = request.GET.get('page', 1)
 
-    # Paginator
-    page_obj = page_obj_for_page(page, Paginator(posts, 10))
+    # page_obj (Paginator)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(posts, 10)
+    page_obj = paginator.get_page(page)
 
     return render(request, "network/index.html", {
         "page_obj": page_obj,
     })
-
-def page_obj_for_page(page, paginator):
-    return paginator.get_page(page)
-
 
 @login_required
 def new_post(request):
