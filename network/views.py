@@ -20,12 +20,15 @@ def index(request):
     page = request.GET.get('page', 1)
 
     # Paginator
-    paginator = Paginator(posts, 10)
-    page_obj = paginator.get_page(page)
+    page_obj = page_obj_for_page(page, Paginator(posts, 10))
 
     return render(request, "network/index.html", {
         "page_obj": page_obj,
     })
+
+def page_obj_for_page(page, paginator):
+    return paginator.get_page(page)
+
 
 @login_required
 def new_post(request):
