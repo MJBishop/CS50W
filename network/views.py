@@ -46,7 +46,7 @@ def following(request):
     else:
         return HttpResponseRedirect(reverse("index"))
 
-@login_required
+
 def profile(request, user_id):
 
     if request.method == "GET":
