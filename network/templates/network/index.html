@@ -1,27 +1,14 @@
-{% extends "network/layout.html" %}
+{% extends "network/newpost.html" %}
 
-{% block body %}
+{% block posts %}
     
-    <div id="profile-view">
-    </div>
-
-    <!-- {% if user.is_authenticated %} -->
-        <div id="new-post-view">
-            <div class="card">
-                <div class="card-body">
-                    <h5 id="new-post-heading">New Post</h5>
-                    <!-- todo - show/hide new-post-form -->
-                    <form id="post-form">
-                        <textarea class="form-control" id="new-post-text" value="{{ post.text | default:'' }}"></textarea>
-                        <input type="submit" class="btn btn-primary">
-                    </form>
-                </div>
-            </div>
+    {% if profile %}
+        <div id="profile-view">
         </div>
-    <!-- {% endif %} -->
+    {% endif %}
 
-    <div id="post-list-view">
-        <h3 id="post-list-heading">All Posts</h3>
+    <div id="post-list">
+        <h3 id="post-list-heading">All Posts</h3> <!--?-->
         <!-- todo - posts -->
     </div>
 

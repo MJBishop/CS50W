@@ -1,0 +1,25 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    {% if user.is_authenticated %}
+        <div id="new-post-view">
+            <div class="card">
+                <div class="card-body">
+                    <h5 id="new-post-heading">New Post</h5>
+                    <!-- todo - show/hide new-post-form -->
+                    <form id="post-form">
+                        <textarea class="form-control" id="new-post-text" value="{{ post.text | default:'' }}"></textarea>
+                        <input type="submit" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div class="container" id="post-list-view">
+        {% block posts}
+        {% endblock %}
+    </div>
+
+{% endblock %}
