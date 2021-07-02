@@ -43,6 +43,31 @@ def following(request):
     })
 
 @login_required
+def profile(request, user_id):
+
+    # Query for requested User
+    try:
+        profile = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return render(request, "network/index.html", {
+                "message": "User does not exist!"
+        })
+
+    # fetch all posts from user
+    posts = Post.objects.posts_from_user(user=profile)
+
+    # page_obj (Paginator)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(posts, 10)
+    page_obj = paginator.get_page(page)
+
+    return render(request, "network/index.html", {
+        "page_obj": page_obj,
+        "profile":profile
+    })
+
+
+@login_required
 def new_post(request):
 
     # Creating a new post must be via POST
