@@ -6,7 +6,8 @@ from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, Http404
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -46,12 +47,7 @@ def following(request):
 def profile(request, user_id):
 
     # Query for requested User
-    try:
-        profile = User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        return render(request, "network/index.html", {
-                "message": "User does not exist!"
-        })
+    profile = get_object_or_404(User, pk=user_id)
 
     # fetch all posts from user
     posts = Post.objects.posts_from_user(user=profile)

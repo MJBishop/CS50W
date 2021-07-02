@@ -39,17 +39,6 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
-
-    # def test_profile_returns_error_message_for_invalid_user(self):
-    #     c = Client()
-    #     logged_in = c.login(username='testuser', password='12345')
-
-    #     user_id = '100'
-    #     path = '/network/profile/' + user_id
-    #     response = c.generic('GET', path)
-    #     # print(response)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context['message'], "User does not exist!")
         
     def test_profile(self):
         c = Client()
@@ -65,6 +54,17 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
         self.assertEqual(response.context['profile'].username, username)
+
+    def test_profile_raises_404_exception_for_invalid_user(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        user_id = '100'
+        path = '/network/profile/' + user_id
+        response = c.generic('GET', path)
+        # print(response)
+        self.assertEqual(response.status_code, 404)
+        
 
     # new_post
     def test_new_post_fails_for_get(self):
