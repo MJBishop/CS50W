@@ -73,7 +73,7 @@ class NetworkViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 404)
 
-    def test_profile_PUT(self):
+    def test_profile_PUT_reverse_to_index(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
         username = 'testuser2'
@@ -83,10 +83,7 @@ class NetworkViewsTestCase(TestCase):
         path = '/network/profile/' + user_id
         response = c.put(path)
         # print(response)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
-        self.assertEqual(response.context['page_obj'].object_list.count(), 0)
-        self.assertEqual(response.context['profile'].username, username)
+        self.assertEqual(response.status_code, 302)
         
 
     # new_post

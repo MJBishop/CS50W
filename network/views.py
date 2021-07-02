@@ -49,21 +49,24 @@ def following(request):
 @login_required
 def profile(request, user_id):
 
-    # Query for requested User
-    profile = get_object_or_404(User, pk=user_id)
+    if request.method == "GET":
+        # Query for requested User
+        profile = get_object_or_404(User, pk=user_id)
 
-    # fetch all posts from user
-    posts = Post.objects.posts_from_user(user=profile)
+        # fetch all posts from user
+        posts = Post.objects.posts_from_user(user=profile)
 
-    # page_obj (Paginator)
-    page = request.GET.get('page', 1)
-    paginator = Paginator(posts, 10)
-    page_obj = paginator.get_page(page)
+        # page_obj (Paginator)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(posts, 10)
+        page_obj = paginator.get_page(page)
 
-    return render(request, "network/index.html", {
-        "page_obj": page_obj,
-        "profile":profile
-    })
+        return render(request, "network/index.html", {
+            "page_obj": page_obj,
+            "profile":profile
+        })
+    else:
+        return HttpResponseRedirect(reverse("index"))
 
 
 @login_required
