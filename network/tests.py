@@ -30,6 +30,14 @@ class NetworkViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
+    def test_following_PUT_reverse_to_index(self):
+        c = Client()
+
+        response = c.put("/network/following")
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/network/following") 
+
     def test_following(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
@@ -64,6 +72,21 @@ class NetworkViewsTestCase(TestCase):
         response = c.generic('GET', path)
         # print(response)
         self.assertEqual(response.status_code, 404)
+
+    def test_profile_PUT(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        username = 'testuser2'
+        u2 = User.objects.get(username=username)
+
+        user_id = str(u2.id)
+        path = '/network/profile/' + user_id
+        response = c.put(path)
+        # print(response)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
+        self.assertEqual(response.context['page_obj'].object_list.count(), 0)
+        self.assertEqual(response.context['profile'].username, username)
         
 
     # new_post

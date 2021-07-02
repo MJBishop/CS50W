@@ -31,17 +31,20 @@ def index(request):
 @login_required
 def following(request):
 
-    # fetch all posts from users follwed by user
-    posts = Post.objects.posts_from_users_followed_by_user(user=request.user)#pass in the user?
+    if request.method == "GET":
+        # fetch all posts from users follwed by user
+        posts = Post.objects.posts_from_users_followed_by_user(user=request.user)#pass in the user?
 
-    # page_obj (Paginator)
-    page = request.GET.get('page', 1)
-    paginator = Paginator(posts, 10)
-    page_obj = paginator.get_page(page)
+        # page_obj (Paginator)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(posts, 10)
+        page_obj = paginator.get_page(page)
 
-    return render(request, "network/index.html", {
-        "page_obj": page_obj,
-    })
+        return render(request, "network/index.html", {
+            "page_obj": page_obj,
+        })
+    else:
+        return HttpResponseRedirect(reverse("index"))
 
 @login_required
 def profile(request, user_id):
