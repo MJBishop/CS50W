@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
@@ -13,8 +14,17 @@ from .models import User, Post, Follow, MAX_POST_LENGTH
 
 
 def index(request):
+
+    # fetch all posts
+    posts = Post.objects.posts_from_all_users()
+    page = request.GET.get('page', 1)
+
+    # Paginator
+    paginator = Paginator(posts, 10)
+    page_obj = paginator.get_page(page)
+
     return render(request, "network/index.html", {
-        
+        "page_obj": page_obj,
     })
 
 @login_required
