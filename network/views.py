@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt #best way??
 
 from .models import User, Post, Follow, MAX_POST_LENGTH
 
@@ -68,7 +69,7 @@ def profile(request, user_id):
     else:
         return HttpResponseRedirect(reverse("index"))
 
-
+@csrf_exempt
 @login_required
 def new_post(request):
 
@@ -176,7 +177,7 @@ def unfollow(request, user_id):
     except:
         return JsonResponse({"error": f'{request.user} is not following {user_to_unfollow}'}, status=400)
     else:
-        return JsonResponse({"message": "New Follow successful."}, status=201)
+        return JsonResponse({"message": "Unfollow successful."}, status=201)
 
 
 def login_view(request):

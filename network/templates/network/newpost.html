@@ -3,24 +3,44 @@
 
 {% block body %}
 
-    {% if user.is_authenticated %}
-        <div id="new-post-view">
-            <div class="card">
-                <div class="card-body">
-                    <h5 id="new-post-heading">New Post</h5>
-                    <!-- todo - show/hide new-post-form -->
-                    <form id="post-form">
-                        <textarea class="form-control" id="new-post-text" value="{{ post.text | default:'' }}"></textarea>
-                        <input type="submit" class="btn btn-primary">
-                    </form>
+    <div class="container" id="new-post-view">
+        
+        {% if user.is_authenticated %}
+            <div id="new-post-view">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <div> -->
+                            <button data-toggle-id="new-post" class="btn btn-sm btn-outline-primary mt-2">New Post</button>
+                        <!-- </div> -->
+                    </div>
                 </div>
-            </div>
-        </div>
-    {% endif %}
+                <div class="card" id="new-post" hidden>
+                    <!-- new-post-form -->
+                    <form id="new-post-form">
+                        <div class="card-body">
+                            <textarea class="form-control" id="new-post-text" value="{{ post.text | default:'' }}"></textarea>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <input type="submit" class="btn btn-primary" id="save-post-button" data-action="save_post"></input>
+                        </div>
+                    </form>
+                    <!-- new-post-form end -->
+                </div>
+            </div>  
+        {% endif %}
+
+    </div>
     
     <div class="container" id="post-list-view">
         {% block posts %}
         {% endblock %}
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript"> 
+        var user = "{{user}}";
+    </script>
+    <script src="{% static 'network/network.js' %}"></script>
 {% endblock %}

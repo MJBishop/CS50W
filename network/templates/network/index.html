@@ -1,15 +1,48 @@
 {% extends "network/newpost.html" %}
+{% load static %}
 
 {% block posts %}
     
     {% if profile %}
         <div id="profile-view">
+
+            {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-outline-primary mt-2" id="follow-post-button">Follow</button>
+            {% endif %}
         </div>
     {% endif %}
 
     <div id="post-list">
-        <h3 id="post-list-heading">All Posts</h3> <!--?-->
-        <!-- todo - posts -->
+        <!-- <h3 id="post-list-heading">All Posts</h3>  -->
+        
+        {% for post in page_obj %}
+            <div id="post" class="card mb-4 bg-transparent text-center">
+                <div class="card-body">
+                    <div>{{ post.text }}</div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <button class="btn btn-sm btn-outline-primary mt-2" type="submit">{{ post.user.username }}</button>
+
+                    {% if user.is_authenticated %}
+                        {% if user == post.user %}
+                            <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-action="update_post">Edit</button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-action="like_post">(un)Like</button>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        {% endfor %}
+
     </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
     
 {% endblock %}
