@@ -76,10 +76,17 @@ function update_post() {
 function like_post() {
     console.log('like_post')
 
+    // toggle like
+
 }
 
-function toggleFollow() {
-    console.log('toggleFollow')
+function toggle_follow() {
+    console.log('toggle_follow')
+
+    // follow 
+
+
+    // unfollow
 
 }
   
