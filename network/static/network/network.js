@@ -2,50 +2,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('DOM ready')
 
-    // document.querySelector('#post-list-view').addEventListener('click', function(event) {
-    //     console.log('button click')
-    
-    // });
-    
-});
+    document.querySelector('#new-post-button').addEventListener('click', function(event) {
+        console.log('new-post-button click')
 
-// can i add to specific element? yes?
-document.addEventListener('click', function(event) {
-    console.log('click')
-
-    let toggleId = event.target.dataset.toggleId;
-    if (toggleId) {
-        let elem = document.getElementById(toggleId);
-        elem.hidden = !elem.hidden;
-    }
-    else {
-        let id = event.target.id;
-        if (id === 'save-post-button') {
-
-            console.log('saving_post')
-            save_post()
+        let toggleId = event.target.dataset.toggleId;
+        if (toggleId) {
+            let elem = document.getElementById(toggleId);
+            elem.hidden = !elem.hidden;
         }
-        else if (id === 'update-post-button') {
+    });
 
-            console.log('updating_post')
-            update_post()
+    document.querySelector('#save-post-button').addEventListener('click', function(event) {
+        console.log('save-post-button click')
+        save_post()
+    });
+
+    document.querySelectorAll('#update-post-button').forEach(function(button) {
+        button.onclick = function() {
+            console.log('update-post-button click')
+            update_post(button.dataset.post_id)
         }
-        else if (id === 'like-post-button') {
+    });
 
-            console.log('liking_post')
+    document.querySelectorAll('#like-post-button').forEach(function(button) {
+        button.onclick = function() {
+            console.log('like-post-button click')
             like_post()
         }
-        else if (id === 'follow-post-button') {
+    });
 
-            console.log('toggle_following_post')
-            toggle_follow()
-        }
-        else {
-            console.log('click with no action')
-            // better way to implement this??
-        }
-    }
-  });
+    document.querySelector('#follow-user-button').addEventListener('click', function(event) {
+        console.log('follow-user-button click')
+        toggle_follow()
+    });
+    
+});
 
   
 function save_post() {
@@ -68,9 +59,14 @@ function save_post() {
     return false;
 }
 
-function update_post() {
+function update_post(post_id) {
     console.log('update_post')
+    console.log(post_id)
 
+    if (post_id) {
+        let elem = document.getElementById(post_id);
+        
+    }
 }
 
 function like_post() {
