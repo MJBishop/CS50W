@@ -18,18 +18,24 @@
         {% for post in page_obj %}
             <div id="post" class="card mb-4 bg-transparent text-center">
                 <div class="card-body">
+                    <button class="btn btn-sm btn-outline-primary mt-2" type="submit">{{ post.user.username }}</button>
                     <div>{{ post.text }}</div>
                 </div>
                 <div class="card-footer bg-transparent">
-                    <button class="btn btn-sm btn-outline-primary mt-2" type="submit">{{ post.user.username }}</button>
-
-                    {% if user.is_authenticated %}
-                        {% if user == post.user %}
-                            <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-action="update_post">Edit</button>
-                        {% endif %}
-                        <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-action="like_post">(un)Like</button>
-                    {% endif %}
-                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if user.is_authenticated %}
+                                {% if user == post.user %}
+                                    <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-action="update_post">Edit</button>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {% if user.is_authenticated %}
+                                <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-action="like_post">Likes {{ post.likes.count }}</button>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endfor %}
