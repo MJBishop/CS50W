@@ -89,7 +89,7 @@ def new_post(request):
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
-
+@csrf_exempt
 @login_required
 def update_post(request, post_id):
 

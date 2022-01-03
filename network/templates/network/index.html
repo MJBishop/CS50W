@@ -22,8 +22,8 @@
                     <div id="post_text">{{ post.text }}</div>
                 <!-- </div>
                 <div class="card-footer bg-transparent"> -->
-                    <div class="row">
-                        <div class="col-md-6">
+                    <div id="post-buttons" class="row">
+                        <div id="update-post-div" class="col-md-6">
                             {% if user.is_authenticated %}
                                 {% if user == post.user %}
                                     <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-post_id="{{ post.id }}">Edit</button>
