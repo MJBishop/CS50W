@@ -88,7 +88,8 @@ def new_post(request):
         return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
-    
+
+
 @csrf_exempt
 @login_required
 def update_post(request, post_id):
@@ -117,6 +118,7 @@ def update_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
 
 
+@csrf_exempt
 @login_required
 def like_post(request, post_id):
     
@@ -128,8 +130,8 @@ def like_post(request, post_id):
 
     # toggle post like for user
     if request.method == "PUT":
-        post.toggle_like(user=request.user)
-        return JsonResponse({"message": "Post update successful."}, status=201)
+        like_count = post.toggle_like(user=request.user)
+        return JsonResponse({"message": "Post update successful.", "likes": like_count}, status=201)
 
     # Update must be via PUT
     else:

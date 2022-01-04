@@ -152,4 +152,4 @@ class Post(models.Model):
             self.likes.add(user)
         else:
             self.likes.remove(user)
-        return self # return post.likes.count or post?
+        return self.likes.count()

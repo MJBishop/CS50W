@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('#like-post-button').forEach(function(button) {
         button.onclick = function() {
             console.log('like-post-button click')
-            like_post()
+            like_post(button)
         }
     });
 
@@ -215,10 +215,44 @@ function end_editing_post(post_id, new_text) {
     div.remove();
 }
 
-function like_post() {
+function like_post(button) {
     console.log('like_post')
 
+    post_id = button.dataset.post_id;
+
     // toggle like
+    const path = '/like/' + post_id;
+    fetch(path, {
+        method: 'PUT',
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Log data to the console
+        console.log(data);
+
+        if (data.error) {
+            
+            // 
+
+            // Present general error alert - todo!
+
+        } 
+        else if (data.message) {
+
+            // update
+            button.innerHTML = "Likes " + data.likes;
+
+            // Present success alert - todo!
+        }
+    })
+
+    // Catch any errors and log them to the console
+    .catch(error => {
+        console.log('Error:', error);
+    });
+
+    // Prevent default submission
+    return false;
 
 }
 
