@@ -85,7 +85,7 @@ def new_post(request):
     try:
         Post.objects.create_post(request.user, post_text)
     except ValidationError:
-        return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        return JsonResponse({"error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
     else:
         return JsonResponse({"message": "New Post successful."}, status=201)
     
@@ -108,7 +108,7 @@ def update_post(request, post_id):
         try:
             post.update(request.user, post_text)
         except ValidationError:
-            return JsonResponse({"error": "Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+            return JsonResponse({"error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
         else:
             return JsonResponse({"message": "Post update successful."}, status=201)
     

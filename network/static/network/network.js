@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var new_post_button = document.querySelector('#new-post-button')
     if (new_post_button) {
         new_post_button.addEventListener('click', function(event) {
-            console.log('new-post-button click')
+            // console.log('new-post-button click')
     
             let toggleId = event.target.dataset.toggleId;
             if (toggleId) {
@@ -15,19 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-
     var save_post_button = document.querySelector('#save-post-button')
     if (save_post_button) {
         save_post_button.addEventListener('click', function(event) {
-            console.log('save-post-button click')
-            save_post()
+            // console.log('save-post-button click')
+            save_new_post()
         });
     }
     
 
     document.querySelectorAll('#update-post-button').forEach(function(button) {
         button.onclick = function() {
-            console.log('update-post-button click')
+            // console.log('update-post-button click')
             update_post(button.dataset.post_id)
         }
     });
@@ -51,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   
-function save_post() {
-    console.log('save_post')
+function save_new_post() {
+    // console.log('save_post')
     
     // Save the new Post
     const path = '/post';
@@ -63,6 +62,11 @@ function save_post() {
         })
     })
     // catch json response!!?
+    .then(response => response.json())
+    .then(data => {
+        // Log data to the console
+        console.log(data);
+    })
 
     // Catch any errors and log them to the console
     .catch(error => {
@@ -74,8 +78,8 @@ function save_post() {
 }
 
 function update_post(post_id) {
-    console.log('update_post')
-    console.log(post_id)
+    // console.log('update_post')
+    // console.log(post_id)
 
     // todo:
     // disable other buttons
@@ -119,13 +123,13 @@ function update_post(post_id) {
 }
 
 function save_updated_post(post_id) {
-    console.log('save_updated_post')
+    // console.log('save_updated_post')
 
     // todo:
     // check for changed post text?
 
     // swap in submit button
-    console.log(post_id)
+    // console.log(post_id)
 
     var new_text = document.querySelector('#update-post-text').value
 
