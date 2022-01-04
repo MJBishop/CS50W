@@ -2,20 +2,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('DOM ready')
 
-    document.querySelector('#new-post-button').addEventListener('click', function(event) {
-        console.log('new-post-button click')
+    var new_post_button = document.querySelector('#new-post-button')
+    if (new_post_button) {
+        new_post_button.addEventListener('click', function(event) {
+            console.log('new-post-button click')
+    
+            let toggleId = event.target.dataset.toggleId;
+            if (toggleId) {
+                let elem = document.getElementById(toggleId);
+                elem.hidden = !elem.hidden;
+            }
+        });
+    }
+    
 
-        let toggleId = event.target.dataset.toggleId;
-        if (toggleId) {
-            let elem = document.getElementById(toggleId);
-            elem.hidden = !elem.hidden;
-        }
-    });
-
-    document.querySelector('#save-post-button').addEventListener('click', function(event) {
-        console.log('save-post-button click')
-        save_post()
-    });
+    var save_post_button = document.querySelector('#save-post-button')
+    if (save_post_button) {
+        save_post_button.addEventListener('click', function(event) {
+            console.log('save-post-button click')
+            save_post()
+        });
+    }
+    
 
     document.querySelectorAll('#update-post-button').forEach(function(button) {
         button.onclick = function() {
@@ -31,10 +39,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.querySelector('#follow-user-button').addEventListener('click', function(event) {
-        console.log('follow-user-button click')
-        toggle_follow()
-    });
+    var follow_user_button = document.querySelector('#follow-user-button');
+    if (follow_user_button) {
+        follow_user_button.addEventListener('click', function(event) {
+            console.log('follow-user-button click')
+            toggle_follow()
+        });
+    }
+    
     
 });
 
@@ -64,6 +76,10 @@ function save_post() {
 function update_post(post_id) {
     console.log('update_post')
     console.log(post_id)
+
+    // todo:
+    // disable other buttons
+    // disallow multiple edits
 
     if (post_id) {
         let elem = document.getElementById(post_id);
@@ -105,6 +121,9 @@ function update_post(post_id) {
 function save_updated_post(post_id) {
     console.log('save_updated_post')
 
+    // todo:
+    // check for changed post text?
+
     // swap in submit button
     console.log(post_id)
 
@@ -123,7 +142,7 @@ function save_updated_post(post_id) {
         const div = document.getElementById('save-updated-post-div');
         div.remove();
 
-    }
+    } // when db completes! - todo!!
 
     // Save the new Post
     const path = '/post/' + post_id;

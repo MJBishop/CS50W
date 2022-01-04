@@ -20,8 +20,6 @@
                 <div class="card-body">
                     <button class="btn btn-sm btn-outline-primary mt-2" type="submit">{{ post.user.username }}</button>
                     <div id="post_text">{{ post.text }}</div>
-                <!-- </div>
-                <div class="card-footer bg-transparent"> -->
                     <div id="post-buttons" class="row">
                         <div id="update-post-div" class="col-md-6">
                             {% if user.is_authenticated %}
@@ -32,7 +30,7 @@
                         </div>
                         <div class="col-md-6">
                             {% if user.is_authenticated %}
-                                <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button">Likes {{ post.likes.count }}</button>
+                                <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-post_id="{{ post.id }}">Likes {{ post.likes.count }}</button>
                             {% endif %}
                         </div>
                     </div>
