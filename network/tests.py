@@ -8,7 +8,7 @@ from .models import User, Follow, Post
 
 
 # Create your tests here.
-class NetworkViewsTestCase(TestCase):
+class ViewsTestCase(TestCase):
     def setUp(self):
         # create a test user
         user = User.objects.create(username='testuser')
@@ -24,7 +24,7 @@ class NetworkViewsTestCase(TestCase):
     def test_index(self):
         c = Client()
 
-        response = c.get("/network/")
+        response = c.get("/")
         # print(response)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
@@ -33,16 +33,16 @@ class NetworkViewsTestCase(TestCase):
     def test_following_PUT_reverse_to_index(self):
         c = Client()
 
-        response = c.put("/network/following")
+        response = c.put("/following")
         # print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/network/following") 
+        self.assertEqual(response.url, "/login/?next=/following") 
 
     def test_following(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.get('/network/following')
+        response = c.get('/following')
         # print(response)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
@@ -51,7 +51,7 @@ class NetworkViewsTestCase(TestCase):
     def test_following_redirects_when_not_signed_in(self):
         c = Client()
 
-        response = c.get('/network/following')
+        response = c.get('/following')
         # print(response)
         self.assertEqual(response.status_code, 302)
         
@@ -62,7 +62,7 @@ class NetworkViewsTestCase(TestCase):
         u2 = User.objects.get(username=username)
 
         user_id = str(u2.id)
-        path = '/network/profile/' + user_id
+        path = '/profile/' + user_id
         response = c.get(path)
         # print(response)
         self.assertEqual(response.status_code, 200)
@@ -75,7 +75,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         user_id = '100'
-        path = '/network/profile/' + user_id
+        path = '/profile/' + user_id
         response = c.generic('GET', path)
         # print(response)
         self.assertEqual(response.status_code, 404)
@@ -87,7 +87,7 @@ class NetworkViewsTestCase(TestCase):
         u2 = User.objects.get(username=username)
 
         user_id = str(u2.id)
-        path = '/network/profile/' + user_id
+        path = '/profile/' + user_id
         response = c.put(path)
         # print(response)
         self.assertEqual(response.status_code, 302)
@@ -98,7 +98,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('GET', '/network/post', json.dumps({"text":"New Post Test Text"}))
+        response = c.generic('GET', '/post', json.dumps({"text":"New Post Test Text"}))
         # print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -106,7 +106,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         # print(response)
         self.assertEqual(response.status_code, 201)
 
@@ -117,7 +117,7 @@ class NetworkViewsTestCase(TestCase):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
 
-        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
+        response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
         # print(response)
         self.assertEqual(response.status_code, 400)
 
@@ -127,10 +127,10 @@ class NetworkViewsTestCase(TestCase):
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
 
-        response = c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text"}))
+        response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text"}))
         # print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/network/post") # todo - check: calls again after login?
+        self.assertEqual(response.url, "/login/?next=/post") # todo - check: calls again after login?
 
     # update_post
     def test_update_post_returns_an_error_for_post_that_does_not_exist(self):
@@ -138,7 +138,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         post_id = '100'
-        path = '/network/post/' + post_id
+        path = '/post/' + post_id
         response = c.generic('PUT', path, json.dumps({"text":"Updated Post Text"}))
         # print(response)
         self.assertEqual(response.status_code, 404)
@@ -148,13 +148,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/post/' + post_id
+        path = '/post/' + post_id
         updated_post_text = "Updated Post Text!!"
         response = c.generic('PUT', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -170,13 +170,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/post/' + post_id
+        path = '/post/' + post_id
         updated_post_text = "Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!"
         response = c.generic('PUT', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -187,13 +187,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # update the post text
         post_id = str(u1_posts[0].id)
-        path = '/network/post/' + post_id
+        path = '/post/' + post_id
         updated_post_text = "Updated Post Text!!"
         response = c.generic('GET', path, json.dumps({"text":updated_post_text}))
         # print(response)
@@ -209,7 +209,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         post_id = '100'
-        path = '/network/like/' + post_id
+        path = '/like/' + post_id
         response = c.generic('PUT', path)
         # print(response)
         self.assertEqual(response.status_code, 404)
@@ -219,13 +219,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # like the post 
         post_id = str(u1_posts[0].id)
-        path = '/network/like/' + post_id
+        path = '/like/' + post_id
 
         response = c.generic('GET', path)
         # print(response)
@@ -240,13 +240,13 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/network/post', json.dumps({"text":"New Post Test Text!!"}))
+        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
         # like the post 
         post_id = str(u1_posts[0].id)
-        path = '/network/like/' + post_id
+        path = '/like/' + post_id
 
         response = c.generic('PUT', path)
         # print(response)
@@ -259,7 +259,7 @@ class NetworkViewsTestCase(TestCase):
 
         # un-like the post 
         post_id = str(post.id)
-        path = '/network/like/' + post_id
+        path = '/like/' + post_id
 
         response = c.generic('PUT', path)
         # print(response)
@@ -276,7 +276,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # u1 follows 
-        path = '/network/follow/' + '100'
+        path = '/follow/' + '100'
         response = c.generic('POST', path)
 
         # print(response)
@@ -289,7 +289,7 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 follows u2
         user_id = str(u2.id)
-        path = '/network/follow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('GET', path)
         # print(response)
         self.assertEqual(response.status_code, 400)
@@ -305,7 +305,7 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 follows u2
         user_id = str(u2.id)
-        path = '/network/follow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('POST', path)
         # print(response)
         self.assertEqual(response.status_code, 201)
@@ -320,12 +320,12 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 follows u2
         user_id = str(u2.id)
-        path = '/network/follow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('POST', path)
 
         # u1 follows u2..
         user_id = str(u2.id)
-        path = '/network/follow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('POST', path)
 
         # print(response)
@@ -338,7 +338,7 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 follows u2
         user_id = str(u2.id)
-        path = '/network/unfollow/' + user_id
+        path = '/unfollow/' + user_id
         response = c.generic('GET', path)
         # print(response)
         self.assertEqual(response.status_code, 400)
@@ -356,7 +356,7 @@ class NetworkViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # u1 follows 
-        path = '/network/unfollow/' + '100'
+        path = '/unfollow/' + '100'
         response = c.generic('DELETE', path)
 
         # print(response)
@@ -369,12 +369,12 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 follows u2
         user_id = str(u2.id)
-        path = '/network/follow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('POST', path)
 
         # u1 unfollows u2..
         user_id = str(u2.id)
-        path = '/network/unfollow/' + user_id
+        path = '/unfollow/' + user_id
         response = c.generic('DELETE', path)
 
         # print(response)
@@ -390,13 +390,13 @@ class NetworkViewsTestCase(TestCase):
 
         # u1 unfollows u2..
         user_id = str(u2.id)
-        path = '/network/unfollow/' + user_id
+        path = '/unfollow/' + user_id
         response = c.generic('DELETE', path)
 
         # print(response)
         self.assertEqual(response.status_code, 400)
 
-
+    # test for is_following 1?
 
 
 class NetworkModelsTestCase(TestCase):
@@ -510,6 +510,13 @@ class NetworkModelsTestCase(TestCase):
         post.toggle_like(u2)
         post.toggle_like(u2)
         self.assertEqual(post.likes.count(), 0)
+
+    def test_post_toggle_like_returns_count(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        post = Post.objects.get(user=u1)
+        count = post.toggle_like(u2)
+        self.assertEqual(count, 1)
 
     def test_two_users_like_post_count(self):
         u1 = User.objects.get(username='Mike')

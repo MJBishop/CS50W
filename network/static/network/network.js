@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (follow_user_button) {
         follow_user_button.addEventListener('click', function(event) {
             console.log('follow-user-button click')
-            toggle_follow()
+            toggle_follow(follow_user_button)
         });
     }
     
@@ -241,6 +241,7 @@ function like_post(button) {
 
             // update
             button.innerHTML = "Likes " + data.likes;
+            // todo: update ui: like or not like
 
             // Present success alert - todo!
         }
@@ -256,8 +257,9 @@ function like_post(button) {
 
 }
 
-function toggle_follow() {
+function toggle_follow(button) {
     console.log('toggle_follow')
+    console.log(button.dataset.profile_id)
 
     // follow 
 

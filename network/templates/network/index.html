@@ -7,7 +7,7 @@
         <div id="profile-view">
 
             {% if user.is_authenticated %}
-                <button class="btn btn-sm btn-outline-primary mt-2" id="follow-user-button">Follow</button>
+                <button class="btn btn-sm btn-outline-primary mt-2" id="follow-user-button" data-profile_id="{{ profile.id }}">Follow</button>
             {% endif %}
         </div>
     {% endif %}

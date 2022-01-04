@@ -64,7 +64,8 @@ def profile(request, user_id):
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
-            "profile":profile
+            "profile": profile,
+            # following?
         })
     else:
         return HttpResponseRedirect(reverse("index"))
