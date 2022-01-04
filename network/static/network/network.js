@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    
 });
 
   
@@ -61,11 +60,28 @@ function save_new_post() {
             text: document.querySelector('#new-post-text').value
         })
     })
-    // catch json response!!?
     .then(response => response.json())
     .then(data => {
         // Log data to the console
         console.log(data);
+        
+        if (data.error) {
+
+            // Present general error alert - todo!
+
+        } 
+        else if (data.validation_error) {
+            // todo:
+            // !! stop removal of form !! - toggle?
+
+            // Present warning alert - todo!
+
+        }
+        else if (data.message) {
+            console.log("No errors")
+
+            // Present success alert - todo!
+        }
     })
 
     // Catch any errors and log them to the console
@@ -87,17 +103,21 @@ function update_post(post_id) {
 
     if (post_id) {
         let elem = document.getElementById(post_id);
-        var post_text = elem.querySelector("#post_text");
-        var text = post_text.innerText
 
-        // swap in text area
+        // 
+        var post_text = elem.querySelector("#post-text");
+        var text = post_text.innerText
+        post_text.hidden = true;
+
+        // create text area
         const text_area = document.createElement('textarea');
         text_area.classList.add('form-control');
         text_area.setAttribute('id', 'update-post-text');
         // populate with text
         text_area.value = text;
-        post_text.innerHTML = '';
-        post_text.append(text_area);
+        // append to post-text-div
+        var post_text_div = elem.querySelector("#post-text-div");
+        post_text_div.append(text_area);
 
         // hide update-post-button
         var post_buttons = elem.querySelector("#post-buttons");
@@ -114,39 +134,17 @@ function update_post(post_id) {
         });
 
         // append save button inside div
-        const div = document.createElement('div')
-        div.setAttribute('id', 'save-updated-post-div');
-        div.append(save_updated_post_button);
-        elem.append(div);
+        const button_div = document.createElement('div')
+        button_div.setAttribute('id', 'save-updated-post-div');
+        button_div.append(save_updated_post_button);
+        elem.append(button_div);
 
     }
 }
 
 function save_updated_post(post_id) {
-    // console.log('save_updated_post')
-
-    // todo:
-    // check for changed post text?
-
-    // swap in submit button
-    // console.log(post_id)
-
+    
     var new_text = document.querySelector('#update-post-text').value
-
-    if (post_id) {
-        let elem = document.getElementById(post_id);
-        var post_text = elem.querySelector("#post_text");
-        post_text.innerText = new_text
-
-        // hide update-post-button
-        var post_buttons = elem.querySelector("#post-buttons");
-        post_buttons.hidden = false;
-
-        // append save button inside div
-        const div = document.getElementById('save-updated-post-div');
-        div.remove();
-
-    } // when db completes! - todo!!
 
     // Save the new Post
     const path = '/post/' + post_id;
@@ -156,7 +154,32 @@ function save_updated_post(post_id) {
             text: new_text
         })
     })
-    // catch json response!!?
+    .then(response => response.json())
+    .then(data => {
+        // Log data to the console
+        console.log(data);
+
+        if (data.error) {
+            
+            // end editing post - original text
+            end_editing_post(post_id, null)
+
+            // Present general error alert - todo!
+
+        } 
+        else if (data.validation_error) {
+
+            // Present warning alert - todo!
+
+        }
+        else if (data.message) {
+
+            // end editing post - new_text
+            end_editing_post(post_id, new_text);
+
+            // Present success alert - todo!
+        }
+    })
 
     // Catch any errors and log them to the console
     .catch(error => {
@@ -165,6 +188,31 @@ function save_updated_post(post_id) {
 
     // Prevent default submission
     return false;
+}
+
+function end_editing_post(post_id, new_text) {
+
+    // unhide Post text
+    let elem = document.getElementById(post_id);
+    var post_text = elem.querySelector("#post-text");
+    post_text.hidden = false;
+
+    // Update Post text
+    if (new_text) {
+        post_text.innerText = new_text
+    }
+
+    // remove textarea
+    var textarea = elem.querySelector("#update-post-text");
+    textarea.remove();
+
+    // show post-buttons
+    var post_buttons = elem.querySelector("#post-buttons");
+    post_buttons.hidden = false;
+
+    // remove save button div
+    const div = document.getElementById('save-updated-post-div');
+    div.remove();
 }
 
 function like_post() {
