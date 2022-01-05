@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.core.exceptions import ValidationError
 
 
-MAX_POST_LENGTH = 200
+MAX_POST_LENGTH = 2
 
 class User(AbstractUser):
     pass
@@ -39,7 +39,12 @@ class FollowManager(models.Manager):
     
     def isFollowing(self, from_user, to_user):
         '''
-        
+        Checks if a User is following a User
+
+        from_user (User): The User initiating the follow
+        to_user (User): The User being followed
+
+        Return: BOOL
         '''
         return self.filter(from_user=from_user, to_user=to_user).exists()
 

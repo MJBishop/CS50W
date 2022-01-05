@@ -286,6 +286,8 @@ function toggle_follow(button) {
                 // update button
                 button.dataset.following = "";
                 button.innerText = "Follow";
+                button.classList.add('btn-outline-primary');
+                button.classList.remove('btn-primary');
 
                 // Present success alert - todo!
             }
@@ -322,7 +324,9 @@ function toggle_follow(button) {
 
                 // update button
                 button.dataset.following = "following";
-                button.innerText = "Unfollow";
+                button.innerText = "Following";
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-primary');
 
                 // Present success alert - todo!
             }
