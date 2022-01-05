@@ -464,6 +464,12 @@ class NetworkModelsTestCase(TestCase):
         following = Follow.objects.isFollowing(u2, u1)
         self.assertEqual(following, False)
 
+    def test_isFollowing_returns_true_when_following(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        following = Follow.objects.isFollowing(u1, u2)
+        self.assertEqual(following, True)
+
     # Post tests
     def test_post_string(self):
         u1 = User.objects.get(username='Mike')
