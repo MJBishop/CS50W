@@ -36,6 +36,12 @@ class FollowManager(models.Manager):
             unfollow.delete()
         else:
             raise Exception(f'Error: {from_user} is not following {to_user}')
+    
+    def isFollowing(self, from_user, to_user):
+        '''
+        
+        '''
+        return self.filter(from_user=from_user, to_user=to_user).exists()
 
 class Follow(models.Model):
     from_user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='following')

@@ -62,10 +62,13 @@ def profile(request, user_id):
         paginator = Paginator(posts, 10)
         page_obj = paginator.get_page(page)
 
+        # todo - is_following!!!
+
+
         return render(request, "network/index.html", {
             "page_obj": page_obj,
             "profile": profile,
-            # following?
+            "following": False 
         })
     else:
         return HttpResponseRedirect(reverse("index"))
@@ -139,6 +142,7 @@ def like_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
 
 
+@csrf_exempt
 @login_required
 def follow(request, user_id):
 
@@ -161,6 +165,7 @@ def follow(request, user_id):
         return JsonResponse({"message": "New Follow successful."}, status=201)
 
 
+@csrf_exempt
 @login_required
 def unfollow(request, user_id):
     

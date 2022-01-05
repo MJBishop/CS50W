@@ -261,10 +261,77 @@ function toggle_follow(button) {
     console.log('toggle_follow')
     console.log(button.dataset.profile_id)
 
-    // follow 
+    var profile_id = button.dataset.profile_id;
 
+    if (button.dataset.following) {
+        // unfollow
 
-    // unfollow
+        const path = '/unfollow/' + profile_id;
+        fetch(path, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Log data to the console
+            console.log(data);
 
+            if (data.error) {
+                
+                // 
+
+                // Present general error alert - todo!
+
+            } 
+            else if (data.message) {
+
+                // update
+
+                // Present success alert - todo!
+            }
+        })
+
+        // Catch any errors and log them to the console
+        .catch(error => {
+            console.log('Error:', error);
+        });
+
+        // Prevent default submission
+        return false;
+    }
+    else {
+        // follow 
+
+        const path = '/follow/' + profile_id;
+        fetch(path, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Log data to the console
+            console.log(data);
+
+            if (data.error) {
+                
+                // 
+
+                // Present general error alert - todo!
+
+            } 
+            else if (data.message) {
+
+                // update
+
+                // Present success alert - todo!
+            }
+        })
+
+        // Catch any errors and log them to the console
+        .catch(error => {
+            console.log('Error:', error);
+        });
+
+        // Prevent default submission
+        return false;
+    }
 }
   

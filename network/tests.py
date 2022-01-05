@@ -54,7 +54,7 @@ class ViewsTestCase(TestCase):
         response = c.get('/following')
         # print(response)
         self.assertEqual(response.status_code, 302)
-        
+
     def test_profile(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
@@ -456,6 +456,13 @@ class NetworkModelsTestCase(TestCase):
         u2 = User.objects.get(username='James')
         follow = Follow.objects.create_follow(u2, u1)
         self.assertEqual(follow.__str__(), "James is following Mike")
+
+    
+    def test_isFollowing_returns_false_when_not_following(self):
+        u1 = User.objects.get(username='Mike')
+        u2 = User.objects.get(username='James')
+        following = Follow.objects.isFollowing(u2, u1)
+        self.assertEqual(following, False)
 
     # Post tests
     def test_post_string(self):

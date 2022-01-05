@@ -6,8 +6,8 @@
     {% if profile %}
         <div id="profile-view">
 
-            {% if user.is_authenticated %}
-                <button class="btn btn-sm btn-outline-primary mt-2" id="follow-user-button" data-profile_id="{{ profile.id }}">Follow</button>
+            {% if user.is_authenticated and user.id != profile.id %}
+                <button class="btn btn-sm btn-outline-primary mt-2" id="follow-user-button" data-profile_id="{{ profile.id }}" data-following="{{ following }}">{% if following %}Unfollow{% else %}Follow{% endif %}</button>
             {% endif %}
         </div>
     {% endif %}
@@ -18,7 +18,8 @@
         {% for post in page_obj %}
             <div id="{{ post.id }}" class="card mb-4 bg-transparent text-center">
                 <div class="card-body">
-                    <button class="btn btn-sm btn-outline-primary mt-2" type="submit">{{ post.user.username }}</button>
+                    <!-- <button class="btn btn-sm btn-outline-primary mt-2" type="submit" id="user-profile-button" data-user_id="{{ post.user.id }}">{{ post.user.username }}</button> -->
+                    Posted by <a href="/profile/{{ post.user.id }}">{{ post.user.username }}</a> on {{ post.date_created }}
                     <div id="post-text-div">
                         <div id="post-text">{{ post.text }}</div>
                     </div>
