@@ -62,13 +62,14 @@ def profile(request, user_id):
         paginator = Paginator(posts, 10)
         page_obj = paginator.get_page(page)
 
-        # todo - is_following!!!
-
+        following = Follow.objects.isFollowing(request.user, profile)
+        str_following = ""
+        if following: str_following = "following"
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
             "profile": profile,
-            "following": False 
+            "following": str_following, 
         })
     else:
         return HttpResponseRedirect(reverse("index"))

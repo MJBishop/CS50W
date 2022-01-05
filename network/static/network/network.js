@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             save_new_post()
         });
     }
-    
 
     document.querySelectorAll('#update-post-button').forEach(function(button) {
         button.onclick = function() {
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('#like-post-button').forEach(function(button) {
         button.onclick = function() {
-            console.log('like-post-button click')
+            console.log('like-post-button click') // not working for other users posts
             like_post(button)
         }
     });
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var follow_user_button = document.querySelector('#follow-user-button');
     if (follow_user_button) {
         follow_user_button.addEventListener('click', function(event) {
-            console.log('follow-user-button click')
+            console.log('follow-user-button click') // not working for BOOL
             toggle_follow(follow_user_button)
         });
     }
@@ -263,7 +262,7 @@ function toggle_follow(button) {
 
     var profile_id = button.dataset.profile_id;
 
-    if (button.dataset.following) {
+    if (button.dataset.following === "following") {
         // unfollow
 
         const path = '/unfollow/' + profile_id;
@@ -284,7 +283,9 @@ function toggle_follow(button) {
             } 
             else if (data.message) {
 
-                // update
+                // update button
+                button.dataset.following = "";
+                button.innerText = "Follow";
 
                 // Present success alert - todo!
             }
@@ -319,7 +320,9 @@ function toggle_follow(button) {
             } 
             else if (data.message) {
 
-                // update
+                // update button
+                button.dataset.following = "following";
+                button.innerText = "Unfollow";
 
                 // Present success alert - todo!
             }
