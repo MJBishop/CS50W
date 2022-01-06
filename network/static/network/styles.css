@@ -1,8 +1,19 @@
 
+/* newpost.html 
+********************************/
+#new-post-view {
+    margin-top: 10px;
+}
+
 /* index.html 
 ********************************/
-#update-post-button {
+#update-post-button, #follow-user-button {
     float: right;
+}
+
+#page-heading {
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 
 /* network.js 

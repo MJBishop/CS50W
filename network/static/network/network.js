@@ -170,6 +170,9 @@ function update_post(post_id) {
 
 function save_updated_post(post_id) {
     
+    // todo - check for changes to post text
+
+    
     var new_text = document.querySelector('#update-post-text').value
 
     // Save the new Post
