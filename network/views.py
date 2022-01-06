@@ -18,7 +18,8 @@ from .models import User, Post, Follow, MAX_POST_LENGTH
 def index(request):
 
     # fetch all posts
-    posts = Post.objects.posts_from_all_users()
+    posts = Post.objects.posts_from_all_users() #annotate likes?
+                        
 
     # page_obj (Paginator)
     page = request.GET.get('page', 1)
@@ -62,9 +63,9 @@ def profile(request, user_id):
         paginator = Paginator(posts, 10)
         page_obj = paginator.get_page(page)
 
-        following = Follow.objects.isFollowing(request.user, profile)
+        #
         str_following = ""
-        if following: str_following = "following"
+        if Follow.objects.isFollowing(request.user, profile): str_following = "following"
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
@@ -163,7 +164,8 @@ def follow(request, user_id):
     except:
         return JsonResponse({"error": f'{request.user} is already following {user_to_follow}'}, status=400)
     else:
-        return JsonResponse({"message": "New Follow successful."}, status=201)
+        return JsonResponse({"message": "New Follow successful.", "followers":user_to_follow.followers.count()}, status=201)
+        # just return the count form the mdel call?
 
 
 @csrf_exempt
@@ -186,7 +188,7 @@ def unfollow(request, user_id):
     except:
         return JsonResponse({"error": f'{request.user} is not following {user_to_unfollow}'}, status=400)
     else:
-        return JsonResponse({"message": "Unfollow successful."}, status=201)
+        return JsonResponse({"message": "Unfollow successful.", "followers":user_to_unfollow.followers.count()}, status=201)
 
 
 def login_view(request):

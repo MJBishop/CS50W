@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('like-post-button click') // not working for other users posts
             like_post(button)
         }
+        // if post in user.liked_posts
     });
 
     var follow_user_button = document.querySelector('#follow-user-button');
@@ -124,7 +125,7 @@ function update_post(post_id) {
 
         // create new save button
         const save_updated_post_button = document.createElement('button');
-        save_updated_post_button.classList.add('btn', 'btn-sm', 'btn-outline-primary', 'mt-2');
+        save_updated_post_button.classList.add('btn', 'btn-sm', 'btn-primary', 'mt-2');
         save_updated_post_button.setAttribute('id', 'save-updated-post-button');
         save_updated_post_button.setAttribute('data-post_id', post_id);
         save_updated_post_button.textContent = 'Save'
@@ -261,6 +262,7 @@ function toggle_follow(button) {
     console.log(button.dataset.profile_id)
 
     var profile_id = button.dataset.profile_id;
+    const followers_count_div = document.getElementById('followers-count-div');
 
     if (button.dataset.following === "following") {
         // unfollow
@@ -288,6 +290,9 @@ function toggle_follow(button) {
                 button.innerText = "Follow";
                 button.classList.add('btn-outline-primary');
                 button.classList.remove('btn-primary');
+
+                // update count
+                followers_count_div.innerText = data.followers + " followers"
 
                 // Present success alert - todo!
             }
@@ -327,6 +332,9 @@ function toggle_follow(button) {
                 button.innerText = "Following";
                 button.classList.remove('btn-outline-primary');
                 button.classList.add('btn-primary');
+
+                // update count
+                followers_count_div.innerText = data.followers + " followers"
 
                 // Present success alert - todo!
             }

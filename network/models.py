@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.core.exceptions import ValidationError
 
 
-MAX_POST_LENGTH = 2
+MAX_POST_LENGTH = 200
 
 class User(AbstractUser):
     pass
