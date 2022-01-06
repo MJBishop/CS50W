@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('DOM ready')
 
+    // Show New Post Form
     var new_post_button = document.querySelector('#new-post-button')
     if (new_post_button) {
         new_post_button.addEventListener('click', function(event) {
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Save New Post
     var save_post_button = document.querySelector('#save-post-button')
     if (save_post_button) {
         save_post_button.addEventListener('click', function(event) {
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Update Post
     document.querySelectorAll('#update-post-button').forEach(function(button) {
         button.onclick = function() {
             // console.log('update-post-button click')
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Like Post
     document.querySelectorAll('#like-post-button').forEach(function(button) {
         button.onclick = function() {
             console.log('like-post-button click') // not working for other users posts
@@ -38,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // if post in user.liked_posts
     });
 
+    // Follow User
     var follow_user_button = document.querySelector('#follow-user-button');
     if (follow_user_button) {
         follow_user_button.addEventListener('click', function(event) {
