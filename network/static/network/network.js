@@ -26,12 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Update Post
-    document.querySelectorAll('#update-post-button').forEach(function(button) {
-        button.onclick = function() {
-            // console.log('update-post-button click')
-            update_post(button.dataset.post_id)
-        }
-    });
+    enable_all_edit_buttons();
 
     // Like Post
     document.querySelectorAll('#like-post-button').forEach(function(button) {
@@ -52,6 +47,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 });
+
+function editing_edit_buttons(post_id) {
+    document.querySelectorAll('#update-post-button').forEach(function(button) {
+        button.onclick = function() {
+            // console.log('update-post-button click')
+            end_editing_post(post_id, null);
+            update_post(button.dataset.post_id)
+        }
+    });
+}
+function enable_all_edit_buttons() {
+    document.querySelectorAll('#update-post-button').forEach(function(button) {
+        button.onclick = function() {
+            // console.log('update-post-button click')
+            update_post(button.dataset.post_id)
+        }
+    });
+}
 
   
 function save_new_post() {
@@ -139,10 +152,18 @@ function update_post(post_id) {
         });
 
         // append save button inside div
-        const button_div = document.createElement('div')
-        button_div.setAttribute('id', 'save-updated-post-div');
-        button_div.append(save_updated_post_button);
-        elem.append(button_div);
+        const button_col_div = document.createElement('div')
+        button_col_div.classList.add('col-12');
+        button_col_div.append(save_updated_post_button);
+
+        const button_row_div = document.createElement('div')
+        button_row_div.classList.add('row');
+        button_row_div.setAttribute('id', 'save-updated-post-div');
+        button_row_div.append(button_col_div);
+        elem.append(button_row_div);
+
+        // disable editing buttons
+        editing_edit_buttons(post_id);
 
     }
 }
@@ -218,6 +239,10 @@ function end_editing_post(post_id, new_text) {
     // remove save button div
     const div = document.getElementById('save-updated-post-div');
     div.remove();
+
+
+    // enable all editing buttons
+    enable_all_edit_buttons();
 }
 
 function like_post(button) {

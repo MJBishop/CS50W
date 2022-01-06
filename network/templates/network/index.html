@@ -37,32 +37,37 @@
     {% endif %}
 
     <div id="post-list">
-        <!-- <h3 id="post-list-heading">All Posts</h3>  -->
-        
-        {% for post in page_obj %}
-            <div id="{{ post.id }}" class="card mb-4 bg-transparent text-center">
-                <div class="card-body">
-                    Posted by <a href="/profile/{{ post.user.id }}">{{ post.user.username }}</a> on {{ post.date_created }}
-                    <div id="post-text-div">
-                        <div id="post-text">{{ post.text }}</div>
-                    </div>
-                    <div id="post-buttons" class="row">
-                        <div id="update-post-div" class="col-md-6">
-                            {% if user.is_authenticated and user == post.user %}
-                                <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-post_id="{{ post.id }}">Edit</button>
-                            {% endif %}
+        <h3 id="post-list-heading">{{ heading }}</h3> 
+        <div class="card-column col-lg-12">
+
+            {% for post in page_obj %}
+                <div id="{{ post.id }}" class="card mb-4 bg-transparent">
+                    <div class="card-body">
+                        <a href="/profile/{{ post.user.id }}">{{ post.user.username }}</a>
+                        <div id="post-text-div">
+                            <div id="post-text" class="card-text">{{ post.text }}</div>
                         </div>
-                        <div class="col-md-6">
-                            {% if user.is_authenticated %}
-                                <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-post_id="{{ post.id }}">Likes {{ post.like_count }}</button>
-                            {% else %}
-                                <button class="btn btn-sm btn-outline-secondary mt-2" disabled>Likes {{ post.like_count }}</button>
-                            {% endif %}
+                        
+                        <div id="post-buttons" class="row">
+                            <div class="text-muted col-lg-12">{{ post.date_created }}</div>
+                            <div class="col-6">
+                                {% if user.is_authenticated %}
+                                    <button class="btn btn-sm btn-outline-primary mt-2" id="like-post-button" data-post_id="{{ post.id }}">Likes {{ post.like_count }}</button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary mt-2" disabled>Likes {{ post.like_count }}</button>
+                                {% endif %}
+                            </div>
+                            <div id="update-post-div" class="col-6">
+                                {% if user.is_authenticated and user == post.user %}
+                                    <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-post_id="{{ post.id }}">Edit</button>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+
+        </div>
 
     </div>
 

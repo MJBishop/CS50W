@@ -29,6 +29,7 @@ def index(request):
 
     return render(request, "network/index.html", {
         "page_obj": page_obj,
+        "heading":"All Posts",
     })
 
 @login_required
@@ -45,6 +46,7 @@ def following(request):
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
+            "heading":"Following",
         })
     else:
         return HttpResponseRedirect(reverse("index"))
@@ -71,6 +73,7 @@ def profile(request, user_id):
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
+            "heading": profile.username,
             "profile": profile,
             "following": str_following, 
         })
