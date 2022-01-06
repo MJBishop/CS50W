@@ -18,7 +18,7 @@ from .models import User, Post, Follow, MAX_POST_LENGTH
 def index(request):
 
     # fetch all posts
-    posts = Post.objects.posts_from_all_users() #annotate likes?
+    posts = Post.objects.posts_from_all_users() #annotate liked?
                         
 
     # page_obj (Paginator)
@@ -65,7 +65,8 @@ def profile(request, user_id):
 
         #
         str_following = ""
-        if Follow.objects.isFollowing(request.user, profile): str_following = "following"
+        if request.user.is_authenticated:
+            if Follow.objects.isFollowing(request.user, profile): str_following = "following"
 
         return render(request, "network/index.html", {
             "page_obj": page_obj,
