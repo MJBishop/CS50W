@@ -292,7 +292,7 @@ function toggle_follow(button) {
                 button.classList.remove('btn-primary');
 
                 // update count
-                followers_count_div.innerText = data.followers + " followers"
+                followers_count_div.innerText = "followers " + data.followers
 
                 // Present success alert - todo!
             }
@@ -334,7 +334,7 @@ function toggle_follow(button) {
                 button.classList.add('btn-primary');
 
                 // update count
-                followers_count_div.innerText = data.followers + " followers"
+                followers_count_div.innerText = "followers " + data.followers
 
                 // Present success alert - todo!
             }
