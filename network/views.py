@@ -127,7 +127,6 @@ def update_post(request, post_id):
             try:
                 post.update(request.user, post_text)
             except ValidationError as e:
-                print(e)
                 return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
             else:
                 return JsonResponse({"message": "Post update successful."}, status=201)
