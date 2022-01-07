@@ -7,9 +7,13 @@
 
 /* index.html 
 ********************************/
-#update-post-button, #follow-user-button {
+#update-post-button {
     float: right;
 }
+
+/* #follow-user-button {
+    margin-top: 25px;
+} */
 
 #page-heading {
     margin-top: 25px;
