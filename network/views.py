@@ -66,7 +66,7 @@ def profile(request, user_id):
         paginator = Paginator(posts, 10)
         page_obj = paginator.get_page(page)
 
-        #
+        # Following profile?
         str_following = ""
         if request.user.is_authenticated:
             if Follow.objects.isFollowing(request.user, profile): str_following = "following"
@@ -92,13 +92,17 @@ def new_post(request):
     data = json.loads(request.body)
     post_text = data.get("text", "")
 
-    # Create the Post
-    try:
-        Post.objects.create_post(request.user, post_text)
-    except ValidationError:
-        return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+    if post_text == "":
+            return JsonResponse({"validation_error": f"Post cannot be empty"}, status=400) #validation error?
     else:
-        return JsonResponse({"message": "New Post successful."}, status=201)
+        # Create the Post
+        try:
+            Post.objects.create_post(request.user, post_text)
+        except ValidationError:
+            return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        else:
+            return JsonResponse({"message": "New Post successful."}, status=201)
+    
 
 
 @csrf_exempt
@@ -116,13 +120,17 @@ def update_post(request, post_id):
         data = json.loads(request.body)
         post_text = data.get("text", "")
 
-        # Update the Post
-        try:
-            post.update(request.user, post_text)
-        except ValidationError:
-            return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+        if post_text == "":
+            return JsonResponse({"validation_error": f"Post cannot be empty"}, status=400) #validation error?
         else:
-            return JsonResponse({"message": "Post update successful."}, status=201)
+            # Update the Post
+            try:
+                post.update(request.user, post_text)
+            except ValidationError as e:
+                print(e)
+                return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
+            else:
+                return JsonResponse({"message": "Post update successful."}, status=201)
     
     # Update must be via PUT
     else:

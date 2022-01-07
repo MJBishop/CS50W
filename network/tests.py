@@ -132,6 +132,17 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/post") # todo - check: calls again after login?
 
+    def test_new_post_fails_for_empty_post_text(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.generic('POST', '/post', json.dumps({"text":""}))
+        # print(response)
+        self.assertEqual(response.status_code, 400)
+
+        u1 = User.objects.get(username='testuser')
+        self.assertEqual(u1.posts.count(), 0)
+
     # update_post
     def test_update_post_returns_an_error_for_post_that_does_not_exist(self):
         c = Client()
