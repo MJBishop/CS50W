@@ -16,6 +16,10 @@
     margin-bottom: 20px;
 }
 
+#followers-count-div {
+    padding-bottom: 10px;
+}
+
 /* network.js 
 ********************************/
 #save-updated-post-button {
