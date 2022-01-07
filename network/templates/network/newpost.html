@@ -8,21 +8,19 @@
         {% if user.is_authenticated %}
             <div id="new-post-view" class="card-column col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                        <button id="new-post-button" data-toggle-id="new-post" class="btn btn-sm btn-outline-primary mt-2">New Post</button>
-                    </div>
-                </div>
-                <div class="card" id="new-post" hidden>
-                    <!-- new-post-form -->
-                    <form id="new-post-form">
-                        <div class="card-body">
-                            <textarea class="form-control" id="new-post-text" value="{{ post.text | default:'' }}"></textarea>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <input type="submit" class="btn btn-primary" id="save-post-button" data-action="save_post"></input>
-                        </div>
-                    </form>
-                    <!-- new-post-form end -->
+                        <form action="{% url 'new_post' %}" method="post">
+                            <div class="row card-body">
+                                {% csrf_token %}
+                                {{ post_form }}
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                        <button type="submit" class="btn btn-primary form-control mx-auto my-1">Post</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                 </div>
             </div>  
         {% endif %}

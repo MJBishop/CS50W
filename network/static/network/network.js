@@ -2,36 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('DOM ready')
 
-    // Show New Post Form
-    var new_post_button = document.querySelector('#new-post-button')
-    if (new_post_button) {
-        new_post_button.addEventListener('click', function(event) {
-            // console.log('new-post-button click')
-    
-            let toggleId = event.target.dataset.toggleId;
-            if (toggleId) {
-                let elem = document.getElementById(toggleId);
-                elem.hidden = !elem.hidden;
-            }
-        });
-    }
-    
-    // Save New Post
-    var save_post_button = document.querySelector('#save-post-button')
-    if (save_post_button) {
-        save_post_button.addEventListener('click', function(event) {
-            // console.log('save-post-button click')
-            save_new_post()
-        });
-    }
-
     // Update Post
     enable_all_edit_buttons();
 
     // Like Post
     document.querySelectorAll('#like-post-button').forEach(function(button) {
         button.onclick = function() {
-            console.log('like-post-button click') // not working for other users posts
+            // console.log('like-post-button click') 
             like_post(button)
         }
         // if post in user.liked_posts
@@ -41,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var follow_user_button = document.querySelector('#follow-user-button');
     if (follow_user_button) {
         follow_user_button.addEventListener('click', function(event) {
-            console.log('follow-user-button click') // not working for BOOL
+            // console.log('follow-user-button click') 
             toggle_follow(follow_user_button)
         });
     }
@@ -57,6 +34,7 @@ function editing_edit_buttons(post_id) {
         }
     });
 }
+
 function enable_all_edit_buttons() {
     document.querySelectorAll('#update-post-button').forEach(function(button) {
         button.onclick = function() {
@@ -66,58 +44,10 @@ function enable_all_edit_buttons() {
     });
 }
 
-  
-function save_new_post() {
-    // console.log('save_post')
-    
-    // Save the new Post
-    const path = '/post';
-    fetch(path, {
-        method: 'POST',
-        body: JSON.stringify({
-            text: document.querySelector('#new-post-text').value
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Log data to the console
-        console.log(data);
-        
-        if (data.error) {
-
-            // Present general error alert - todo!
-
-        } 
-        else if (data.validation_error) {
-            // todo:
-            // !! stop removal of form !! - toggle?
-
-            // Present warning alert - todo!
-
-        }
-        else if (data.message) {
-            console.log("No errors")
-
-            // Present success alert - todo!
-        }
-    })
-
-    // Catch any errors and log them to the console
-    .catch(error => {
-        console.log('Error:', error);
-    });
-
-    // Prevent default submission
-    return false;
-}
 
 function update_post(post_id) {
     // console.log('update_post')
     // console.log(post_id)
-
-    // todo:
-    // disable other buttons
-    // disallow multiple edits
 
     if (post_id) {
         let elem = document.getElementById(post_id);

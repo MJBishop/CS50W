@@ -12,15 +12,21 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt #best way??
 # from django.db.models import Count, Case, When, BooleanField
+from django.forms import ModelForm
 
 from .models import User, Post, Follow, MAX_POST_LENGTH
+
+
+class NewPostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        exclude = ['user', 'likes', 'date_created']
 
 
 def index(request):
 
     # fetch all posts
     posts = Post.objects.posts_from_all_users() #annotate liked?
-                        
 
     # page_obj (Paginator)
     page = request.GET.get('page', 1)
@@ -28,6 +34,7 @@ def index(request):
     page_obj = paginator.get_page(page)
 
     return render(request, "network/index.html", {
+        "post_form": NewPostForm(),
         "page_obj": page_obj,
         "heading":"All Posts",
     })
@@ -45,6 +52,7 @@ def following(request):
         page_obj = paginator.get_page(page)
 
         return render(request, "network/index.html", {
+            "post_form": NewPostForm(),
             "page_obj": page_obj,
             "heading":"Following",
         })
@@ -72,6 +80,7 @@ def profile(request, user_id):
             if Follow.objects.isFollowing(request.user, profile): str_following = "following"
 
         return render(request, "network/index.html", {
+            "post_form": NewPostForm(),
             "page_obj": page_obj,
             "heading": profile.username,
             "profile": profile,
@@ -80,29 +89,20 @@ def profile(request, user_id):
     else:
         return HttpResponseRedirect(reverse("index"))
 
-@csrf_exempt
+# @csrf_exempt
 @login_required
 def new_post(request):
 
-    # Creating a new post must be via POST
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
+    if request.method == "POST":
+        form = NewPostForm(request.POST)
 
-    # Unpack Post text from request.body
-    data = json.loads(request.body)
-    post_text = data.get("text", "")
-
-    if post_text == "":
-            return JsonResponse({"validation_error": f"Post cannot be empty"}, status=400) #validation error?
-    else:
-        # Create the Post
-        try:
+        # validate form
+        if form.is_valid():
+            post_text = form.cleaned_data["text"]
             Post.objects.create_post(request.user, post_text)
-        except ValidationError:
-            return JsonResponse({"validation_error": f"Post should be {MAX_POST_LENGTH} characters or less"}, status=400)
-        else:
-            return JsonResponse({"message": "New Post successful."}, status=201)
+        # else?
     
+    return HttpResponseRedirect(reverse("index"))
 
 
 @csrf_exempt
