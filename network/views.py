@@ -153,8 +153,8 @@ def like_post(request, post_id):
 
     # toggle post like for user
     if request.method == "PUT":
-        like_count = post.toggle_like(user=request.user)
-        return JsonResponse({"message": "Post update successful.", "likes": like_count}, status=201)
+        like_count, liked = post.toggle_like(user=request.user)
+        return JsonResponse({"message": "Post update successful.", "likes": like_count, "liked": liked}, status=201)
 
     # Update must be via PUT
     else:

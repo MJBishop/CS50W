@@ -202,12 +202,18 @@ function like_post(button) {
         } 
         else if (data.message) {
 
-            // update
+            // update like count
             button.innerHTML = "Likes " + data.likes;
 
-            // todo: update ui: like or not like
-            button.classList.remove('btn-outline-primary');
-            button.classList.add('btn-primary');
+            // Update UI: liked or unliked
+            if (data.liked === 'liked') {
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-primary');
+            } 
+            else {
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-outline-primary');
+            }
 
             // Present success alert - todo!
         }

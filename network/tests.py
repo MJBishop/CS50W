@@ -527,12 +527,13 @@ class NetworkModelsTestCase(TestCase):
         post.toggle_like(u2)
         self.assertEqual(post.likes.count(), 0)
 
-    def test_post_toggle_like_returns_count(self):
+    def test_post_toggle_like_returns_count_and_liked(self):
         u1 = User.objects.get(username='Mike')
         u2 = User.objects.get(username='James')
         post = Post.objects.get(user=u1)
-        count = post.toggle_like(u2)
+        count, liked = post.toggle_like(u2)
         self.assertEqual(count, 1)
+        self.assertEqual(liked, 'liked')
 
     def test_two_users_like_post_count(self):
         u1 = User.objects.get(username='Mike')

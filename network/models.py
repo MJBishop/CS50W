@@ -159,8 +159,10 @@ class Post(models.Model):
 
         Return: Post
         '''
+        liked = ''
         if not user.liked_posts.filter(pk=self.id).exists():
             self.likes.add(user)
+            liked = 'liked'
         else:
             self.likes.remove(user)
-        return self.likes.count()
+        return self.likes.count(), liked
