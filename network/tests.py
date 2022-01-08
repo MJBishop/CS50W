@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from .models import User, Follow, Post
+from .views import NewPostForm
 
 
 # Create your tests here.
@@ -20,6 +21,24 @@ class ViewsTestCase(TestCase):
         user2.set_password('54321')
         user2.save()
 
+    # NewPostForm
+    def test_valid_newpost_form_data(self):
+        form = NewPostForm({
+            'text': "Hello World!",
+        })
+        self.assertTrue(form.is_valid())
+        post_text = form.cleaned_data["text"]
+        self.assertEqual(post_text, "Hello World!")
+
+    def test_blank_newpost_form_data(self):
+        form = NewPostForm({
+            'text': "",
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            'text': ['This field is required.'],
+        })
+
     # index tests
     def test_index(self):
         c = Client()
@@ -29,6 +48,9 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
+
+    # def test_POST_new_post_form_to_index(self):
+
 
     def test_following_PUT_reverse_to_index(self):
         c = Client()
@@ -54,6 +76,8 @@ class ViewsTestCase(TestCase):
         response = c.get('/following')
         # print(response)
         self.assertEqual(response.status_code, 302)
+
+    # def test_POST_new_post_form_to_following(self):
 
     def test_profile(self):
         c = Client()
@@ -91,6 +115,8 @@ class ViewsTestCase(TestCase):
         response = c.put(path)
         # print(response)
         self.assertEqual(response.status_code, 302)
+
+    # def test_POST_new_post_form_to_profile(self):
         
 
     # new_post

@@ -157,7 +157,7 @@ class Post(models.Model):
 
         user (User): The User liking/unliking the Post
 
-        Return: Post
+        Return: like count, str: 'liked' if user had liked post, empty string if user unliked post
         '''
         liked = ''
         if not user.liked_posts.filter(pk=self.id).exists():
