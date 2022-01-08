@@ -49,7 +49,15 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
-    # def test_POST_new_post_form_to_index(self):
+    # def test_POST_new_post_to_index(self):
+    #     c = Client()
+    #     logged_in = c.login(username='testuser', password='12345')
+
+    #     response = c.post("/", data={"text": "Hello World!"})
+    #     # print(response)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
+    #     self.assertEqual(response.context['page_obj'].object_list.count(), 1)
 
 
     def test_following_PUT_reverse_to_index(self):
@@ -160,7 +168,7 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
@@ -182,7 +190,7 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
@@ -199,7 +207,7 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
@@ -216,7 +224,7 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
@@ -248,7 +256,8 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        # c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 
@@ -269,7 +278,8 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        # c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+        response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)
 

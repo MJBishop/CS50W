@@ -31,16 +31,27 @@ class NewPostForm(forms.ModelForm):
 
 def index(request):
 
+    form = NewPostForm()
+    # if request.method == 'POST':
+    #     if request.user.is_authenticated:
+    #         form = NewPostForm(request.POST)
+
+    #         # validate form
+    #         if form.is_valid():
+    #             post_text = form.cleaned_data["text"]
+    #             Post.objects.create_post(request.user, post_text)
+    #             form = NewPostForm()
+
     # fetch all posts
-    posts = Post.objects.posts_from_all_users() #annotate liked?
+    posts = Post.objects.posts_from_all_users()
 
     # page_obj (Paginator)
-    page = request.GET.get('page', 1)
+    page = request.GET.get('page', 1) #problem here with request.GET ???
     paginator = Paginator(posts, 10)
     page_obj = paginator.get_page(page)
 
     return render(request, "network/index.html", {
-        "post_form": NewPostForm(),
+        "post_form": form,
         "page_obj": page_obj,
         "heading":"All Posts",
     })
