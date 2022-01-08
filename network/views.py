@@ -21,6 +21,12 @@ class NewPostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ['user', 'likes', 'date_created']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control mx-auto', 'placeholder': "New Post" }),
+        }
+        labels = {
+            'text': ''
+        }
 
 
 def index(request):

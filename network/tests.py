@@ -94,35 +94,20 @@ class ViewsTestCase(TestCase):
         
 
     # new_post
-    def test_new_post_fails_for_get(self):
-        c = Client()
-        logged_in = c.login(username='testuser', password='12345')
+    
 
-        response = c.generic('GET', '/post', json.dumps({"text":"New Post Test Text"}))
-        # print(response)
-        self.assertEqual(response.status_code, 400)
+    # def test_new_post(self):
+    #     c = Client()
+    #     logged_in = c.login(username='testuser', password='12345')
 
-    def test_new_post(self):
-        c = Client()
-        logged_in = c.login(username='testuser', password='12345')
+    #     response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
+    #     # print(response)
+    #     self.assertEqual(response.status_code, 201)
 
-        response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
-        # print(response)
-        self.assertEqual(response.status_code, 201)
+    #     u1 = User.objects.get(username='testuser')
+    #     self.assertEqual(u1.posts.count(), 1)
 
-        u1 = User.objects.get(username='testuser')
-        self.assertEqual(u1.posts.count(), 1)
-
-    def test_new_post_fails_for_post_text_greater_than_MAX_POST_LENGTH(self):
-        c = Client()
-        logged_in = c.login(username='testuser', password='12345')
-
-        response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!New Post Test Text!!"}))
-        # print(response)
-        self.assertEqual(response.status_code, 400)
-
-        u1 = User.objects.get(username='testuser')
-        self.assertEqual(u1.posts.count(), 0)
+    
 
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
@@ -132,16 +117,6 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/post") # todo - check: calls again after login?
 
-    def test_new_post_fails_for_empty_post_text(self):
-        c = Client()
-        logged_in = c.login(username='testuser', password='12345')
-
-        response = c.generic('POST', '/post', json.dumps({"text":""}))
-        # print(response)
-        self.assertEqual(response.status_code, 400)
-
-        u1 = User.objects.get(username='testuser')
-        self.assertEqual(u1.posts.count(), 0)
 
     # update_post
     def test_update_post_returns_an_error_for_post_that_does_not_exist(self):

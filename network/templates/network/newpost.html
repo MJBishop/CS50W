@@ -4,27 +4,25 @@
 {% block body %}
 
     <div class="container" id="new-post-view">
-        
+
         {% if user.is_authenticated %}
-            <div id="new-post-view" class="card-column col-lg-12">
-                <div class="card">
-                        <form action="{% url 'new_post' %}" method="post">
-                            <div class="row card-body">
+            <div id="new-post-view" class="col-lg-12">
+                <div >
+                    <form action="{% url 'new_post' %}" method="post">
+                        <div class="row align-items-center">
+                            <div class="col-sm-12 col-md-9 col-lg-10 my-1">
                                 {% csrf_token %}
                                 {{ post_form }}
                             </div>
-                            <div class="card-footer bg-transparent">
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3">
-                                        <button type="submit" class="btn btn-primary form-control mx-auto my-1">Post</button>
-                                    </div>
-                                </div>
+                            <div class="col-sm-12 col-md-3 col-lg-2">
+                                <button type="submit" class="btn btn-primary form-control mx-auto my-1">Post</button>
                             </div>
-                        </form>
+                        </div>
+                    </form>
                 </div>
             </div>  
         {% endif %}
-
+        
     </div>
     
     <div class="container" id="post-list-view">

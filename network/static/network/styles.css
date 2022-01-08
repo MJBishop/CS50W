@@ -5,6 +5,11 @@
     margin-top: 10px;
 }
 
+#id_text {
+    height: 90px;
+}
+
+
 /* index.html 
 ********************************/
 #update-post-button {
