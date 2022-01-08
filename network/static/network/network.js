@@ -204,7 +204,10 @@ function like_post(button) {
 
             // update
             button.innerHTML = "Likes " + data.likes;
+
             // todo: update ui: like or not like
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-primary');
 
             // Present success alert - todo!
         }

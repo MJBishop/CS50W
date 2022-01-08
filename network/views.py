@@ -22,7 +22,7 @@ class NewPostForm(forms.ModelForm):
         model = Post
         exclude = ['user', 'likes', 'date_created']
         widgets = {
-            'text': forms.Textarea(attrs={'class': 'form-control mx-auto', 'placeholder': "New Post" }),
+            'text': forms.Textarea(attrs={'class': 'form-control mx-auto my-1', 'placeholder': "New Post" }),
         }
         labels = {
             'text': ''
@@ -95,7 +95,6 @@ def profile(request, user_id):
     else:
         return HttpResponseRedirect(reverse("index"))
 
-# @csrf_exempt
 @login_required
 def new_post(request):
 
