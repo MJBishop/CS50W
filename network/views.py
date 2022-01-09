@@ -54,6 +54,7 @@ def index(request):
         "post_form": form,
         "page_obj": page_obj,
         "heading":"All Posts",
+        "allposts_page" :"active",
     })
 
 @login_required
@@ -72,6 +73,7 @@ def following(request):
             "post_form": NewPostForm(),
             "page_obj": page_obj,
             "heading":"Following",
+            "following_page" :"active",
         })
     else:
         return HttpResponseRedirect(reverse("index"))
@@ -102,6 +104,7 @@ def profile(request, user_id):
             "heading": profile.username,
             "profile": profile,
             "following": str_following, 
+            "profile_page" :"active",
         })
     else:
         return HttpResponseRedirect(reverse("index"))
@@ -203,7 +206,7 @@ def unfollow(request, user_id):
     
     # Deleting a follow must be via DELETE
     if request.method != "DELETE":
-        return JsonResponse({"error": "POST request required."}, status=400)
+        return JsonResponse({"error": "DELETE request required."}, status=400)
 
     # Query for requested User
     try:

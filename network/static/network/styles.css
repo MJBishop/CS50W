@@ -1,4 +1,30 @@
 
+/* layout.html 
+********************************/
+html {
+    position: relative;
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
+body {
+    margin-bottom: 60px; /* bottom margin == footer height */
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* fix footer height */
+    line-height: 60px; /* vertically center text */
+    /* background-color: #f5f5f5; */
+}
+body > .container {
+    padding: 74px 0 60px 0;
+}
+#main-nav {
+    background-color: white;
+    border-bottom:1px solid rgba(53, 25, 59, 0.74);
+}
+
 /* newpost.html 
 ********************************/
 #new-post-view {
@@ -15,10 +41,6 @@
 #update-post-button {
     float: right;
 }
-
-/* #follow-user-button {
-    margin-top: 25px;
-} */
 
 #page-heading {
     margin-top: 25px;

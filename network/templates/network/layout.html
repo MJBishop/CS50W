@@ -11,43 +11,77 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Network</a>
-          
-            <div>
-              <ul class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile/{{ user.id }}"><strong>{{ user.username }}</strong></a>
-                    </li>
-                {% endif %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'following' %}">Following</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
-                {% endif %}
-              </ul>
+        <!-- Navigation -->
+        <nav id="main-nav" class="navbar navbar-expand-md fixed-top navbar-light" role="navigation">
+            <div class="container-fluid">
+                <a class="navbar-brand">Network</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <!-- site navigation -->
+                    <ul class="navbar-nav mr-auto">
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item {{ profile_page }}">
+                                <a class="nav-link" href="/profile/{{ user.id }}"><strong>{{ user.username }}</strong></a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item {{ allposts_page }}">
+                            <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                        </li>
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item {{ following_page }}">
+                                <a class="nav-link" href="{% url 'following' %}">Following</a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                    <!-- user actions -->
+                    <ul class="navbar-nav my-2 my-lg-0">
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="navbar-text text-muted pr-3">Not signed in.</a>
+                            </li>
+                            <li class="nav-item {{ login_page }}">
+                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                            </li>
+                            <li class="nav-item {{ register_page }}">
+                                <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </div>
             </div>
-          </nav>
-        
-        <div class="body">
-            <div class="container">
+        </nav>
+
+        <!-- Main -->
+        <main role="main" class="container">
+            <div class="container-fluid">
+
                 {% block body %}
                 {% endblock %}
+
             </div>
-        </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <span class="text-muted">MBishop for Harvard CS50 Web Programming, Project 4</span>
+            </div>
+        </footer>
+        
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    
     </body>
 </html>
