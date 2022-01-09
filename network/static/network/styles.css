@@ -22,8 +22,9 @@ body > .container {
 }
 #main-nav {
     background-color: white;
-    border-bottom:1px solid rgba(53, 25, 59, 0.74);
+    border-bottom:1px solid rgba(109, 35, 126, 0.74);
 }
+
 
 /* newpost.html 
 ********************************/
@@ -33,6 +34,8 @@ body > .container {
 
 #id_text {
     height: 90px;
+    /* border-color: rgba(53, 25, 59, 0.74); */
+    /* border-color: rgba(109, 35, 126, 0.74); */
 }
 
 
@@ -50,6 +53,7 @@ body > .container {
 #followers-count-div {
     padding-bottom: 10px;
 }
+
 
 /* network.js 
 ********************************/

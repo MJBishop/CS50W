@@ -31,17 +31,6 @@ class NewPostForm(forms.ModelForm):
 
 def index(request):
 
-    form = NewPostForm()
-    # if request.method == 'POST':
-    #     if request.user.is_authenticated:
-    #         form = NewPostForm(request.POST)
-
-    #         # validate form
-    #         if form.is_valid():
-    #             post_text = form.cleaned_data["text"]
-    #             Post.objects.create_post(request.user, post_text)
-    #             form = NewPostForm()
-
     # fetch all posts
     posts = Post.objects.posts_from_all_users()
 
@@ -51,7 +40,7 @@ def index(request):
     page_obj = paginator.get_page(page)
 
     return render(request, "network/index.html", {
-        "post_form": form,
+        "post_form": NewPostForm(),
         "page_obj": page_obj,
         "heading":"All Posts",
         "allposts_page" :"active",
