@@ -61,7 +61,6 @@
 
                             </div>
                             <div id="update-post-div" class="col-6">
-
                                 {% if user.is_authenticated and user == post.user %}
                                     <button class="btn btn-sm btn-outline-primary mt-2" id="update-post-button" data-post_id="{{ post.id }}">Edit</button>
                                 {% endif %}

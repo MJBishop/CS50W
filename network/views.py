@@ -107,7 +107,7 @@ def profile(request, user_id):
         return HttpResponseRedirect(reverse("index"))
 
 @login_required
-def new_post(request):
+def new_post(request): 
 
     if request.method == "POST":
         form = NewPostForm(request.POST)
@@ -118,7 +118,8 @@ def new_post(request):
             Post.objects.create_post(request.user, post_text)
         # else?
     
-    return HttpResponseRedirect(reverse("index"))
+    # always redirects to profile - wanted behaviour???
+    return HttpResponseRedirect(reverse("profile", args=[request.user.id]))
 
 
 @csrf_exempt

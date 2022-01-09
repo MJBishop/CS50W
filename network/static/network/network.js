@@ -110,8 +110,8 @@ function save_updated_post(post_id) {
     fetch(path, {
         method: 'PUT',
         body: JSON.stringify({
-            text: new_text
-        })
+            text: new_text,
+        }),
     })
     .then(response => response.json())
     .then(data => {
