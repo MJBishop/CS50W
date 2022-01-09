@@ -10,8 +10,6 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt #best way??
-# from django.db.models import Count, Case, When, BooleanField
 from django.forms import ModelForm
 
 from .models import User, Post, Follow, MAX_POST_LENGTH
@@ -91,9 +89,9 @@ def profile(request, user_id):
             "post_form": NewPostForm(),
             "page_obj": page_obj,
             "heading": profile.username,
+            "profile_page" :"active",
             "profile": profile,
             "following": str_following, 
-            "profile_page" :"active",
         })
     else:
         return HttpResponseRedirect(reverse("index"))
@@ -127,10 +125,6 @@ def update_post(request, post_id):
         # Unpack Post text from request.body
         data = json.loads(request.body)
         post_text = data.get("text", "")
-
-        # form = NewPostForm(request.PUT)
-        # if form.is_valid():
-        #     post_text = form.cleaned_data["text"]
 
         if post_text == "":
             return JsonResponse({"validation_error": f"Post cannot be empty"}, status=400) #validation error?
