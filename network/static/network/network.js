@@ -49,10 +49,22 @@ function update_post(post_id) {
     // console.log('update_post')
     // console.log(post_id)
 
+    // var post_form = document.getElementById("post-form");
+    // if (post_form) {
+    //     console.log(post_form);
+
+    //     var clone_form = post_form.cloneNode(true);
+    //     var url = '/post/' + post_id;
+    //     clone_form.setAttribute('id', 'update-post-form')
+    //     clone_form.setAttribute('action', url)
+    //     clone_form.setAttribute('method', 'put')
+    //     console.log(clone_form);
+    // }
+
     if (post_id) {
         let elem = document.getElementById(post_id);
 
-        // 
+        // hide
         var post_text = elem.querySelector("#post-text");
         var text = post_text.innerText
         post_text.hidden = true;
@@ -103,7 +115,7 @@ function save_updated_post(post_id) {
     // todo - check for changes to post text
 
     
-    var new_text = document.querySelector('#update-post-text').value
+    var new_text = document.querySelector('#update-post-text').value;
 
     // Save the new Post
     const path = '/post/' + post_id;
@@ -112,6 +124,7 @@ function save_updated_post(post_id) {
         body: JSON.stringify({
             text: new_text,
         }),
+        headers: { "X-CSRFToken": csrf_token },
     })
     .then(response => response.json())
     .then(data => {
@@ -187,6 +200,7 @@ function like_post(button) {
     const path = '/like/' + post_id;
     fetch(path, {
         method: 'PUT',
+        headers: { "X-CSRFToken": csrf_token },
     })
     .then(response => response.json())
     .then(data => {
@@ -242,6 +256,7 @@ function toggle_follow(button) {
         const path = '/unfollow/' + profile_id;
         fetch(path, {
             method: 'DELETE',
+            headers: { "X-CSRFToken": csrf_token },
         })
         .then(response => response.json())
         .then(data => {
@@ -284,6 +299,7 @@ function toggle_follow(button) {
         const path = '/follow/' + profile_id;
         fetch(path, {
             method: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
         })
         .then(response => response.json())
         .then(data => {

@@ -48,7 +48,7 @@
                         <div id="post-buttons" class="row">
                             <div class="text-muted col-lg-12">{{ post.date_created }}</div>
                             <div class="col-6">
-
+                                
                                 {% if user.is_authenticated %}
                                     {% if post in user.liked_posts.all %}
                                         <button class="btn btn-sm btn-primary mt-2" id="like-post-button" data-post_id="{{ post.id }}">Likes {{ post.like_count }}</button>

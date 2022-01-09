@@ -110,11 +110,10 @@ def new_post(request):
             Post.objects.create_post(request.user, post_text)
         # else?
     
-    # always redirects to profile - wanted behaviour???
+    # always redirects to profile
     return HttpResponseRedirect(reverse("profile", args=[request.user.id]))
 
 
-@csrf_exempt
 @login_required
 def update_post(request, post_id):
 
@@ -128,6 +127,10 @@ def update_post(request, post_id):
         # Unpack Post text from request.body
         data = json.loads(request.body)
         post_text = data.get("text", "")
+
+        # form = NewPostForm(request.PUT)
+        # if form.is_valid():
+        #     post_text = form.cleaned_data["text"]
 
         if post_text == "":
             return JsonResponse({"validation_error": f"Post cannot be empty"}, status=400) #validation error?
@@ -145,7 +148,6 @@ def update_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
 
 
-@csrf_exempt
 @login_required
 def like_post(request, post_id):
     
@@ -165,7 +167,6 @@ def like_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
 
 
-@csrf_exempt
 @login_required
 def follow(request, user_id):
 
@@ -189,7 +190,6 @@ def follow(request, user_id):
         # just return the count form the mdel call?
 
 
-@csrf_exempt
 @login_required
 def unfollow(request, user_id):
     
