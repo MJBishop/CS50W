@@ -134,6 +134,7 @@ function save_updated_post(post_id) {
             text: new_text,
         }),
         headers: { "X-CSRFToken": csrftoken },
+        mode: 'same-origin',
     })
     .then(response => response.json())
     .then(data => {
@@ -217,6 +218,7 @@ function like_post(button) {
     fetch(path, {
         method: 'PUT',
         headers: { "X-CSRFToken": csrftoken },
+        mode: 'same-origin',
     })
     .then(response => response.json())
     .then(data => {
@@ -280,6 +282,7 @@ function toggle_follow(button) {
         fetch(path, {
             method: 'DELETE',
             headers: { "X-CSRFToken": csrftoken },
+            mode: 'same-origin',
         })
         .then(response => response.json())
         .then(data => {
@@ -323,6 +326,7 @@ function toggle_follow(button) {
         fetch(path, {
             method: 'POST',
             headers: { "X-CSRFToken": csrftoken },
+            mode: 'same-origin',
         })
         .then(response => response.json())
         .then(data => {
