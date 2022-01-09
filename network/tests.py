@@ -278,7 +278,6 @@ class ViewsTestCase(TestCase):
         logged_in = c.login(username='testuser', password='12345')
 
         # create a post, and retrieve it
-        # c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
         response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         u1_posts = Post.objects.posts_from_user(u1)

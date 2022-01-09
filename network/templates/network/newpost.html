@@ -3,6 +3,7 @@
 
 {% block body %}
 
+    <!-- New Post -->
     <div class="container" id="new-post-view">
 
         {% if user.is_authenticated %}
@@ -23,18 +24,19 @@
         
     </div>
     
+    <!-- Posts -->
     <div class="container" id="post-list-view">
 
         {% block posts %}
         {% endblock %}
-        
+
     </div>
 
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript"> 
-        var csrf_token = "{{ csrf_token }}";
+        // var csrf_token = "{{ csrf_token }}";
     </script>
     <script src="{% static 'network/network.js' %}"></script>
 {% endblock %}

@@ -2,19 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('DOM ready')
 
-    // Update Post
+    // Update Post Button Action
     enable_all_edit_buttons();
 
-    // Like Post
+    // Like Post Button Action
     document.querySelectorAll('#like-post-button').forEach(function(button) {
         button.onclick = function() {
             // console.log('like-post-button click') 
             like_post(button)
         }
-        // if post in user.liked_posts
     });
 
-    // Follow User
+    // Follow User Button Action
     var follow_user_button = document.querySelector('#follow-user-button');
     if (follow_user_button) {
         follow_user_button.addEventListener('click', function(event) {
@@ -24,6 +23,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 });
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 function editing_edit_buttons(post_id) {
     document.querySelectorAll('#update-post-button').forEach(function(button) {
@@ -48,18 +63,6 @@ function enable_all_edit_buttons() {
 function update_post(post_id) {
     // console.log('update_post')
     // console.log(post_id)
-
-    // var post_form = document.getElementById("post-form");
-    // if (post_form) {
-    //     console.log(post_form);
-
-    //     var clone_form = post_form.cloneNode(true);
-    //     var url = '/post/' + post_id;
-    //     clone_form.setAttribute('id', 'update-post-form')
-    //     clone_form.setAttribute('action', url)
-    //     clone_form.setAttribute('method', 'put')
-    //     console.log(clone_form);
-    // }
 
     if (post_id) {
         let elem = document.getElementById(post_id);
@@ -114,8 +117,14 @@ function save_updated_post(post_id) {
     
     // todo - check for changes to post text
 
-    
     var new_text = document.querySelector('#update-post-text').value;
+    
+    // csrf token from DOM
+    // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // csrf token from cookie
+    const csrftoken = getCookie('csrftoken');
+
 
     // Save the new Post
     const path = '/post/' + post_id;
@@ -124,7 +133,7 @@ function save_updated_post(post_id) {
         body: JSON.stringify({
             text: new_text,
         }),
-        headers: { "X-CSRFToken": csrf_token },
+        headers: { "X-CSRFToken": csrftoken },
     })
     .then(response => response.json())
     .then(data => {
@@ -195,12 +204,19 @@ function like_post(button) {
     console.log('like_post')
 
     post_id = button.dataset.post_id;
+    
+    // csrf token from DOM
+    // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // csrf token from cookie
+    const csrftoken = getCookie('csrftoken');
+
 
     // toggle like
     const path = '/like/' + post_id;
     fetch(path, {
         method: 'PUT',
-        headers: { "X-CSRFToken": csrf_token },
+        headers: { "X-CSRFToken": csrftoken },
     })
     .then(response => response.json())
     .then(data => {
@@ -250,13 +266,20 @@ function toggle_follow(button) {
     var profile_id = button.dataset.profile_id;
     const followers_count_div = document.getElementById('followers-count-div');
 
+    // csrf token from DOM
+    // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // csrf token from cookie
+    const csrftoken = getCookie('csrftoken');
+
+
     if (button.dataset.following === "following") {
         // unfollow
 
         const path = '/unfollow/' + profile_id;
         fetch(path, {
             method: 'DELETE',
-            headers: { "X-CSRFToken": csrf_token },
+            headers: { "X-CSRFToken": csrftoken },
         })
         .then(response => response.json())
         .then(data => {
@@ -299,7 +322,7 @@ function toggle_follow(button) {
         const path = '/follow/' + profile_id;
         fetch(path, {
             method: 'POST',
-            headers: { "X-CSRFToken": csrf_token },
+            headers: { "X-CSRFToken": csrftoken },
         })
         .then(response => response.json())
         .then(data => {
