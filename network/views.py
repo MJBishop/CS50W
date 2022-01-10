@@ -195,28 +195,6 @@ def follow(request, user_id):
     else: return JsonResponse({"error": "DELETE or POST request required."}, status=400)
 
 
-@login_required
-def unfollow(request, user_id):
-    
-    # Deleting a follow must be via DELETE
-    if request.method != "DELETE":
-        return JsonResponse({"error": "DELETE request required."}, status=400)
-
-    # Query for requested User
-    try:
-        user_to_unfollow = User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found."}, status=404)
-
-    # Delete follow
-    try:
-        Follow.objects.delete_follow(from_user=request.user, to_user=user_to_unfollow)
-    except:
-        return JsonResponse({"error": f'{request.user} is not following {user_to_unfollow}'}, status=400)
-    else:
-        return JsonResponse({"message": "Unfollow successful.", "followers":user_to_unfollow.followers.count()}, status=201)
-
-
 def login_view(request):
     if request.method == "POST":
 
