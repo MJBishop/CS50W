@@ -226,8 +226,6 @@ function like_post(button) {
         console.log(data);
 
         if (data.error) {
-            
-            // 
 
             // Present general error alert - todo!
 
@@ -262,8 +260,8 @@ function like_post(button) {
 }
 
 function toggle_follow(button) {
-    console.log('toggle_follow')
-    console.log(button.dataset.profile_id)
+    // console.log('toggle_follow')
+    // console.log(button.dataset.profile_id)
 
     var profile_id = button.dataset.profile_id;
     const followers_count_div = document.getElementById('followers-count-div');
@@ -274,94 +272,58 @@ function toggle_follow(button) {
     // csrf token from cookie
     const csrftoken = getCookie('csrftoken');
 
+    const following = button.dataset.following === "following";
+    var method = 'POST';
+    if (following) {
+        method = 'DELETE';
+    }
 
-    if (button.dataset.following === "following") {
-        // unfollow
+    const path = '/follow/' + profile_id;
+    fetch(path, {
+        method: method,
+        headers: { "X-CSRFToken": csrftoken },
+        mode: 'same-origin',
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Log data to the console
+        console.log(data);
 
-        const path = '/unfollow/' + profile_id;
-        fetch(path, {
-            method: 'DELETE',
-            headers: { "X-CSRFToken": csrftoken },
-            mode: 'same-origin',
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Log data to the console
-            console.log(data);
+        if (data.error) {
 
-            if (data.error) {
-                
-                // 
+            // Present general error alert - todo!
 
-                // Present general error alert - todo!
+        } 
+        else if (data.message) {
 
-            } 
-            else if (data.message) {
-
-                // update button
+            // update button
+            if (following) { // unfollow
                 button.dataset.following = "";
                 button.innerText = "Follow";
                 button.classList.add('btn-outline-primary');
                 button.classList.remove('btn-primary');
-
-                // update count
-                followers_count_div.innerText = "followers " + data.followers
-
-                // Present success alert - todo!
             }
-        })
-
-        // Catch any errors and log them to the console
-        .catch(error => {
-            console.log('Error:', error);
-        });
-
-        // Prevent default submission
-        return false;
-    }
-    else {
-        // follow 
-
-        const path = '/follow/' + profile_id;
-        fetch(path, {
-            method: 'POST',
-            headers: { "X-CSRFToken": csrftoken },
-            mode: 'same-origin',
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Log data to the console
-            console.log(data);
-
-            if (data.error) {
-                
-                // 
-
-                // Present general error alert - todo!
-
-            } 
-            else if (data.message) {
-
-                // update button
+            else { // follow
                 button.dataset.following = "following";
                 button.innerText = "Following";
                 button.classList.remove('btn-outline-primary');
                 button.classList.add('btn-primary');
-
-                // update count
-                followers_count_div.innerText = "followers " + data.followers
-
-                // Present success alert - todo!
             }
-        })
 
-        // Catch any errors and log them to the console
-        .catch(error => {
-            console.log('Error:', error);
-        });
+            // update count
+            followers_count_div.innerText = "followers " + data.followers
 
-        // Prevent default submission
-        return false;
-    }
+            // Present success alert - todo!
+
+        }
+    })
+
+    // Catch any errors and log them to the console
+    .catch(error => {
+        console.log('Error:', error);
+    });
+
+    // Prevent default submission
+    return false;
 }
   
