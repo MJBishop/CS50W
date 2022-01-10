@@ -408,11 +408,8 @@ class ViewsTestCase(TestCase):
         # u1 follows u2
         user_id = str(u2.id)
         path = '/follow/' + user_id
-        response = c.generic('POST', path)
+        resp = c.generic('POST', path)
 
-        # u1 unfollows u2..
-        user_id = str(u2.id)
-        path = '/unfollow/' + user_id
         response = c.generic('DELETE', path)
 
         # print(response)
@@ -428,7 +425,7 @@ class ViewsTestCase(TestCase):
 
         # u1 unfollows u2..
         user_id = str(u2.id)
-        path = '/unfollow/' + user_id
+        path = '/follow/' + user_id
         response = c.generic('DELETE', path)
 
         # print(response)

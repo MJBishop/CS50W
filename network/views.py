@@ -164,24 +164,35 @@ def like_post(request, post_id):
 @login_required
 def follow(request, user_id):
 
-    # Creating a new follow must be via POST
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-
     # Query for requested User
     try:
-        user_to_follow = User.objects.get(pk=user_id)
+        to_user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
 
-    # Create follow
-    try:
-        Follow.objects.create_follow(from_user=request.user, to_user=user_to_follow)
-    except:
-        return JsonResponse({"error": f'{request.user} is already following {user_to_follow}'}, status=400)
-    else:
-        return JsonResponse({"message": "New Follow successful.", "followers":user_to_follow.followers.count()}, status=201)
-        # just return the count form the mdel call?
+    # Creating a new follow must be via POST
+    if request.method == "POST":
+
+        # Create follow
+        try:
+            Follow.objects.create_follow(from_user=request.user, to_user=to_user)
+        except:
+            return JsonResponse({"error": f'{request.user} is already following {to_user}'}, status=400)
+        else:
+            return JsonResponse({"message": "New Follow successful.", "followers":to_user.followers.count()}, status=201)
+
+    # Deleting a follow must be via DELETE
+    elif request.method == "DELETE":
+        
+        # Delete follow
+        try:
+            Follow.objects.delete_follow(from_user=request.user, to_user=to_user)
+        except:
+            return JsonResponse({"error": f'{request.user} is not following {to_user}'}, status=400)
+        else:
+            return JsonResponse({"message": "Unfollow successful.", "followers":to_user.followers.count()}, status=201)
+
+    else: return JsonResponse({"error": "DELETE or POST request required."}, status=400)
 
 
 @login_required
