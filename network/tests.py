@@ -1,11 +1,44 @@
 import json
-from django.db.models.query import Prefetch
 from django.test import Client, TestCase
-from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from .models import User, Follow, Post
 from .views import NewPostForm
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
+
+class MySeleniumTests(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        
+        # create a test user
+        user = User.objects.create(username='testuser')
+        user.set_password('12345')
+        user.save()
+        
+        # webdriver - chromedriver
+        cls.selenium = WebDriver(executable_path=chrome_driver_path)
+        cls.selenium.implicitly_wait(10)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def test_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/login'))
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys('testuser')
+        password_input = self.selenium.find_element_by_name("password")
+        password_input.send_keys('12345')
+        self.selenium.find_element_by_xpath('//input[@value="Login"]').click()
+        # check login by finding element on index.html 
+        self.selenium.find_element_by_id("page-heading")
 
 
 # Create your tests here.
