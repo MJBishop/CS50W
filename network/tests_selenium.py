@@ -99,6 +99,23 @@ class RegisterTests(SeleniumTests):
         # check for testuser2 in page_source
         assert username2 in self.selenium.page_source
 
+    def test_register_denies_access_for_unmatched_passwords(self):
+        
+        register_page = RegisterPage(self.selenium, self.live_server_url)
+        register_page.navigate()
+
+        # check for testuser2 not in page_source
+        assert username2 not in self.selenium.page_source
+
+        register_page.set_username('foo')
+        register_page.set_email('foo@bar.com')
+        register_page.set_password('foo')
+        register_page.set_confirmation('bar')
+        register_page = register_page.submitExpectingFailure()
+        self.assertIn("Passwords must match.", register_page.get_errors().text)
+        
+        # check for testuser2 in page_source
+        assert username2 not in self.selenium.page_source
 
     #  test links to these pages?
 
