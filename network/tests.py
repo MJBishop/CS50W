@@ -166,15 +166,22 @@ class ViewsTestCase(TestCase):
         response = c.post("/post", data={"text": "Hello World!"})
         u1 = User.objects.get(username='testuser')
         self.assertEqual(u1.posts.count(), 1)
-    
 
+    def test_new_post_redirects_to_profile(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+
+        response = c.post("/post", data={"text": "Hello World!"})
+        # print(response)
+        self.assertEqual(response.url, "/profile/1") 
+    
     def test_new_post_redirects_when_not_signed_in(self):
         c = Client()
 
         response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text"}))
         # print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/post") # todo - check: calls again after login?
+        self.assertEqual(response.url, "/login/?next=/post")
 
 
     # update_post
