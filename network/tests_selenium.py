@@ -57,6 +57,7 @@ class LoginPage(BasePage):
     
     # ERRORS_CLASS = 'errorlist'
 
+
     def set_username(self, username):
         self.fill_form_by_name(self.username, username)
 
@@ -85,21 +86,12 @@ class RegisterPage(LoginPage):
     # input value
     xpath = '//input[@value="Register"]'
 
-    def set_username(self, username):
-        self.fill_form_by_name(self.username, username)
 
     def set_email(self, email):
         self.fill_form_by_name(self.email, email)
 
-    def set_password(self, password):
-        self.fill_form_by_name(self.password, password)
-
     def set_confirmation(self, confirmation):
         self.fill_form_by_name(self.confirmation, confirmation)
-
-    def submit(self):
-        self.driver.find_element_by_xpath(self.xpath).click()
-        return IndexPage(self.driver, self.live_server_url)
 
     def submitExpectingFailure(self):
         self.driver.find_element_by_xpath(self.xpath).click()
