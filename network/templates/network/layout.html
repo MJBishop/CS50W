@@ -24,7 +24,7 @@
 
                         {% if user.is_authenticated %}
                             <li class="nav-item {{ profile_page }}">
-                                <a class="nav-link" href="/profile/{{ user.id }}"><strong>{{ user.username }}</strong></a>
+                                <a id="userid" class="nav-link" href="/profile/{{ user.id }}"><strong>{{ user.username }}</strong></a>
                             </li>
                         {% endif %}
 

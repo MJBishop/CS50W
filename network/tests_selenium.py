@@ -44,38 +44,16 @@ class SeleniumTests(StaticLiveServerTestCase):
 class LoginTests(SeleniumTests):
 
     def test_login(self):
-
         login_page = LoginPage(self.selenium, self.live_server_url)
         login_page.navigate()
-
-        # check for testuser not in page_source
-        assert username not in self.selenium.page_source
-
-        login_page.set_username(username)
-        login_page.set_password(password)
-        index_page = login_page.submit()
-
-        # check login by finding element on index.html 
-        self.selenium.find_element_by_id("page-heading")
-        
-        # check for testuser in page_source
-        assert username in self.selenium.page_source
+        index_page = login_page.login_as(username, password)
+        self.assertIn(username, index_page.get_userid().text)
 
     def test_login_denies_access(self):
-        
         login_page = LoginPage(self.selenium, self.live_server_url)
         login_page.navigate()
-
-        # check for testuser not in page_source
-        assert username not in self.selenium.page_source
-
-        login_page.set_username("foo")
-        login_page.set_password("bar")
-        login_page = login_page.submitExpectingFailure()
+        login_page = login_page.expect_failure_to_login_as('foo', 'bar')
         self.assertIn("Invalid", login_page.get_errors().text)
-        
-        # check for testuser in page_source
-        assert username not in self.selenium.page_source
 
 class RegisterTests(SeleniumTests):
 
@@ -112,13 +90,40 @@ class RegisterTests(SeleniumTests):
         register_page.set_password('foo')
         register_page.set_confirmation('bar')
         register_page = register_page.submitExpectingFailure()
-        self.assertIn("Passwords must match.", register_page.get_errors().text)
+        self.assertIn("Passwords", register_page.get_errors().text)
         
         # check for testuser2 in page_source
         assert username2 not in self.selenium.page_source
 
+    # def test_register_denies_access_for_username_already_taken(self):
+        
+    #     register_page = RegisterPage(self.selenium, self.live_server_url)
+    #     register_page.navigate()
+
+    #     # check for testuser2 not in page_source
+    #     assert username2 not in self.selenium.page_source
+
+    #     register_page.set_username(username2)
+    #     register_page.set_email(email2)
+    #     register_page.set_password(password2)
+    #     register_page.set_confirmation(password2)
+    #     register_page = register_page.submitExpectingFailure()
+    #     self.assertIn("Username", register_page.get_errors().text)
+        
+    #     # check for testuser2 in page_source
+    #     assert username2 not in self.selenium.page_source
+
     #  test links to these pages?
 
+class IndexTests(SeleniumTests):
+
+    def test_index(self):
+
+        index_page = IndexPage(self.selenium, self.live_server_url)
+        index_page.navigate()
+
+        # check login by finding element on index.html 
+        self.selenium.find_element_by_id("page-heading")
 
 
 # POM
@@ -184,6 +189,16 @@ class LoginPage(BasePage):
         self.driver.find_element_by_xpath(self.xpath).click()
         return LoginPage(self.driver, self.live_server_url)
 
+    def login_as(self, username, password):
+        self.set_username(username)
+        self.set_password(password)
+        return self.submit()
+
+    def expect_failure_to_login_as(self, username, password):
+        self.set_username(username)
+        self.set_password(password)
+        return self.submitExpectingFailure()
+
 class RegisterPage(LoginPage):
     url = "/register"
 
@@ -206,5 +221,51 @@ class RegisterPage(LoginPage):
         return RegisterPage(self.driver, self.live_server_url)
 
 class IndexPage(BasePage):
+    url = "/"
+
+    # id
+    post_text = 'id_text'
+    user_id = 'userid'
+
+    # input value
+    xpath = '//input[@value="NewPost"]'
+
+    def get_userid(self):
+        return self.driver.find_element_by_id(self.user_id)
+
+    def set_post_text(self, post_text):
+        self.fill_form_by_id(self.post_text, post_text)
+
+    def get_errors(self):
+        return self.driver.find_element_by_class_name(self.ERROR_CLASS)
+
+    def submit(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
+
+    def submitExpectingFailure(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
+
+
+class AllPostsPage(IndexPage):
     pass
 
+    # sign in
+
+    # toggle like
+    # edit post
+
+class FollowingPage(IndexPage):
+    url = "/following"
+
+class ProfilePage(IndexPage):
+    
+    def __init__(self, driver, live_server_url, profile_id):
+        self.driver = driver
+        self.live_server_url = live_server_url
+        self.url = '/profile/' + profile_id
+
+    # sign in
+    # profile (other user)
+    # toggle follow
