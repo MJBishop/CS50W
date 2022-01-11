@@ -25,7 +25,7 @@ class SeleniumTests(StaticLiveServerTestCase):
         user.set_password(password)
         user.save()
         
-        # webdriver - chromedriver
+        # webdriver - chromedriver: separate method that can be tested?
         try:
             cls.selenium = WebDriver()
         except:
@@ -41,79 +41,37 @@ class SeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
+
 class LoginTests(SeleniumTests):
 
     def test_login(self):
-        login_page = LoginPage(self.selenium, self.live_server_url)
-        login_page.navigate()
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
         index_page = login_page.login_as(username, password)
-        self.assertIn(username, index_page.get_userid().text)
+        self.assertIn(username, index_page.get_user().text)
 
     def test_login_denies_access(self):
-        login_page = LoginPage(self.selenium, self.live_server_url)
-        login_page.navigate()
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
         login_page = login_page.expect_failure_to_login_as('foo', 'bar')
         self.assertIn("Invalid", login_page.get_errors().text)
+
 
 class RegisterTests(SeleniumTests):
 
     def test_register(self):
-
-        register_page = RegisterPage(self.selenium, self.live_server_url)
-        register_page.navigate()
-
-        # check for testuser2 not in page_source
-        assert username2 not in self.selenium.page_source
-
-        register_page.set_username(username2)
-        register_page.set_email(email2)
-        register_page.set_password(password2)
-        register_page.set_confirmation(password2)
-        index_page = register_page.submit()
-
-        # check login by finding element on index.html 
-        self.selenium.find_element_by_id("page-heading")
-        
-        # check for testuser2 in page_source
-        assert username2 in self.selenium.page_source
+        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
+        index_page = register_page.register_as(username2, email2, password2, password2)
+        self.assertIn(username, index_page.get_user().text)
 
     def test_register_denies_access_for_unmatched_passwords(self):
-        
-        register_page = RegisterPage(self.selenium, self.live_server_url)
-        register_page.navigate()
-
-        # check for testuser2 not in page_source
-        assert username2 not in self.selenium.page_source
-
-        register_page.set_username('foo')
-        register_page.set_email('foo@bar.com')
-        register_page.set_password('foo')
-        register_page.set_confirmation('bar')
-        register_page = register_page.submitExpectingFailure()
+        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
+        register_page = register_page.expect_failure_to_register_as('foo', 'foo@bar.com', 'foo', 'bar')
         self.assertIn("Passwords", register_page.get_errors().text)
-        
-        # check for testuser2 in page_source
-        assert username2 not in self.selenium.page_source
 
     # def test_register_denies_access_for_username_already_taken(self):
-        
-    #     register_page = RegisterPage(self.selenium, self.live_server_url)
-    #     register_page.navigate()
-
-    #     # check for testuser2 not in page_source
-    #     assert username2 not in self.selenium.page_source
-
-    #     register_page.set_username(username2)
-    #     register_page.set_email(email2)
-    #     register_page.set_password(password2)
-    #     register_page.set_confirmation(password2)
-    #     register_page = register_page.submitExpectingFailure()
+    #     register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
+    #     register_page = register_page.expect_failure_to_register_as(username2, email2, password2, password2)
     #     self.assertIn("Username", register_page.get_errors().text)
-        
-    #     # check for testuser2 in page_source
-    #     assert username2 not in self.selenium.page_source
 
-    #  test links to these pages?
 
 class IndexTests(SeleniumTests):
 
@@ -126,13 +84,15 @@ class IndexTests(SeleniumTests):
         self.selenium.find_element_by_id("page-heading")
 
 
-# POM
+# POMs
 class BasePage(object):
     url = None
 
-    def __init__(self, driver, live_server_url):
+    def __init__(self, driver, live_server_url, navigate=False):
         self.driver = driver
         self.live_server_url = live_server_url
+        if navigate:
+            self.navigate()
 
     def fill_form_by_css(self, form_css, value):
         elem = self.driver.find(form_css)
@@ -220,6 +180,20 @@ class RegisterPage(LoginPage):
         self.driver.find_element_by_xpath(self.xpath).click()
         return RegisterPage(self.driver, self.live_server_url)
 
+    def register_as(self, username, email, password, confirmation):
+        self.set_username(username)
+        self.set_email(email)
+        self.set_password(password)
+        self.set_confirmation(confirmation)
+        return self.submit()
+
+    def expect_failure_to_register_as(self, username, email, password, confirmation):
+        self.set_username(username)
+        self.set_email(email)
+        self.set_password(password)
+        self.set_confirmation(confirmation)
+        return self.submitExpectingFailure()
+
 class IndexPage(BasePage):
     url = "/"
 
@@ -230,7 +204,7 @@ class IndexPage(BasePage):
     # input value
     xpath = '//input[@value="NewPost"]'
 
-    def get_userid(self):
+    def get_user(self):
         return self.driver.find_element_by_id(self.user_id)
 
     def set_post_text(self, post_text):
@@ -248,13 +222,14 @@ class IndexPage(BasePage):
         return ProfilePage(self.driver, self.live_server_url) #profile_id !!
 
 
-class AllPostsPage(IndexPage):
-    pass
-
     # sign in
-
+    # logout
+    
     # toggle like
     # edit post
+
+class AllPostsPage(IndexPage):
+    pass
 
 class FollowingPage(IndexPage):
     url = "/following"
