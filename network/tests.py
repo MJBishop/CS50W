@@ -17,6 +17,95 @@ username2 = 'testuser2'
 password2 = '54321'
 email2 = 'testuser@test.com'
 
+# POM
+class BasePage(object):
+    url = None
+
+    def __init__(self, driver, live_server_url):
+        self.driver = driver
+        self.live_server_url = live_server_url
+
+    def fill_form_by_css(self, form_css, value):
+        elem = self.driver.find(form_css)
+        elem.send_keys(value)
+
+    def fill_form_by_id(self, form_element_id, value):
+        elem = self.driver.find_element_by_id(form_element_id)
+        elem.send_keys(value)
+
+    def fill_form_by_name(self, name, value):
+        elem = self.driver.find_element_by_name(name)
+        elem.send_keys(value)
+
+    @property
+    def title(self):
+        return self.driver.title
+    
+    def navigate(self):
+        self.driver.get(
+			"{}{}".format(
+				self.live_server_url,
+				self.url
+			)
+        )
+
+class LoginPage(BasePage):
+    username = 'username'
+    password = "password"
+    url = "/login"
+    xpath = '//input[@value="Login"]'
+    # ERRORS_CLASS = 'errorlist'
+
+    def set_username(self, username):
+        self.fill_form_by_name(self.username, username)
+
+    def set_password(self, password):
+        self.fill_form_by_name(self.password, password)
+
+    # def get_errors(self):
+    #     return self.driver.find_element_by_class_name(self.ERRORS_CLASS)
+
+    def submit(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return IndexPage(self.driver, self.live_server_url)
+
+    def submitExpectingFailure(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return LoginPage(self.driver, self.live_server_url)
+
+
+class RegisterPage(LoginPage):
+    email = 'email'
+    confirmation = "confirmation"
+    url = "/register"
+    xpath = '//input[@value="Register"]'
+
+    def set_username(self, username):
+        self.fill_form_by_name(self.username, username)
+
+    def set_email(self, email):
+        self.fill_form_by_name(self.email, email)
+
+    def set_password(self, password):
+        self.fill_form_by_name(self.password, password)
+
+    def set_confirmation(self, confirmation):
+        self.fill_form_by_name(self.confirmation, confirmation)
+
+    def submit(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return IndexPage(self.driver, self.live_server_url)
+
+    def submitExpectingFailure(self):
+        self.driver.find_element_by_xpath(self.xpath).click()
+        return RegisterPage(self.driver, self.live_server_url)
+
+
+class IndexPage(BasePage):
+    pass
+
+
+# Selenium Tests
 class SeleniumTests(StaticLiveServerTestCase):
 
     @classmethod
@@ -37,47 +126,51 @@ class SeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
+class LoginTests(SeleniumTests):
+
     def test_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/login'))
+
+        login_page = LoginPage(self.selenium, self.live_server_url)
+        login_page.navigate()
 
         # check for testuser not in page_source
         assert username not in self.selenium.page_source
 
-        # login
-        username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys(username)
-        password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys(password)
-        self.selenium.find_element_by_xpath('//input[@value="Login"]').click()
+        login_page.set_username(username)
+        login_page.set_password(password)
+        index_page = login_page.submit()
 
         # check login by finding element on index.html 
         self.selenium.find_element_by_id("page-heading")
-
+        
         # check for testuser in page_source
         assert username in self.selenium.page_source
 
+class RegisterTests(SeleniumTests):
+
     def test_register(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/register'))
+
+        register_page = RegisterPage(self.selenium, self.live_server_url)
+        register_page.navigate()
 
         # check for testuser2 not in page_source
         assert username2 not in self.selenium.page_source
 
-        # login
-        username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys(username2)
-        email_input = self.selenium.find_element_by_name("email")
-        email_input.send_keys(email2)
-        password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys(password2)
-        confirmation_input = self.selenium.find_element_by_name("confirmation")
-        confirmation_input.send_keys(password2)
-        self.selenium.find_element_by_xpath('//input[@value="Register"]').click()
+        register_page.set_username(username2)
+        register_page.set_email(email2)
+        register_page.set_password(password2)
+        register_page.set_confirmation(password2)
+        index_page = register_page.submit()
 
         # check login by finding element on index.html 
         self.selenium.find_element_by_id("page-heading")
-
+        
         # check for testuser2 in page_source
         assert username2 in self.selenium.page_source
+
+
+    #  test links to these pages?
+
 
 
 # Create your tests here.
