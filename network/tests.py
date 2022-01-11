@@ -82,16 +82,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
-    # def test_POST_new_post_to_index(self):
-    #     c = Client()
-    #     logged_in = c.login(username='testuser', password='12345')
-
-    #     response = c.post("/", data={"text": "Hello World!"})
-    #     # print(response)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
-    #     self.assertEqual(response.context['page_obj'].object_list.count(), 1)
-
+        # 
 
     def test_following_PUT_reverse_to_index(self):
         c = Client()
@@ -166,23 +157,15 @@ class ViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 302)
 
-    # def test_POST_new_post_form_to_profile(self):
-        
 
     # new_post
-    
+    def test_new_post(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
 
-    # def test_new_post(self):
-    #     c = Client()
-    #     logged_in = c.login(username='testuser', password='12345')
-
-    #     response = c.generic('POST', '/post', json.dumps({"text":"New Post Test Text!!"}))
-    #     # print(response)
-    #     self.assertEqual(response.status_code, 201)
-
-    #     u1 = User.objects.get(username='testuser')
-    #     self.assertEqual(u1.posts.count(), 1)
-
+        response = c.post("/post", data={"text": "Hello World!"})
+        u1 = User.objects.get(username='testuser')
+        self.assertEqual(u1.posts.count(), 1)
     
 
     def test_new_post_redirects_when_not_signed_in(self):
