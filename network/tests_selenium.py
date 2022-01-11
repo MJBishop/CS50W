@@ -61,6 +61,22 @@ class LoginTests(SeleniumTests):
         # check for testuser in page_source
         assert username in self.selenium.page_source
 
+    def test_login_denies_access(self):
+        
+        login_page = LoginPage(self.selenium, self.live_server_url)
+        login_page.navigate()
+
+        # check for testuser not in page_source
+        assert username not in self.selenium.page_source
+
+        login_page.set_username("foo")
+        login_page.set_password("bar")
+        login_page = login_page.submitExpectingFailure()
+        self.assertIn("Invalid", login_page.get_errors().text)
+        
+        # check for testuser in page_source
+        assert username not in self.selenium.page_source
+
 class RegisterTests(SeleniumTests):
 
     def test_register(self):
@@ -130,7 +146,8 @@ class LoginPage(BasePage):
     # input value
     xpath = '//input[@value="Login"]'
     
-    # ERRORS_CLASS = 'errorlist'
+    # error message
+    ERROR_CLASS = 'error'
 
 
     def set_username(self, username):
@@ -139,8 +156,8 @@ class LoginPage(BasePage):
     def set_password(self, password):
         self.fill_form_by_name(self.password, password)
 
-    # def get_errors(self):
-    #     return self.driver.find_element_by_class_name(self.ERRORS_CLASS)
+    def get_errors(self):
+        return self.driver.find_element_by_class_name(self.ERROR_CLASS)
 
     def submit(self):
         self.driver.find_element_by_xpath(self.xpath).click()
