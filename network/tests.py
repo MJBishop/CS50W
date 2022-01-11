@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 
-class MySeleniumTests(StaticLiveServerTestCase):
+class SeleniumTests(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -145,7 +145,7 @@ class ViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 404)
 
-    def test_profile_PUT_reverse_to_index(self):
+    def test_profile_PUT_POST_DELETE_reverse_to_index(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
         username = 'testuser2'
@@ -153,7 +153,16 @@ class ViewsTestCase(TestCase):
 
         user_id = str(u2.id)
         path = '/profile/' + user_id
+        
         response = c.put(path)
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.delete(path)
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.post(path)
         # print(response)
         self.assertEqual(response.status_code, 302)
 
