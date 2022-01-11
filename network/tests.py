@@ -9,6 +9,13 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
+# testuser
+username = 'testuser'
+password = '12345'
+# testuser2
+username2 = 'testuser2'
+password2 = '54321'
+email2 = 'testuser@test.com'
 
 class SeleniumTests(StaticLiveServerTestCase):
 
@@ -17,8 +24,8 @@ class SeleniumTests(StaticLiveServerTestCase):
         super().setUpClass()
         
         # create a test user
-        user = User.objects.create(username='testuser')
-        user.set_password('12345')
+        user = User.objects.create(username=username)
+        user.set_password(password)
         user.save()
         
         # webdriver - chromedriver
@@ -32,13 +39,45 @@ class SeleniumTests(StaticLiveServerTestCase):
 
     def test_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/login'))
+
+        # check for testuser not in page_source
+        assert username not in self.selenium.page_source
+
+        # login
         username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys('testuser')
+        username_input.send_keys(username)
         password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys('12345')
+        password_input.send_keys(password)
         self.selenium.find_element_by_xpath('//input[@value="Login"]').click()
+
         # check login by finding element on index.html 
         self.selenium.find_element_by_id("page-heading")
+
+        # check for testuser in page_source
+        assert username in self.selenium.page_source
+
+    def test_register(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/register'))
+
+        # check for testuser2 not in page_source
+        assert username2 not in self.selenium.page_source
+
+        # login
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys(username2)
+        email_input = self.selenium.find_element_by_name("email")
+        email_input.send_keys(email2)
+        password_input = self.selenium.find_element_by_name("password")
+        password_input.send_keys(password2)
+        confirmation_input = self.selenium.find_element_by_name("confirmation")
+        confirmation_input.send_keys(password2)
+        self.selenium.find_element_by_xpath('//input[@value="Register"]').click()
+
+        # check login by finding element on index.html 
+        self.selenium.find_element_by_id("page-heading")
+
+        # check for testuser2 in page_source
+        assert username2 in self.selenium.page_source
 
 
 # Create your tests here.
