@@ -82,8 +82,8 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.num_pages, 1)
         self.assertEqual(response.context['page_obj'].object_list.count(), 0)
 
-        # 
-
+    
+    # following 
     def test_following_PUT_reverse_to_index(self):
         c = Client()
 
@@ -109,8 +109,28 @@ class ViewsTestCase(TestCase):
         # print(response)
         self.assertEqual(response.status_code, 302)
 
-    # def test_POST_new_post_form_to_following(self):
+    def test_following_PUT_POST_DELETE_reverse_to_index(self):
+        c = Client()
+        logged_in = c.login(username='testuser', password='12345')
+        username = 'testuser2'
+        u2 = User.objects.get(username=username)
 
+        user_id = str(u2.id)
+        path = '/following'
+        
+        response = c.put(path)
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.delete(path)
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.post(path)
+        # print(response)
+        self.assertEqual(response.status_code, 302)
+
+    # profile
     def test_profile(self):
         c = Client()
         logged_in = c.login(username='testuser', password='12345')
