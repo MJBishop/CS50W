@@ -359,10 +359,10 @@ class NetworkModelsTestCase(TestCase):
         cls.user2 = User.objects.create_user('James')
 
         # create Follow
-        cls.f1 = Follow.objects.create(from_user=cls.user1, to_user=cls.user2)
+        cls.follow1 = Follow.objects.create(from_user=cls.user1, to_user=cls.user2)
 
         # create Post
-        cls.p1 = Post.objects.create(user=cls.user1, text='MY FIRST POST')
+        cls.post1 = Post.objects.create(user=cls.user1, text='MY FIRST POST')
             
 
     # Follow tests
@@ -407,8 +407,7 @@ class NetworkModelsTestCase(TestCase):
 
     # Post tests
     def test_post_string(self):
-        post = Post.objects.get(user=self.user1)
-        self.assertEqual(post.__str__(), "Mike, MY FIRST POST. 0 likes.")
+        self.assertEqual(self.post1.__str__(), "Mike, MY FIRST POST. 0 likes.")
 
     def test_create_post(self):
         test_post_string = "MY SECOND POST"
@@ -423,7 +422,7 @@ class NetworkModelsTestCase(TestCase):
     def test_edit_post_raises_exception_for_invalid_user(self):
         post = Post.objects.get(user=self.user1)
         test_post_string = "UPDATED POST"
-        self.assertRaises(Exception, post.update, self.user2, test_post_string)
+        self.assertRaises(Exception, self.post1.update, self.user2, test_post_string)
 
     def test_edit_post_raises_exception_for_for_post_length_greater_than_MAX_POST_LENGTH(self):
         post = Post.objects.get(user=self.user1)
@@ -438,27 +437,23 @@ class NetworkModelsTestCase(TestCase):
         self.assertEqual(updated_post.text, test_post_string)
 
     def test_post_likes_count_like(self):
-        post = Post.objects.get(user=self.user1)
-        post.toggle_like(self.user2)
-        self.assertEqual(post.likes.count(), 1)
+        self.post1.toggle_like(self.user2)
+        self.assertEqual(self.post1.likes.count(), 1)
         
     def test_post_likes_count_unlike(self):
-        post = Post.objects.get(user=self.user1)
-        post.toggle_like(self.user2)
-        post.toggle_like(self.user2)
-        self.assertEqual(post.likes.count(), 0)
+        self.post1.toggle_like(self.user2)
+        self.post1.toggle_like(self.user2)
+        self.assertEqual(self.post1.likes.count(), 0)
 
     def test_post_toggle_like_returns_count_and_liked(self):
-        post = Post.objects.get(user=self.user1)
-        count, liked = post.toggle_like(self.user2)
+        count, liked = self.post1.toggle_like(self.user2)
         self.assertEqual(count, 1)
         self.assertEqual(liked, 'liked')
 
     def test_two_users_like_post_count(self):
-        post = Post.objects.get(user=self.user1)
-        post.toggle_like(self.user2)
-        post.toggle_like(self.user1)
-        self.assertEqual(post.likes.count(), 2)
+        self.post1.toggle_like(self.user2)
+        self.post1.toggle_like(self.user1)
+        self.assertEqual(self.post1.likes.count(), 2)
 
     def test_posts_for_all_users_returns_one_post(self):
         all_posts = Post.objects.posts_from_all_users()
@@ -478,13 +473,13 @@ class NetworkModelsTestCase(TestCase):
 
     def test_posts_from_users_followed_by_user_one_returns_one_post(self):
         test_post_string = "JAMES' POST"
-        post1 = Post.objects.create_post(self.user2, text=test_post_string)
+        post = Post.objects.create_post(self.user2, text=test_post_string)
         all_posts = Post.objects.posts_from_users_followed_by_user(self.user1)
         self.assertEqual(all_posts.count(), 1)
 
     def test_posts_from_users_followed_by_user_one_returns_four_posts(self):
         test_post_string = "JAMES' POST"
-        post1 = Post.objects.create_post(self.user2, text=test_post_string)
+        post = Post.objects.create_post(self.user2, text=test_post_string)
         post2 = Post.objects.create_post(self.user2, text=test_post_string)
 
         u3 = User.objects.create_user('Paul')
@@ -507,9 +502,9 @@ class NetworkModelsTestCase(TestCase):
 
     def test_posts_annotate_order_by(self):
         p1 = Post.objects.create_post(self.user1, 'MY SECOND POST')
-        p1 = Post.objects.create_post(self.user1, 'MY THIRD POST')
+        p2 = Post.objects.create_post(self.user1, 'MY THIRD POST')
         posts = Post.objects.posts_from_user(self.user1)
-        self.assertEqual(posts[0], p1)
+        self.assertEqual(posts[0], p2)
 
 
 
