@@ -8,22 +8,22 @@ local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-p
 # testuser
 username = 'testuser'
 password = '12345'
+email = 'testuser@test.com'
 # testuser2
 username2 = 'testuser2'
 password2 = '54321'
-email2 = 'testuser@test.com'
+email2 = 'testuser2@test.com'
 
 # Selenium Tests
 class SeleniumTests(StaticLiveServerTestCase):
 
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username=username, email=email, password=password)
+        
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        
-        # create a test user
-        user = User.objects.create(username=username)
-        user.set_password(password)
-        user.save()
         
         # webdriver - chromedriver: separate method that can be tested?
         try:
@@ -56,21 +56,23 @@ class LoginTests(SeleniumTests):
 
 
 class RegisterTests(SeleniumTests):
-
-    def test_register(self):
+    
+    def test_register_success(self):
         register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
         index_page = register_page.register_as(username2, email2, password2, password2)
         self.assertIn(username, index_page.get_user().text)
 
-    def test_register_denies_access_for_unmatched_passwords(self):
+    def test_register_fails_username_exists(self):
+        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
+        register_page = register_page.expect_failure_to_register_as(username, email, password, password)
+        self.assertIn("Username", register_page.get_errors().text)
+
+    def test_register_fails_unmatched_passwords(self):
         register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
         register_page = register_page.expect_failure_to_register_as('foo', 'foo@bar.com', 'foo', 'bar')
         self.assertIn("Passwords", register_page.get_errors().text)
 
-    # def test_register_denies_access_for_username_already_taken(self):
-    #     register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
-    #     register_page = register_page.expect_failure_to_register_as(username2, email2, password2, password2)
-    #     self.assertIn("Username", register_page.get_errors().text)
+        
 
 
 class IndexTests(SeleniumTests):
@@ -236,9 +238,8 @@ class FollowingPage(IndexPage):
 
 class ProfilePage(IndexPage):
     
-    def __init__(self, driver, live_server_url, profile_id):
-        self.driver = driver
-        self.live_server_url = live_server_url
+    def __init__(self, driver, live_server_url, profile_id, navigate=False):
+        super().__init__(self, driver, live_server_url, navigate)
         self.url = '/profile/' + profile_id
 
     # sign in
