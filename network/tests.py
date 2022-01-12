@@ -27,7 +27,9 @@ class FormsTestCase(TestCase):
             'text': ['This field is required.'],
         })
         
+
 testuser = 'testuser'
+password = '12345'
 
 class ViewsTestCase(TestCase):
 
@@ -35,7 +37,7 @@ class ViewsTestCase(TestCase):
     def setUpTestData(cls):
 
         cls.user1 = User.objects.create_user(
-            username=testuser, email='testuser@test.com', password='12345')
+            username=testuser, email='testuser@test.com', password=password)
 
         cls.user2 = User.objects.create_user(
             username='testuser2', email='testuser2@test.com', password='54321')
@@ -55,7 +57,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.url, "/login/?next=/following") 
 
     def test_following(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         response = self.client.get('/following')
         self.assertEqual(response.status_code, 200)
@@ -67,7 +69,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_following_PUT_POST_DELETE_reverse_to_index(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         path = '/following'
 
         response = self.client.put(path)
@@ -81,7 +83,7 @@ class ViewsTestCase(TestCase):
 
     # profile
     def test_profile(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         username = str(self.user2.username)
         user_id = str(self.user2.id)
         path = '/profile/' + user_id
@@ -93,7 +95,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.context['profile'].username, username)
 
     def test_profile_raises_404_exception_for_invalid_user(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         user_id = '100'
         path = '/profile/' + user_id
 
@@ -101,7 +103,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_profile_PUT_POST_DELETE_reverse_to_index(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         user_id = str(self.user2.id)
         path = '/profile/' + user_id
         
@@ -117,13 +119,13 @@ class ViewsTestCase(TestCase):
 
     # new_post
     def test_new_post(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         response = self.client.post("/post", data={"text": "Hello World!"})
         self.assertEqual(self.user1.posts.count(), 1)
 
     def test_new_post_redirects_to_profile(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         response = self.client.post("/post", data={"text": "Hello World!"})
         self.assertEqual(response.url, "/profile/1") 
@@ -136,7 +138,7 @@ class ViewsTestCase(TestCase):
 
     # update_post
     def test_update_post_returns_an_error_for_post_that_does_not_exist(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         post_id = '100'
         path = '/post/' + post_id
 
@@ -144,7 +146,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_update_post(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -164,7 +166,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(post.text, updated_post_text)
 
     def test_update_post_fails_for_post_text_greater_than_MAX_POST_LENGTH(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -179,7 +181,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_update_post_fails_for_empty_post_text(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -194,7 +196,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         
     def test_update_fails_for_GET_and_POST(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -213,7 +215,7 @@ class ViewsTestCase(TestCase):
 
     # toggle_like
     def test_like_post_returns_an_error_for_post_that_does_not_exist(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         post_id = '100'
         path = '/like/' + post_id
 
@@ -221,7 +223,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_like_post_fails_for_GET_and_POST(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -238,7 +240,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_like_post(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # create a post, and retrieve it
         response = self.client.post("/post", data={"text": "Hello World!"})
@@ -270,14 +272,14 @@ class ViewsTestCase(TestCase):
 
     # Follow / Unfollow
     def test_follow_returns_an_error_for_user_that_does_not_exist(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
         path = '/follow/' + '100'
 
         response = self.client.generic('POST', path)
         self.assertEqual(response.status_code, 404)
 
     def test_follow_fails_for_GET_and_PUT(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 follows u2
         user_id = str(self.user2.id)
@@ -290,7 +292,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_follow(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 follows u2
         user_id = str(self.user2.id)
@@ -301,7 +303,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(self.user1.following.count(), 1)
 
     def test_follow_returns_an_error_for_user_already_following_user2(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 follows u2
         user_id = str(self.user2.id)
@@ -316,7 +318,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_unfollow_returns_an_error_for_user_that_does_not_exist(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 follows 
         path = '/follow/' + '100'
@@ -325,7 +327,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_unfollow(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 follows u2
         user_id = str(self.user2.id)
@@ -337,7 +339,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(self.user1.following.count(), 0)
 
     def test_unfollow_returns_an_error_for_user_not_following_user2(self):
-        logged_in = self.client.login(username=testuser, password='12345')
+        logged_in = self.client.login(username=testuser, password=password)
 
         # u1 unfollows u2..
         user_id = str(self.user2.id)
