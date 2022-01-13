@@ -192,10 +192,18 @@ class IndexTests(SeleniumTests):
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
 
     def test_like_post(self):
+        self.assertIn('Likes 0', self.allposts_page.get_first_post_like_button().text)
+        like_button_id = self.allposts_page.get_first_post_like_button_id()
+
+        # like
         index_template = self.allposts_page.click_first_post_like_button()
-        like_button_id = index_template.get_first_post_like_button_id()
         WebDriverWait(self.selenium, timeout=10).until(text_to_be_present_in_element((By.ID, like_button_id), 'Likes 1'))
         self.assertIn('Likes 1', index_template.get_first_post_like_button().text)
+
+        # unlike
+        index_template = self.allposts_page.click_first_post_like_button()
+        WebDriverWait(self.selenium, timeout=10).until(text_to_be_present_in_element((By.ID, like_button_id), 'Likes 0'))
+        self.assertIn('Likes 0', index_template.get_first_post_like_button().text)
 
 
     # post -> profile when no login!
