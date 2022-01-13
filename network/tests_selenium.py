@@ -1,11 +1,10 @@
+from typing import get_args
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.core.exceptions import ValidationError
-
-from network.views import following
 from .models import User
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
+from selenium.common.exceptions import NoSuchElementException
 
 # testuser
 username = 'testuser'
@@ -43,15 +42,46 @@ class SeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
+class AnnonymousLayoutTests(SeleniumTests):
+
+    def setUp(self):
+        super().setUp()
+
+        self.index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
+
+    def test_allposts_heading(self):
+        self.assertIn("All Posts", self.index_page.get_heading().text)
+
+    def test_allposts(self):
+        all_posts_page = self.index_page.click_allposts()
+        self.assertIn("All Posts", self.index_page.get_heading().text)
+
+    def test_following(self):
+        self.assertRaises(NoSuchElementException, self.index_page.click_following)
+
+    def test_profile(self):
+        self.assertRaises(NoSuchElementException, self.index_page.click_profile)
+
+    def test_register(self):
+        register_page = self.index_page.click_register()
+        self.assertIn("Register", self.selenium.page_source)
+
+    def test_login(self):
+        login_page = self.index_page.click_login()
+        self.assertIn("Log In", self.selenium.page_source)
+
+    def test_logout(self):
+        self.assertRaises(NoSuchElementException, self.index_page.click_logout)
+
 
 class LoginTests(SeleniumTests):
 
-    def test_login(self):
+    def test_login_success(self):
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
         index_page = login_page.login_as(username, password)
         self.assertIn(username, index_page.get_user().text)
 
-    def test_login_denies_access(self):
+    def test_login_fail(self):
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
         login_page = login_page.expect_failure_to_login_as('foo', 'bar')
         self.assertIn("Invalid", login_page.get_errors().text)
@@ -77,26 +107,45 @@ class RegisterTests(SeleniumTests):
 
 class IndexTests(SeleniumTests):
 
-    def test_index(self):
+    def test_allposts(self):
         index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
         self.assertIn("All Posts", index_page.get_heading().text)
 
+    
+    # def test_login(self):
 
-class FollowingTests(SeleniumTests):
+    # def test_register(self):
+
+
+class LayoutTests(SeleniumTests):
+
+    def setUp(self):
+        super().setUp()
+
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+        self.index_page = login_page.login_as(username, password)
+
+    def test_allposts(self):
+        self.assertIn("All Posts", self.index_page.get_heading().text)
 
     def test_following(self):
-        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        index_page = login_page.login_as(username, password)
-        following_page = index_page.click_following()
+        following_page = self.index_page.click_following()
         self.assertIn("Following", following_page.get_heading().text)
 
-class ProfileTests(SeleniumTests):
-
-    def test_following(self):
-        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        index_page = login_page.login_as(username, password)
-        profile_page = index_page.click_profile()
+    def test_profile(self):
+        profile_page = self.index_page.click_profile()
         self.assertIn(username, profile_page.get_heading().text)
+
+    # def test_logout(self):
+
+
+# class FollowingTests(SeleniumTests):
+
+    
+
+# class ProfileTests(SeleniumTests):
+
+    
 
 
 # POMs
@@ -133,7 +182,54 @@ class BasePage(object):
 			)
         )
 
-class LoginPage(BasePage):
+class LayoutTemplate(BasePage):
+    url = "/"
+
+    # ELEMENTS:
+    HEADING_ELEM_ID = 'post-list-heading'
+    ALLPOSTS_LINK_TEXT = 'All Posts' # todo
+    FOLLOWING_LINK_TEXT = 'Following'
+    PROFILE_LINK_TEXT = username
+    LOGOUT_LINK_TEXT = 'Log Out' # todo
+    LOGIN_LINK_TEXT = 'Log In' # todo
+    REGISTER_LINK_TEXT = 'Register' # todo
+
+
+    def get_user(self):
+        return self.driver.find_element_by_id(self.USERID_ELEM_ID)
+
+    def get_heading(self):
+        return self.driver.find_element_by_id(self.HEADING_ELEM_ID)
+
+    def click_allposts(self):
+        self.driver.find_element_by_link_text(self.ALLPOSTS_LINK_TEXT).click()
+        return AllPostsPage(self.driver, self.live_server_url)
+
+    def click_following(self):
+        self.driver.find_element_by_link_text(self.FOLLOWING_LINK_TEXT).click()
+        return FollowingPage(self.driver, self.live_server_url)
+
+    def click_profile(self):
+        self.driver.find_element_by_link_text(self.PROFILE_LINK_TEXT).click()
+        return ProfilePage(self.driver, self.live_server_url)
+
+    def click_login(self):
+        self.driver.find_element_by_link_text(self.LOGIN_LINK_TEXT).click()
+        return LoginPage(self.driver, self.live_server_url)
+
+    def click_register(self):
+        self.driver.find_element_by_link_text(self.REGISTER_LINK_TEXT).click()
+        return RegisterPage(self.driver, self.live_server_url)
+
+    def click_logout(self):
+        self.driver.find_element_by_link_text(self.LOGOUT_LINK_TEXT).click()
+        return AllPostsPage(self.driver, self.live_server_url)
+
+
+    # sign in
+    # logout
+
+class LoginPage(LayoutTemplate):
     url = "/login"
 
     # ELEMENTS:
@@ -218,59 +314,13 @@ class RegisterPage(LoginPage):
         return self.submitExpectingFailure()
 
 
-class IndexPage(BasePage):
+class IndexPage(LayoutTemplate):
     url = "/"
 
-    # ELEMENTS:
-    HEADING_ELEM_ID = 'post-list-heading'
-    FOLLOWING_LINK_TEXT = 'Following'
-    PROFILE_LINK_TEXT = username
-    POST_TEXTAREA_ELEM_ID = 'id_text'
-    USERID_ELEM_ID = 'userid'
-    INPUT_ELEM_XPATH = '//input[@value="NewPost"]'
 
-
-    def get_user(self):
-        return self.driver.find_element_by_id(self.USERID_ELEM_ID)
-
-    def get_heading(self):
-        return self.driver.find_element_by_id(self.HEADING_ELEM_ID)
-
-    def set_post_text(self, post_text):
-        self.fill_form_by_id(self.POST_TEXTAREA_ELEM_ID, post_text)
-
-    def submit(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
-
-    def submitExpectingFailure(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
-
-
-    
-    def click_following(self):
-        self.driver.find_element_by_link_text(self.FOLLOWING_LINK_TEXT).click()
-        return FollowingPage(self.driver, self.live_server_url)
-
-    def click_profile(self):
-        self.driver.find_element_by_link_text(self.PROFILE_LINK_TEXT).click()
-        return ProfilePage(self.driver, self.live_server_url)
-
-
-    # sign in
-    # logout
     
     # toggle like
     # edit post
-
-class AllPostsPage(IndexPage):
-    pass
-
-class FollowingPage(IndexPage):
-    url = "/following"
-
-
 
 class ProfilePage(IndexPage):
     url = "/profile/1"
@@ -283,3 +333,26 @@ class ProfilePage(IndexPage):
     # sign in
     # profile (other user)
     # toggle follow
+
+class AllPostsPage(IndexPage):
+    url = "/"
+
+    # ELEMENTS:
+    POST_TEXTAREA_ELEM_ID = 'id_text'
+    USERID_ELEM_ID = 'userid'
+    INPUT_ELEM_XPATH = '//input[@value="NewPost"]'
+
+    def set_post_text(self, post_text):
+        self.fill_form_by_id(self.POST_TEXTAREA_ELEM_ID, post_text)
+
+    def submit(self):
+        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
+
+    def submitExpectingFailure(self):
+        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
+
+class FollowingPage(IndexPage):
+    url = "/following"
+
