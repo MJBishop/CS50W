@@ -47,7 +47,7 @@ class AnnonymousLayoutTests(SeleniumTests):
     def setUp(self):
         super().setUp()
 
-        self.index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
+        self.index_page = AllPostsPage(self.selenium, self.live_server_url, navigate=True)
 
     def test_allposts_heading(self):
         self.assertIn("All Posts", self.index_page.get_heading().text)
@@ -105,18 +105,6 @@ class RegisterTests(SeleniumTests):
         self.assertIn("Passwords", register_page.get_errors().text)
 
 
-class IndexTests(SeleniumTests):
-
-    def test_allposts(self):
-        index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
-        self.assertIn("All Posts", index_page.get_heading().text)
-
-    
-    # def test_login(self):
-
-    # def test_register(self):
-
-
 class LayoutTests(SeleniumTests):
 
     def setUp(self):
@@ -125,7 +113,11 @@ class LayoutTests(SeleniumTests):
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
         self.index_page = login_page.login_as(username, password)
 
+    def test_allposts_heading(self):
+        self.assertIn("All Posts", self.index_page.get_heading().text)
+
     def test_allposts(self):
+        all_posts_page = self.index_page.click_allposts()
         self.assertIn("All Posts", self.index_page.get_heading().text)
 
     def test_following(self):
@@ -136,8 +128,22 @@ class LayoutTests(SeleniumTests):
         profile_page = self.index_page.click_profile()
         self.assertIn(username, profile_page.get_heading().text)
 
-    # def test_logout(self):
+    def test_register(self):
+        self.assertRaises(NoSuchElementException, self.index_page.click_register)
 
+    def test_login(self):
+        self.assertRaises(NoSuchElementException, self.index_page.click_login)
+
+    def test_logout(self):
+        index_page = self.index_page.click_logout()
+        self.assertIn("All Posts", self.index_page.get_heading().text) #?
+
+
+class IndexTests(SeleniumTests):
+
+    def test_allposts(self):
+        index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
+        self.assertIn("All Posts", index_page.get_heading().text)
 
 # class FollowingTests(SeleniumTests):
 
