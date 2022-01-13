@@ -192,25 +192,33 @@ class IndexTests(SeleniumTests):
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
 
     def test_like_post(self):
-        self.assertIn('Likes 0', self.allposts_page.get_first_post_like_button().text)
-        like_button_id = self.allposts_page.get_first_post_like_button_id()
-
+        
         # like
-        index_template = self.allposts_page.click_first_post_like_button()
-        WebDriverWait(self.selenium, timeout=10).until(text_to_be_present_in_element((By.ID, like_button_id), 'Likes 1'))
-        self.assertIn('Likes 1', index_template.get_first_post_like_button().text)
+        expected_str = self.allposts_page.click_first_post_like_button()
+        self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
 
         # unlike
-        index_template = self.allposts_page.click_first_post_like_button()
-        WebDriverWait(self.selenium, timeout=10).until(text_to_be_present_in_element((By.ID, like_button_id), 'Likes 0'))
-        self.assertIn('Likes 0', index_template.get_first_post_like_button().text)
+        expected_str = self.allposts_page.click_first_post_unlike_button()
+        self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
 
+    def test_post_profile(self):
+        profile_page = self.allposts_page.click_post_profile()
+        self.assertIn(username, profile_page.get_heading().text)
+    
+    def test_post_profile_other_user(self):
+
+        # logout
+        # crete new user
+        # login
+
+
+        profile_page = self.allposts_page.click_post_profile()
+        self.assertIn(username, profile_page.get_heading().text)
 
     # post -> profile when no login!
 
     # post:
         # prfile click
-        # like/unlike
         # edit
 
 
@@ -430,7 +438,7 @@ class IndexTemplate(NewPostTemplate):
     EDIT_POST_BUTTON_ELEM_ID = 'update-post-button'
     SAVE_POST_BUTTON_ELEM_ID = 'save-updated-post-button'
     SAVE_POST_TEXTAREA_ELEM_ID = 'update-post-text'
-    PROFILE_LINK_TEXT = username #??
+    POST_PROFILE_LINK_TEXT = username #??
 
 
     def get_first_post(self):
@@ -443,8 +451,16 @@ class IndexTemplate(NewPostTemplate):
         return self.driver.find_element_by_id(self.LIKE_POST_BUTTON_ELEM_ID)
 
     def click_first_post_like_button(self):
+        one_like_str = 'Likes 1'
         self.get_first_post_like_button().click()
-        return IndexTemplate(self.driver, self.live_server_url)
+        WebDriverWait(self.driver, timeout=10).until(text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), one_like_str))
+        return one_like_str
+
+    def click_first_post_unlike_button(self):
+        no_likes_str = 'Likes 0' #move to POM
+        self.get_first_post_like_button().click()
+        WebDriverWait(self.driver, timeout=10).until(text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), no_likes_str))
+        return no_likes_str
 
     def get_first_post_edit_button(self):
         return self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID)
@@ -455,7 +471,9 @@ class IndexTemplate(NewPostTemplate):
     def get_first_post_save_textarea(self):
         return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
 
-
+    def click_post_profile(self):
+        self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
+        return ProfilePage(self.driver, self.live_server_url)
 
 
 
