@@ -262,8 +262,22 @@ class ProfileTests(SeleniumTests):
 
     def test_followers_count(self):
         self.assertIn('0', self.profile_page.get_followers_count_div().text)
+
+        # follow
         expected_str = self.profile_page.follow_profile()
         self.assertIn('1', self.profile_page.get_followers_count_div().text)
+
+        # unfollow
+        expected_str = self.profile_page.unfollow_profile()
+        self.assertIn('0', self.profile_page.get_followers_count_div().text)
+
+    def test_following_count(self):
+        expected_str = self.profile_page.follow_profile()
+        index_page = self.profile_page.logout()
+        login_page = index_page.click_login()
+        index_page = login_page.login_as(username, password)
+        profile_page = index_page.click_profile()
+        self.assertIn('1', self.profile_page.get_following_count_div().text)
 
     
 
