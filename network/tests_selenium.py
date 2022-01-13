@@ -5,6 +5,9 @@ from .models import User, MAX_POST_LENGTH
 from selenium.webdriver.chrome.webdriver import WebDriver
 local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
 
 # testuser
 username = 'testuser'
@@ -76,32 +79,37 @@ class AnnonymousLayoutTests(SeleniumTests):
 
 class LoginTests(SeleniumTests):
 
+    def setUp(self):
+        super().setUp()
+
+        self.login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+
     def test_login_success(self):
-        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        index_page = login_page.login_as(username, password)
+        index_page = self.login_page.login_as(username, password)
         self.assertIn(username, index_page.get_user().text)
 
     def test_login_fail(self):
-        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        login_page = login_page.expect_failure_to_login_as('foo', 'bar')
+        login_page = self.login_page.expect_failure_to_login_as('foo', 'bar')
         self.assertIn("Invalid", login_page.get_errors().text)
 
 
 class RegisterTests(SeleniumTests):
 
+    def setUp(self):
+        super().setUp()
+
+        self.register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
+
     def test_register_success(self):
-        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
-        index_page = register_page.register_as(username2, email2, password2, password2)
+        index_page = self.register_page.register_as(username2, email2, password2, password2)
         self.assertIn(username, index_page.get_user().text)
 
     def test_register_fail_username_exists(self):
-        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
-        register_page = register_page.expect_failure_to_register_as(username, email, password, password)
+        register_page = self.register_page.expect_failure_to_register_as(username, email, password, password)
         self.assertIn("Username", register_page.get_errors().text)
 
     def test_register_fail_unmatched_passwords(self):
-        register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
-        register_page = register_page.expect_failure_to_register_as('foo', 'foo@bar.com', 'foo', 'bar')
+        register_page = self.register_page.expect_failure_to_register_as('foo', 'foo@bar.com', 'foo', 'bar')
         self.assertIn("Passwords", register_page.get_errors().text)
 
 
@@ -168,21 +176,38 @@ class NewPostTests(SeleniumTests):
         self.assertIn(username, profile_page.get_heading().text)
         
 
-
-
-
-
-
-
-
-
-
-
 class IndexTests(SeleniumTests):
 
-    def test_allposts(self):
-        index_page = IndexPage(self.selenium, self.live_server_url, navigate=True)
-        self.assertIn("All Posts", index_page.get_heading().text)
+    def setUp(self):
+        super().setUp()
+
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+        index_page = login_page.login_as(username, password)
+        self.string_to_test = "Hello World!"
+        profile_page = index_page.post_text(self.string_to_test)
+        self.allposts_page = profile_page.click_allposts()
+
+
+    def test_first_post(self):
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
+
+    def test_like_post(self):
+        index_template = self.allposts_page.click_first_post_like_button()
+        like_button_id = index_template.get_first_post_like_button_id()
+        WebDriverWait(self.selenium, timeout=10).until(text_to_be_present_in_element((By.ID, like_button_id), 'Likes 1'))
+        self.assertIn('Likes 1', index_template.get_first_post_like_button().text)
+
+
+    # post -> profile when no login!
+
+    # post:
+        # prfile click
+        # like/unlike
+        # edit
+
+
+
+
 
 # class FollowingTests(SeleniumTests):
 
@@ -300,7 +325,7 @@ class LoginPage(LayoutTemplate):
 
     def submit(self):
         self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return IndexPage(self.driver, self.live_server_url)
+        return AllPostsPage(self.driver, self.live_server_url)
 
     def login_as(self, username, password):
         self.set_user_data(username, password)
@@ -365,6 +390,7 @@ class NewPostTemplate(LayoutTemplate):
     INPUT_ELEM_XPATH = '//input[@value="NewPost"]'
     POST_TEXT_DIV_ELEM_ID = "post-text-div"
 
+
     def get_post_text_div(self):
         return self.driver.find_element_by_id(self.POST_TEXT_DIV_ELEM_ID)
 
@@ -387,28 +413,55 @@ class NewPostTemplate(LayoutTemplate):
 
 
 
-class IndexPage(NewPostTemplate):
+class IndexTemplate(NewPostTemplate):
+    url = "/"
+
+    # ELEMENTS:
+    POST_TEXT_ELEM_ID = 'post-text'
+    LIKE_POST_BUTTON_ELEM_ID = 'like-post-button'
+    EDIT_POST_BUTTON_ELEM_ID = 'update-post-button'
+    SAVE_POST_BUTTON_ELEM_ID = 'save-updated-post-button'
+    SAVE_POST_TEXTAREA_ELEM_ID = 'update-post-text'
+    PROFILE_LINK_TEXT = username #??
+
+
+    def get_first_post(self):
+        return self.driver.find_element_by_id(self.POST_TEXT_ELEM_ID)
+
+    def get_first_post_like_button_id(self):
+        return self.LIKE_POST_BUTTON_ELEM_ID
+
+    def get_first_post_like_button(self):
+        return self.driver.find_element_by_id(self.LIKE_POST_BUTTON_ELEM_ID)
+
+    def click_first_post_like_button(self):
+        self.get_first_post_like_button().click()
+        return IndexTemplate(self.driver, self.live_server_url)
+
+    def get_first_post_edit_button(self):
+        return self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID)
+
+    def get_first_post_save_button(self):
+        return self.driver.find_element_by_id(self.SAVE_POST_BUTTON_ELEM_ID)
+
+    def get_first_post_save_textarea(self):
+        return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
+
+
+
+
+
+
+
+class AllPostsPage(IndexTemplate):
     url = "/"
 
 
-    
-    # toggle like
-    # edit post
-
-
-class AllPostsPage(IndexPage):
-    url = "/"
-
-
-
-    
-
-
-class FollowingPage(IndexPage):
+class FollowingPage(IndexTemplate):
     url = "/following"
 
 
-class ProfilePage(IndexPage):
+class ProfilePage(IndexTemplate):
     url = "/profile/1"
 
     
