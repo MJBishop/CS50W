@@ -246,9 +246,24 @@ class ProfileTests(SeleniumTests):
         self.profile_page = index_page.click_post_profile_name()
 
 
-    def test_post_profile_other_user(self):
+    def test_post_to_other_users_profile_(self):
         self.assertIn(username, self.profile_page.get_heading().text)
         self.assertIn(username2, self.profile_page.get_user().text)
+
+    def test_follow_user(self):
+
+        # follow
+        expected_str = self.profile_page.follow_profile()
+        self.assertIn(expected_str, self.profile_page.get_follow_profile_button().text)
+
+        # unfollow
+        expected_str = self.profile_page.unfollow_profile()
+        self.assertIn(expected_str, self.profile_page.get_follow_profile_button().text)
+
+    def test_followers_count(self):
+        self.assertIn('0', self.profile_page.get_followers_count_div().text)
+        expected_str = self.profile_page.follow_profile()
+        self.assertIn('1', self.profile_page.get_followers_count_div().text)
 
     
 
@@ -523,9 +538,17 @@ class ProfilePage(IndexTemplate):
 
 
     # ELEMENTS:
+    FOLLOWERS_COUNT_ELEM_ID = 'followers-count-div'
+    FOLLOWING_COUNT_ELEM_ID = 'following-count-div'
     FOLLOW_PROFILE_BUTTON_ELEM_ID = 'follow-user-button'
     FOLLOWING_PROFILE_BUTTON_STR = 'Following'
     NOT_FOLLOWING_PROFILE_BUTTON_STR = 'Follow'
+
+    def get_followers_count_div(self):
+        return self.driver.find_element_by_id(self.FOLLOWERS_COUNT_ELEM_ID)
+
+    def get_following_count_div(self):
+        return self.driver.find_element_by_id(self.FOLLOWING_COUNT_ELEM_ID)
 
     def get_follow_profile_button(self):
         return self.driver.find_element_by_id(self.FOLLOW_PROFILE_BUTTON_ELEM_ID)
