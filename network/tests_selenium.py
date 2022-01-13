@@ -2,12 +2,12 @@ from typing import get_args
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import User, MAX_POST_LENGTH
 
-from selenium.webdriver.chrome.webdriver import WebDriver
-local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.webdriver import WebDriver
+local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 
 # testuser
 username = 'testuser'
@@ -74,7 +74,7 @@ class AnnonymousLayoutTests(SeleniumTests):
         self.assertIn("Log In", self.selenium.page_source)
 
     def test_logout(self):
-        self.assertRaises(NoSuchElementException, self.index_page.click_logout)
+        self.assertRaises(NoSuchElementException, self.index_page.logout)
 
 
 class LoginTests(SeleniumTests):
@@ -143,7 +143,7 @@ class LayoutTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, self.index_page.click_login)
 
     def test_logout(self):
-        index_page = self.index_page.click_logout()
+        index_page = self.index_page.logout()
         self.assertIn("All Posts", self.index_page.get_heading().text) #?
 
 
@@ -192,7 +192,7 @@ class IndexTests(SeleniumTests):
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
 
     def test_like_post(self):
-        
+
         # like
         expected_str = self.allposts_page.click_first_post_like_button()
         self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
@@ -202,17 +202,16 @@ class IndexTests(SeleniumTests):
         self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
 
     def test_post_profile(self):
-        profile_page = self.allposts_page.click_post_profile()
+        profile_page = self.allposts_page.click_post_profile_name()
         self.assertIn(username, profile_page.get_heading().text)
     
-    def test_post_profile_other_user(self):
 
         # logout
         # crete new user
         # login
 
 
-        profile_page = self.allposts_page.click_post_profile()
+        profile_page = self.allposts_page.click_post_profile_name()
         self.assertIn(username, profile_page.get_heading().text)
 
     # post -> profile when no login!
@@ -229,7 +228,27 @@ class IndexTests(SeleniumTests):
 
     
 
-# class ProfileTests(SeleniumTests):
+class ProfileTests(SeleniumTests):
+
+    def setUp(self):
+        super().setUp()
+
+        self.user = User.objects.create_user(
+            username=username2, email=email2, password=password2)
+
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+        index_page = login_page.login_as(username, password)
+        string_to_test = "Hello World!"
+        profile_page = index_page.post_text(string_to_test)
+        index_page = profile_page.logout()
+        login_page = index_page.click_login()
+        index_page = login_page.login_as(username2, password2)
+        self.profile_page = index_page.click_post_profile_name()
+
+
+    def test_post_profile_other_user(self):
+        self.assertIn(username, self.profile_page.get_heading().text)
+        self.assertIn(username2, self.profile_page.get_user().text)
 
     
 
@@ -308,7 +327,7 @@ class LayoutTemplate(BasePage):
         self.driver.find_element_by_link_text(self.REGISTER_LINK_TEXT).click()
         return RegisterPage(self.driver, self.live_server_url)
 
-    def click_logout(self):
+    def logout(self):
         self.driver.find_element_by_link_text(self.LOGOUT_LINK_TEXT).click()
         return AllPostsPage(self.driver, self.live_server_url)
 
@@ -425,7 +444,7 @@ class NewPostTemplate(LayoutTemplate):
         return self.submit()
 
 
-    # failure:
+    # failure returns ProfilePage or does nothing
 
 
 
@@ -439,6 +458,8 @@ class IndexTemplate(NewPostTemplate):
     SAVE_POST_BUTTON_ELEM_ID = 'save-updated-post-button'
     SAVE_POST_TEXTAREA_ELEM_ID = 'update-post-text'
     POST_PROFILE_LINK_TEXT = username #??
+    one_like_str = 'Likes 1'
+    no_likes_str = 'Likes 0' 
 
 
     def get_first_post(self):
@@ -451,16 +472,20 @@ class IndexTemplate(NewPostTemplate):
         return self.driver.find_element_by_id(self.LIKE_POST_BUTTON_ELEM_ID)
 
     def click_first_post_like_button(self):
-        one_like_str = 'Likes 1'
         self.get_first_post_like_button().click()
-        WebDriverWait(self.driver, timeout=10).until(text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), one_like_str))
-        return one_like_str
+        WebDriverWait(self.driver, timeout=10).until(
+            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.one_like_str)
+            )
+        return self.one_like_str
 
     def click_first_post_unlike_button(self):
-        no_likes_str = 'Likes 0' #move to POM
         self.get_first_post_like_button().click()
-        WebDriverWait(self.driver, timeout=10).until(text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), no_likes_str))
-        return no_likes_str
+        WebDriverWait(self.driver, timeout=10).until(
+            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.no_likes_str)
+            )
+        return self.no_likes_str
+
+
 
     def get_first_post_edit_button(self):
         return self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID)
@@ -471,11 +496,12 @@ class IndexTemplate(NewPostTemplate):
     def get_first_post_save_textarea(self):
         return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
 
-    def click_post_profile(self):
+    def click_post_profile_name(self):
         self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
         return ProfilePage(self.driver, self.live_server_url)
 
-
+    def get_post_notification(self):
+        pass
 
 
 
@@ -495,6 +521,28 @@ class ProfilePage(IndexTemplate):
     #     super().__init__(self, driver, live_server_url, navigate)
     #     self.url = '/profile/' + profile_id
 
-    # sign in
-    # profile (other user)
-    # toggle follow
+
+    # ELEMENTS:
+    FOLLOW_PROFILE_BUTTON_ELEM_ID = 'follow-user-button'
+    FOLLOWING_PROFILE_BUTTON_STR = 'Following'
+    NOT_FOLLOWING_PROFILE_BUTTON_STR = 'Follow'
+
+    def get_follow_profile_button(self):
+        return self.driver.find_element_by_id(self.FOLLOW_PROFILE_BUTTON_ELEM_ID)
+
+    def unfollow_profile(self):
+        self.get_follow_profile_button().click()
+        WebDriverWait(self.driver, timeout=10).until(
+            text_to_be_present_in_element((By.ID, self.FOLLOW_PROFILE_BUTTON_ELEM_ID), self.NOT_FOLLOWING_PROFILE_BUTTON_STR)
+            )
+        return self.NOT_FOLLOWING_PROFILE_BUTTON_STR
+
+    def follow_profile(self):
+        self.get_follow_profile_button().click()
+        WebDriverWait(self.driver, timeout=10).until(
+            text_to_be_present_in_element((By.ID, self.FOLLOW_PROFILE_BUTTON_ELEM_ID), self.FOLLOWING_PROFILE_BUTTON_STR)
+            )
+        return self.FOLLOWING_PROFILE_BUTTON_STR
+
+    # test followers count
+    # test following count
