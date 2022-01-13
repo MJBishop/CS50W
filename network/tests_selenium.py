@@ -1,6 +1,6 @@
 from typing import get_args
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from .models import User
+from .models import User, MAX_POST_LENGTH
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
@@ -151,6 +151,29 @@ class NewPostTests(SeleniumTests):
         string_to_test = "Hello World!"
         profile_page = self.index_page.post_text(string_to_test)
         self.assertIn(string_to_test, self.selenium.page_source)
+
+    # doesn;t submit - therefore how to test properly?
+    def test_post_fail_empty_string(self):
+        string_to_test = ""
+        profile_page = self.index_page.expect_failure_to_post_text(string_to_test)
+        self.assertRaises(NoSuchElementException, profile_page.get_post_text_div)
+
+    def test_post_fail_longer_than_MAX_POST_LENGTH(self):
+        accepted_string = 'A' * MAX_POST_LENGTH
+        string_to_test = accepted_string + 'B'
+        profile_page = self.index_page.expect_failure_to_post_text(string_to_test)
+        self.assertNotIn(string_to_test, self.selenium.page_source)
+        self.assertIn(accepted_string, self.selenium.page_source)
+        
+
+
+
+
+
+
+
+
+
 
 
 class IndexTests(SeleniumTests):
@@ -338,6 +361,10 @@ class NewPostTemplate(LayoutTemplate):
     # ELEMENTS:
     POST_TEXTAREA_ELEM_ID = 'id_text'
     INPUT_ELEM_XPATH = '//input[@value="NewPost"]'
+    POST_TEXT_DIV_ELEM_ID = "post-text-div"
+
+    def get_post_text_div(self):
+        return self.driver.find_element_by_id(self.POST_TEXT_DIV_ELEM_ID)
 
     def set_post_text(self, post_text):
         self.fill_form_by_id(self.POST_TEXTAREA_ELEM_ID, post_text)
