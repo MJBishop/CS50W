@@ -151,19 +151,21 @@ class NewPostTests(SeleniumTests):
         string_to_test = "Hello World!"
         profile_page = self.index_page.post_text(string_to_test)
         self.assertIn(string_to_test, self.selenium.page_source)
+        self.assertIn(username, profile_page.get_heading().text)
 
-    # doesn;t submit - therefore how to test properly?
     def test_post_fail_empty_string(self):
         string_to_test = ""
-        profile_page = self.index_page.expect_failure_to_post_text(string_to_test)
-        self.assertRaises(NoSuchElementException, profile_page.get_post_text_div)
+        profile_page = self.index_page.post_text(string_to_test)
+        self.assertNotIn(username, profile_page.get_heading().text)
+        self.assertIn("All Posts", self.selenium.page_source) 
 
-    def test_post_fail_longer_than_MAX_POST_LENGTH(self):
+    def test_post_success_length_up_to_MAX_POST_LENGTH(self):
         accepted_string = 'A' * MAX_POST_LENGTH
         string_to_test = accepted_string + 'B'
-        profile_page = self.index_page.expect_failure_to_post_text(string_to_test)
+        profile_page = self.index_page.post_text(string_to_test)
         self.assertNotIn(string_to_test, self.selenium.page_source)
         self.assertIn(accepted_string, self.selenium.page_source)
+        self.assertIn(username, profile_page.get_heading().text)
         
 
 
@@ -374,7 +376,7 @@ class NewPostTemplate(LayoutTemplate):
 
     def submit(self):
         self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
+        return ProfilePage(self.driver, self.live_server_url)
 
     def post_text(self, text):
         self.set_post_text(text)
@@ -382,14 +384,6 @@ class NewPostTemplate(LayoutTemplate):
 
 
     # failure:
-
-    def submitExpectingFailure(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return ProfilePage(self.driver, self.live_server_url) #profile_id !!
-
-    def expect_failure_to_post_text(self, text):
-        self.set_post_text(text)
-        return self.submitExpectingFailure()
 
 
 
