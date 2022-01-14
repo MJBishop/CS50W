@@ -202,7 +202,7 @@ class IndexTests(SeleniumTests):
         self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
 
     def test_post_profile_link(self):
-        profile_page = self.allposts_page.click_post_profile_name()
+        profile_page = self.allposts_page.click_first_post_profile_name()
         self.assertIn(username, profile_page.get_heading().text)
     
     def test_edit_post_buttons(self):
@@ -263,10 +263,16 @@ class IndexTests(SeleniumTests):
         self.assertIn(second_string_to_test, self.allposts_page.get_first_post().text)
         self.assertNotIn(self.string_to_test, self.allposts_page.get_second_post().text)
 
+        updated_text = 'updated post text'
+        self.allposts_page.set_post_textarea_text(updated_text)
+
+        # # click save button
+        self.allposts_page.click_post_save_button()
+        self.assertIn(updated_text, self.allposts_page.get_second_post().text)
+
 
 
     # post -> profile when no login!
-    # edit new post
 
 # class FollowingTests(SeleniumTests):
 
@@ -290,7 +296,7 @@ class ProfileTests(SeleniumTests):
 
         #login user2
         index_page = login_page.login_as(username2, password2)
-        self.profile_page = index_page.click_post_profile_name()
+        self.profile_page = index_page.click_first_post_profile_name()
 
 
     def test_post_profile_link_to_other_user(self):
@@ -549,7 +555,7 @@ class IndexTemplate(NewPostTemplate):
 
     def click_second_post_edit_button(self):
         self.driver.find_elements_by_id(self.EDIT_POST_BUTTON_ELEM_ID)[1].click()
-        WebDriverWait(self.driver, timeout=3).until(
+        WebDriverWait(self.driver, timeout=3).until( #??
             text_to_be_present_in_element((By.ID, self.SAVE_POST_BUTTON_ELEM_ID), 'Save')
             )
         return 
@@ -574,7 +580,7 @@ class IndexTemplate(NewPostTemplate):
             )
         return self.no_likes_str
 
-    def click_post_profile_name(self):
+    def click_first_post_profile_name(self):
         self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
         return ProfilePage(self.driver, self.live_server_url)
 
