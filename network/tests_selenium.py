@@ -238,7 +238,6 @@ class IndexTests(SeleniumTests):
         # # click save button
         self.allposts_page.click_first_post_save_button()
         self.assertIn(updated_text, self.allposts_page.get_first_post().text)
-        self.assertIn(self.string_to_test + updated_text, self.allposts_page.get_first_post().text)
 
 
 
@@ -561,7 +560,9 @@ class IndexTemplate(NewPostTemplate):
         return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
 
     def set_post_textarea_text(self, post_text):
-        self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID).send_keys(post_text)
+        textarea = self.get_first_post_save_textarea()
+        textarea.clear()
+        textarea.send_keys(post_text)
 
 
     def get_post_notification(self):
