@@ -239,6 +239,11 @@ class IndexTests(SeleniumTests):
         self.allposts_page.click_first_post_save_button()
         self.assertIn(updated_text, self.allposts_page.get_first_post().text)
 
+    def test_second_post(self):
+        second_string_to_test = "My Second Post!"
+        profile_page = self.allposts_page.post_text(second_string_to_test)
+        self.assertIn(self.string_to_test, profile_page.get_second_post().text)
+
 
 
     # post -> profile when no login!
@@ -301,6 +306,9 @@ class ProfileTests(SeleniumTests):
 
         profile_page = self.profile_page.click_profile()
         self.assertIn('1', profile_page.get_following_count_div().text)
+
+
+
 
     # def test_no_edit_buuton
 
@@ -515,6 +523,10 @@ class IndexTemplate(NewPostTemplate):
     POST_PROFILE_LINK_TEXT = username #??
     one_like_str = 'Likes 1'
     no_likes_str = 'Likes 0' 
+
+
+    def get_second_post(self):
+        return self.driver.find_elements_by_id(self.POST_TEXT_ELEM_ID)[1]
 
 
     def get_first_post(self):
