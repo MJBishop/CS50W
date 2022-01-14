@@ -2,7 +2,7 @@ from typing import get_args
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import User, MAX_POST_LENGTH
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -201,26 +201,37 @@ class IndexTests(SeleniumTests):
         expected_str = self.allposts_page.click_first_post_unlike_button()
         self.assertIn(expected_str, self.allposts_page.get_first_post_like_button().text)
 
-    def test_post_profile(self):
+    def test_post_profile_link(self):
         profile_page = self.allposts_page.click_post_profile_name()
         self.assertIn(username, profile_page.get_heading().text)
     
+    def test_edit_post_buttons(self):
+        self.assertRaises(NoSuchElementException, self.allposts_page.click_first_post_save_button)
 
-        # logout
-        # crete new user
-        # login
+        # click edit button
+        self.allposts_page.click_first_post_edit_button()
+        self.assertRaises(ElementNotInteractableException, self.allposts_page.click_first_post_edit_button)
 
+        # # click save button
+        self.allposts_page.click_first_post_save_button()
+        self.assertRaises(NoSuchElementException, self.allposts_page.click_first_post_save_button)
+    
+    def test_edit_post(self):
 
-        profile_page = self.allposts_page.click_post_profile_name()
-        self.assertIn(username, profile_page.get_heading().text)
+        # click edit button
+        self.allposts_page.click_first_post_edit_button()
+
+        # # assert new button and textarea with post text
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().text)
+
+        # # click button
+        self.allposts_page.click_first_post_save_button()
+        
+        # # assert new button and div with post text
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().text)
+
 
     # post -> profile when no login!
-
-    # post:
-        # prfile click
-        # edit
-
-
 
 # class FollowingTests(SeleniumTests):
 
@@ -247,7 +258,7 @@ class ProfileTests(SeleniumTests):
         self.profile_page = index_page.click_post_profile_name()
 
 
-    def test_post_to_other_users_profile_(self):
+    def test_post_profile_link_to_other_user(self):
         self.assertIn(username, self.profile_page.get_heading().text)
         self.assertIn(username2, self.profile_page.get_user().text)
 
@@ -279,6 +290,8 @@ class ProfileTests(SeleniumTests):
 
         profile_page = self.profile_page.click_profile()
         self.assertIn('1', profile_page.get_following_count_div().text)
+
+    # def test_no_edit_buuton
 
     
 
@@ -496,9 +509,6 @@ class IndexTemplate(NewPostTemplate):
     def get_first_post(self):
         return self.driver.find_element_by_id(self.POST_TEXT_ELEM_ID)
 
-    def get_first_post_like_button_id(self):
-        return self.LIKE_POST_BUTTON_ELEM_ID
-
     def get_first_post_like_button(self):
         return self.driver.find_element_by_id(self.LIKE_POST_BUTTON_ELEM_ID)
 
@@ -516,24 +526,31 @@ class IndexTemplate(NewPostTemplate):
             )
         return self.no_likes_str
 
-
-
-    def get_first_post_edit_button(self):
-        return self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID)
-
-    def get_first_post_save_button(self):
-        return self.driver.find_element_by_id(self.SAVE_POST_BUTTON_ELEM_ID)
-
-    def get_first_post_save_textarea(self):
-        return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
-
     def click_post_profile_name(self):
         self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
         return ProfilePage(self.driver, self.live_server_url)
 
+
+    def click_first_post_edit_button(self):
+        self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID).click()
+        WebDriverWait(self.driver, timeout=3).until(
+            text_to_be_present_in_element((By.ID, self.SAVE_POST_BUTTON_ELEM_ID), 'Save')
+            )
+        return 
+
+    def click_first_post_save_button(self):
+        self.driver.find_element_by_id(self.SAVE_POST_BUTTON_ELEM_ID).click()
+        WebDriverWait(self.driver, timeout=3).until(
+            text_to_be_present_in_element((By.ID, self.EDIT_POST_BUTTON_ELEM_ID), 'Edit')
+            )
+        return 
+
+    def get_first_post_save_textarea(self):
+        return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
+
+
     def get_post_notification(self):
         pass
-
 
 
 class AllPostsPage(IndexTemplate):
@@ -582,6 +599,3 @@ class ProfilePage(IndexTemplate):
             text_to_be_present_in_element((By.ID, self.FOLLOW_PROFILE_BUTTON_ELEM_ID), self.FOLLOWING_PROFILE_BUTTON_STR)
             )
         return self.FOLLOWING_PROFILE_BUTTON_STR
-
-    # test followers count
-    # test following count
