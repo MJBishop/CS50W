@@ -222,11 +222,8 @@ class IndexTests(SeleniumTests):
 
 
 
-
-
 # class FollowingTests(SeleniumTests):
 
-    
 
 class ProfileTests(SeleniumTests):
 
@@ -237,11 +234,15 @@ class ProfileTests(SeleniumTests):
             username=username2, email=email2, password=password2)
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+
+        # login user1
         index_page = login_page.login_as(username, password)
         string_to_test = "Hello World!"
         profile_page = index_page.post_text(string_to_test)
         index_page = profile_page.logout()
         login_page = index_page.click_login()
+
+        #login user2
         index_page = login_page.login_as(username2, password2)
         self.profile_page = index_page.click_post_profile_name()
 
@@ -272,12 +273,12 @@ class ProfileTests(SeleniumTests):
         self.assertIn('0', self.profile_page.get_followers_count_div().text)
 
     def test_following_count(self):
+        # user2 follows user1
         expected_str = self.profile_page.follow_profile()
-        index_page = self.profile_page.logout()
-        login_page = index_page.click_login()
-        index_page = login_page.login_as(username, password)
-        profile_page = index_page.click_profile()
-        self.assertIn('1', self.profile_page.get_following_count_div().text)
+        self.assertIn('1', self.profile_page.get_followers_count_div().text)
+
+        profile_page = self.profile_page.click_profile()
+        self.assertIn('1', profile_page.get_following_count_div().text)
 
     
 
@@ -325,7 +326,6 @@ class LayoutTemplate(BasePage):
     USERID_ELEM_ID = 'userid'
     ALLPOSTS_LINK_TEXT = 'All Posts'
     FOLLOWING_LINK_TEXT = 'Following'
-    PROFILE_LINK_TEXT = username
     LOGIN_LINK_TEXT = 'Log In' 
     REGISTER_LINK_TEXT = 'Register' 
     LOGOUT_LINK_TEXT = 'Log Out' 
@@ -345,8 +345,10 @@ class LayoutTemplate(BasePage):
         return FollowingPage(self.driver, self.live_server_url)
 
     def click_profile(self):
-        self.driver.find_element_by_link_text(self.PROFILE_LINK_TEXT).click()
-        return ProfilePage(self.driver, self.live_server_url)
+        profile_link = self.driver.find_element_by_id(self.USERID_ELEM_ID)
+        url = profile_link.get_attribute('href')
+        profile_link.click()
+        return ProfilePage(self.driver, self.live_server_url, url=url)
 
     def click_login(self):
         self.driver.find_element_by_link_text(self.LOGIN_LINK_TEXT).click()
@@ -543,12 +545,12 @@ class FollowingPage(IndexTemplate):
 
 
 class ProfilePage(IndexTemplate):
-    url = "/profile/1"
-
     
-    # def __init__(self, driver, live_server_url, pro, navigate=False):
-    #     super().__init__(self, driver, live_server_url, navigate)
-    #     self.url = '/profile/' + profile_id
+    def __init__(self, driver, live_server_url, url="/profile/1", navigate=False):
+        super().__init__(driver, live_server_url, navigate=False)
+        self.url = url
+        if (navigate):
+            self.navigate()
 
 
     # ELEMENTS:
