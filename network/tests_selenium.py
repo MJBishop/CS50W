@@ -206,25 +206,25 @@ class IndexTests(SeleniumTests):
         self.assertIn(username, profile_page.get_heading().text)
     
     def test_edit_post_buttons(self):
-        self.assertRaises(NoSuchElementException, self.allposts_page.click_first_post_save_button)
+        self.assertRaises(NoSuchElementException, self.allposts_page.click_post_save_button)
 
         # click edit button
         self.allposts_page.click_first_post_edit_button()
         self.assertRaises(ElementNotInteractableException, self.allposts_page.click_first_post_edit_button)
 
         # # click save button
-        self.allposts_page.click_first_post_save_button()
-        self.assertRaises(NoSuchElementException, self.allposts_page.click_first_post_save_button)
+        self.allposts_page.click_post_save_button()
+        self.assertRaises(NoSuchElementException, self.allposts_page.click_post_save_button)
     
     def test_edit_post_textarea(self):
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
 
         # click edit button
         self.allposts_page.click_first_post_edit_button()
-        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().get_attribute('value'))
+        self.assertIn(self.string_to_test, self.allposts_page.get_post_save_textarea().get_attribute('value'))
 
         # # click save button
-        self.allposts_page.click_first_post_save_button()
+        self.allposts_page.click_post_save_button()
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
 
     def test_edit_post(self):
@@ -236,13 +236,32 @@ class IndexTests(SeleniumTests):
         self.allposts_page.set_post_textarea_text(updated_text)
 
         # # click save button
-        self.allposts_page.click_first_post_save_button()
+        self.allposts_page.click_post_save_button()
         self.assertIn(updated_text, self.allposts_page.get_first_post().text)
 
     def test_second_post(self):
         second_string_to_test = "My Second Post!"
         profile_page = self.allposts_page.post_text(second_string_to_test)
         self.assertIn(self.string_to_test, profile_page.get_second_post().text)
+
+    def test_switch_to_editing_second_post(self):
+        second_string_to_test = "My Second Post!"
+        profile_page = self.allposts_page.post_text(second_string_to_test)
+
+        self.assertIn(second_string_to_test, self.allposts_page.get_first_post().text)
+        self.assertIn(self.string_to_test, self.allposts_page.get_second_post().text)
+
+        # click edit button - 1st Post
+        self.allposts_page.click_first_post_edit_button()
+        self.assertIn(second_string_to_test, self.allposts_page.get_post_save_textarea().get_attribute('value'))
+        self.assertNotIn(second_string_to_test, self.allposts_page.get_first_post().text)
+        self.assertIn(self.string_to_test, self.allposts_page.get_second_post().text)
+
+        # # click edit button - 2nd Post
+        self.allposts_page.click_second_post_edit_button()
+        self.assertIn(self.string_to_test, self.allposts_page.get_post_save_textarea().get_attribute('value'))
+        self.assertIn(second_string_to_test, self.allposts_page.get_first_post().text)
+        self.assertNotIn(self.string_to_test, self.allposts_page.get_second_post().text)
 
 
 
@@ -485,7 +504,7 @@ class NewPostTemplate(LayoutTemplate):
     
     # ELEMENTS:
     POST_TEXTAREA_ELEM_ID = 'id_text'
-    INPUT_ELEM_XPATH = '//input[@value="NewPost"]'
+    INPUT_ELEM_XPATH = '//input[@value="Post"]'
     POST_TEXT_DIV_ELEM_ID = "post-text-div"
 
 
@@ -528,6 +547,12 @@ class IndexTemplate(NewPostTemplate):
     def get_second_post(self):
         return self.driver.find_elements_by_id(self.POST_TEXT_ELEM_ID)[1]
 
+    def click_second_post_edit_button(self):
+        self.driver.find_elements_by_id(self.EDIT_POST_BUTTON_ELEM_ID)[1].click()
+        WebDriverWait(self.driver, timeout=3).until(
+            text_to_be_present_in_element((By.ID, self.SAVE_POST_BUTTON_ELEM_ID), 'Save')
+            )
+        return 
 
     def get_first_post(self):
         return self.driver.find_element_by_id(self.POST_TEXT_ELEM_ID)
@@ -561,18 +586,18 @@ class IndexTemplate(NewPostTemplate):
             )
         return 
 
-    def click_first_post_save_button(self):
+    def click_post_save_button(self):
         self.driver.find_element_by_id(self.SAVE_POST_BUTTON_ELEM_ID).click()
         WebDriverWait(self.driver, timeout=3).until(
             text_to_be_present_in_element((By.ID, self.EDIT_POST_BUTTON_ELEM_ID), 'Edit')
             )
         return 
 
-    def get_first_post_save_textarea(self):
+    def get_post_save_textarea(self):
         return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
 
     def set_post_textarea_text(self, post_text):
-        textarea = self.get_first_post_save_textarea()
+        textarea = self.get_post_save_textarea()
         textarea.clear()
         textarea.send_keys(post_text)
 
