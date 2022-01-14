@@ -216,22 +216,34 @@ class IndexTests(SeleniumTests):
         self.allposts_page.click_first_post_save_button()
         self.assertRaises(NoSuchElementException, self.allposts_page.click_first_post_save_button)
     
+    def test_edit_post_textarea(self):
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
+
+        # click edit button
+        self.allposts_page.click_first_post_edit_button()
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().get_attribute('value'))
+
+        # # click save button
+        self.allposts_page.click_first_post_save_button()
+        self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
+
     def test_edit_post(self):
 
         # click edit button
         self.allposts_page.click_first_post_edit_button()
 
-        # # assert new button and textarea with post text
-        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().text)
+        updated_text = 'updated post text'
+        self.allposts_page.set_post_textarea_text(updated_text)
 
-        # # click button
+        # # click save button
         self.allposts_page.click_first_post_save_button()
-        
-        # # assert new button and div with post text
-        self.assertIn(self.string_to_test, self.allposts_page.get_first_post_save_textarea().text)
+        self.assertIn(updated_text, self.allposts_page.get_first_post().text)
+        self.assertIn(self.string_to_test + updated_text, self.allposts_page.get_first_post().text)
+
 
 
     # post -> profile when no login!
+    # edit new post
 
 # class FollowingTests(SeleniumTests):
 
@@ -547,6 +559,9 @@ class IndexTemplate(NewPostTemplate):
 
     def get_first_post_save_textarea(self):
         return self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID)
+
+    def set_post_textarea_text(self, post_text):
+        self.driver.find_element_by_id(self.SAVE_POST_TEXTAREA_ELEM_ID).send_keys(post_text)
 
 
     def get_post_notification(self):
