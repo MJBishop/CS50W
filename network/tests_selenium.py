@@ -3,7 +3,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import User, MAX_POST_LENGTH
 
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
-from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element, presence_of_element_located
+from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element, presence_of_element_located, invisibility_of_element
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -39,7 +39,7 @@ class SeleniumTests(StaticLiveServerTestCase):
             except Exception as e:
                 print(e)
             
-        cls.selenium.implicitly_wait(10)
+        cls.selenium.implicitly_wait(3)
 
     @classmethod
     def tearDownClass(cls):
@@ -310,12 +310,43 @@ class IndexPaginationTests(SeleniumTests):
 
     def test_pagination_three_pages(self):
         # all posts page has many posts
-        self.assertIn('first', self.allposts_page.get_pagination_first().text)
-        self.assertIn('prevoius', self.allposts_page.get_pagination_previous().text)
-        self.assertIn('1 of 3', self.allposts_page.get_pagination_current().text)
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_first)
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_previous)
+        self.assertIn('1 of ', self.allposts_page.get_pagination_current().text)
         self.assertIn('next', self.allposts_page.get_pagination_next().text)
         self.assertIn('last', self.allposts_page.get_pagination_last().text)
 
+        # click next
+        self.allposts_page = self.allposts_page.click_next()
+        self.assertIn('first', self.allposts_page.get_pagination_first().text)
+        self.assertIn('previous', self.allposts_page.get_pagination_previous().text)
+        self.assertIn('2 of ', self.allposts_page.get_pagination_current().text)
+        self.assertIn('next', self.allposts_page.get_pagination_next().text)
+        self.assertIn('last', self.allposts_page.get_pagination_last().text)
+
+        # click last
+        self.allposts_page = self.allposts_page.click_last()
+        self.assertIn('first', self.allposts_page.get_pagination_first().text)
+        self.assertIn('previous', self.allposts_page.get_pagination_previous().text)
+        self.assertIn(' of ', self.allposts_page.get_pagination_current().text)
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_next)
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_last)
+
+        # # click previous
+        self.allposts_page = self.allposts_page.click_previous()
+        self.assertIn('first', self.allposts_page.get_pagination_first().text)
+        self.assertIn('previous', self.allposts_page.get_pagination_previous().text)
+        self.assertIn(' of ', self.allposts_page.get_pagination_current().text)
+        self.assertIn('next', self.allposts_page.get_pagination_next().text)
+        self.assertIn('last', self.allposts_page.get_pagination_last().text)
+
+        # # click first
+        self.allposts_page = self.allposts_page.click_first()
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_first)
+        self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_previous)
+        self.assertIn('1 of ', self.allposts_page.get_pagination_current().text)
+        self.assertIn('next', self.allposts_page.get_pagination_next().text)
+        self.assertIn('last', self.allposts_page.get_pagination_last().text)
 
 class FollowingTests(SingleUserTests):
 
@@ -578,6 +609,10 @@ class IndexTemplate(NewPostTemplate):
     POST_PROFILE_LINK_TEXT = username #??
     one_like_str = 'Likes 1'
     no_likes_str = 'Likes 0' 
+    PAGINATOR_FIRST_LINK_TEXT = 'first'
+    PAGINATOR_LAST_LINK_TEXT = 'last'
+    PAGINATOR_PREVIOUS_LINK_TEXT = 'previous'
+    PAGINATOR_NEXT_LINK_TEXT = 'next'
 
     def get_second_post(self):
         return self.driver.find_elements_by_id(self.POST_TEXT_ELEM_ID)[1]
@@ -636,31 +671,53 @@ class IndexTemplate(NewPostTemplate):
         textarea.send_keys(post_text)
 
     def get_pagination_first(self):
-        # WebDriverWait(self.driver, timeout=10).until(
-        #     presence_of_element_located((By.ID, 'first'))
-        #     )
         return self.driver.find_element_by_id('first')
 
     def get_pagination_previous(self):
-        # WebDriverWait(self.driver, timeout=10).until(
-        #     presence_of_element_located((By.ID, 'previous'))
-        #     )
         return self.driver.find_element_by_id('previous')
 
     def get_pagination_current(self):
         return self.driver.find_element_by_id('current')
 
     def get_pagination_next(self):
-        # WebDriverWait(self.driver, timeout=10).until(
-        #     presence_of_element_located((By.ID, 'next'))
-        #     )
         return self.driver.find_element_by_id('next')
 
     def get_pagination_last(self):
-        # WebDriverWait(self.driver, timeout=10).until(
-        #     presence_of_element_located((By.ID, 'last'))
-        #     )
         return self.driver.find_element_by_id('last')
+
+    def click_next(self):
+        link = self.driver.find_element_by_link_text(self.PAGINATOR_NEXT_LINK_TEXT)
+        self.driver.execute_script("arguments[0].click();", link)
+        WebDriverWait(self.driver, timeout=10).until(
+            presence_of_element_located((By.ID, 'previous'))
+            )
+        return AllPostsPage(self.driver, self.live_server_url)
+
+    def click_last(self):
+        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_LAST_LINK_TEXT)
+        self.driver.execute_script("arguments[0].click();", link)
+        WebDriverWait(self.driver, timeout=10).until(
+            invisibility_of_element((By.ID, 'last'))
+            )
+        return AllPostsPage(self.driver, self.live_server_url)
+
+    def click_previous(self):
+        # self.driver.find_element_by_id('previous').click()
+        link = self.driver.find_element_by_link_text(self.PAGINATOR_PREVIOUS_LINK_TEXT)
+        self.driver.execute_script("arguments[0].click();", link)
+        WebDriverWait(self.driver, timeout=10).until(
+            presence_of_element_located((By.ID, 'next'))
+            )
+        return AllPostsPage(self.driver, self.live_server_url)
+
+    def click_first(self):
+        # self.driver.find_element_by_id('first').click()
+        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_FIRST_LINK_TEXT)
+        self.driver.execute_script("arguments[0].click();", link)
+        WebDriverWait(self.driver, timeout=10).until(
+            invisibility_of_element((By.ID, 'first'))
+            )
+        return AllPostsPage(self.driver, self.live_server_url)
 
 
     def get_post_notification(self):
