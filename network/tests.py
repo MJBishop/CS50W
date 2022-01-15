@@ -1,8 +1,8 @@
 import json
-from django.test import RequestFactory, Client, TestCase
+from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
-from .models import User, Follow, Post
+from .models import User, Follow, Post, MAX_POST_LENGTH
 from .views import NewPostForm
 
 
@@ -41,6 +41,10 @@ class ViewsTestCase(TestCase):
 
         cls.user2 = User.objects.create_user(
             username='testuser2', email='testuser2@test.com', password='54321')
+
+    def setUp(self):
+        # Every test needs a client.
+        self.client = Client()
 
     # index tests
     def test_index(self):
@@ -175,7 +179,7 @@ class ViewsTestCase(TestCase):
         # update the post text
         post_id = str(u1_posts[0].id)
         path = '/post/' + post_id
-        updated_post_text = "Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!Updated Post Text!!!"
+        updated_post_text = ('A' * MAX_POST_LENGTH) + 'B'
         
         response = self.client.generic('PUT', path, json.dumps({"text":updated_post_text}))
         self.assertEqual(response.status_code, 400)
@@ -398,7 +402,6 @@ class NetworkModelsTestCase(TestCase):
         follow = Follow.objects.create_follow(self.user2, self.user1)
         self.assertEqual(follow.__str__(), "James is following Mike")
 
-    
     def test_isFollowing_returns_false_when_not_following(self):
         following = Follow.objects.isFollowing(self.user2, self.user1)
         self.assertEqual(following, False)
@@ -406,6 +409,7 @@ class NetworkModelsTestCase(TestCase):
     def test_isFollowing_returns_true_when_following(self):
         following = Follow.objects.isFollowing(self.user1, self.user2)
         self.assertEqual(following, True)
+
 
     # Post tests
     def test_post_string(self):
@@ -417,7 +421,7 @@ class NetworkModelsTestCase(TestCase):
         self.assertEqual(post.text, test_post_string)
 
     def test_create_post_raises_exception_for_post_length_greater_than_MAX_POST_LENGTH(self):
-        test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "
+        test_post_string = ('A' * MAX_POST_LENGTH) + 'B'
         with self.assertRaises(ValidationError):
             Post.objects.create_post(self.user2, text=test_post_string)
 
@@ -428,7 +432,7 @@ class NetworkModelsTestCase(TestCase):
 
     def test_edit_post_raises_exception_for_for_post_length_greater_than_MAX_POST_LENGTH(self):
         post = Post.objects.get(user=self.user1)
-        test_post_string = "MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST MY SECOND TEST POST "
+        test_post_string = ('A' * MAX_POST_LENGTH) + 'B'
         with self.assertRaises(ValidationError):
             post.update(self.user1, test_post_string)
         
