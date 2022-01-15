@@ -308,6 +308,15 @@ class IndexPaginationTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
 
+    # def test_pagination_two_pages(self):
+    #     # profile page has 1 post
+    #     profile_page = self.allposts_page.click_profile()
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_previous)
+    #     self.assertIn('1 of 1', profile_page.get_pagination_current().text)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
+
     def test_pagination_more_than_two_pages(self):
         # all posts page has many posts
         self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_first)
