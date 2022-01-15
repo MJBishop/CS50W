@@ -3,7 +3,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import User, MAX_POST_LENGTH
 
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
-from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element
+from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element, presence_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -18,12 +18,13 @@ username2 = 'testuser2'
 password2 = '54321'
 email2 = 'testuser2@test.com'
 
+
 # Selenium Tests
 class SeleniumTests(StaticLiveServerTestCase):
 
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username=username, email=email, password=password)
+    # def setUp(self):
+    #     self.user = User.objects.create_user(
+    #         username=username, email=email, password=password)
         
     @classmethod
     def setUpClass(cls):
@@ -45,7 +46,15 @@ class SeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-class AnnonymousLayoutTests(SeleniumTests):
+class SingleUserTests(SeleniumTests):
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            username=username, email=email, password=password)
+
+
+class AnnonymousLayoutTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -77,7 +86,7 @@ class AnnonymousLayoutTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, self.index_page.logout)
 
 
-class LoginTests(SeleniumTests):
+class LoginTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -93,7 +102,7 @@ class LoginTests(SeleniumTests):
         self.assertIn("Invalid", login_page.get_errors().text)
 
 
-class RegisterTests(SeleniumTests):
+class RegisterTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -113,7 +122,7 @@ class RegisterTests(SeleniumTests):
         self.assertIn("Passwords", register_page.get_errors().text)
 
 
-class LayoutTests(SeleniumTests):
+class LayoutTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -147,7 +156,7 @@ class LayoutTests(SeleniumTests):
         self.assertIn("All Posts", self.index_page.get_heading().text) #?
 
 
-class NewPostTests(SeleniumTests):
+class NewPostTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -176,7 +185,7 @@ class NewPostTests(SeleniumTests):
         self.assertIn(username, profile_page.get_heading().text)
         
 
-class IndexTests(SeleniumTests):
+class IndexTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -186,7 +195,6 @@ class IndexTests(SeleniumTests):
         self.string_to_test = "Hello World!"
         profile_page = index_page.post_text(self.string_to_test)
         self.allposts_page = profile_page.click_allposts()
-
 
     def test_first_post(self):
         self.assertIn(self.string_to_test, self.allposts_page.get_first_post().text)
@@ -235,7 +243,7 @@ class IndexTests(SeleniumTests):
         updated_text = 'updated post text'
         self.allposts_page.set_post_textarea_text(updated_text)
 
-        # # click save button
+        # click save button
         self.allposts_page.click_post_save_button()
         self.assertIn(updated_text, self.allposts_page.get_first_post().text)
 
@@ -270,14 +278,52 @@ class IndexTests(SeleniumTests):
         self.allposts_page.click_post_save_button()
         self.assertIn(updated_text, self.allposts_page.get_second_post().text)
 
+    def test_all_posts_in_all_posts_page(self):
+        pass
+
+class IndexPaginationTests(SeleniumTests):
+    fixtures = ['mydata.json']
+
+    def setUp(self):
+        super().setUp()
+
+        login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
+        self.allposts_page = login_page.login_as(username, password)
+
+    def test_pagination_no_posts(self): 
+        # follwing page has no posts
+        following_page = self.allposts_page.click_following()
+        self.assertRaises(NoSuchElementException, following_page.get_pagination_first)
+        self.assertRaises(NoSuchElementException, following_page.get_pagination_previous)
+        self.assertIn('No Posts', following_page.get_pagination_current().text)
+        self.assertRaises(NoSuchElementException, following_page.get_pagination_next)
+        self.assertRaises(NoSuchElementException, following_page.get_pagination_last)
+
+    # def test_pagination_one_page(self):
+    #     # profile page has 1 post
+    #     profile_page = self.allposts_page.click_profile()
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_previous)
+    #     self.assertIn('1 of 1', self.profile_page.get_pagination_current().text)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
+    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
+
+    def test_pagination_three_pages(self):
+        # all posts page has many posts
+        self.assertIn('first', self.allposts_page.get_pagination_first().text)
+        self.assertIn('prevoius', self.allposts_page.get_pagination_previous().text)
+        self.assertIn('1 of 3', self.allposts_page.get_pagination_current().text)
+        self.assertIn('next', self.allposts_page.get_pagination_next().text)
+        self.assertIn('last', self.allposts_page.get_pagination_last().text)
 
 
-    # post -> profile when no login!
+class FollowingTests(SingleUserTests):
 
-# class FollowingTests(SeleniumTests):
+    def test_only_users_followed_posts_in_following(self):
+        pass
 
 
-class ProfileTests(SeleniumTests):
+class ProfileTests(SingleUserTests):
 
     def setUp(self):
         super().setUp()
@@ -297,7 +343,6 @@ class ProfileTests(SeleniumTests):
         #login user2
         index_page = login_page.login_as(username2, password2)
         self.profile_page = index_page.click_first_post_profile_name()
-
 
     def test_post_profile_link_to_other_user(self):
         self.assertIn(username, self.profile_page.get_heading().text)
@@ -332,11 +377,8 @@ class ProfileTests(SeleniumTests):
         profile_page = self.profile_page.click_profile()
         self.assertIn('1', profile_page.get_following_count_div().text)
 
-
-
-
-    # def test_no_edit_buuton
-
+    def test_only_user_posts_in_proflie(self):
+        pass
     
 
 
@@ -429,7 +471,6 @@ class LoginPage(LayoutTemplate):
     ERROR_ELEM_ID = 'error-message'
     INPUT_ELEM_XPATH = '//input[@value="Login"]'
 
-
     def set_username(self, username):
         self.fill_form_by_name(self.USERNAME_ELEM_NAME, username)
 
@@ -443,7 +484,6 @@ class LoginPage(LayoutTemplate):
     def get_errors(self):
         return self.driver.find_element_by_id(self.ERROR_ELEM_ID)
 
-
     # success:
 
     def submit(self):
@@ -453,7 +493,6 @@ class LoginPage(LayoutTemplate):
     def login_as(self, username, password):
         self.set_user_data(username, password)
         return self.submit()
-
 
     # failure:
 
@@ -474,7 +513,6 @@ class RegisterPage(LoginPage):
     CONFIRMATION_ELEM_NAME = "confirmation"
     INPUT_ELEM_XPATH = '//input[@value="Register"]'
 
-
     def set_email(self, email):
         self.fill_form_by_name(self.EMAIL_ELEM_NAME, email)
 
@@ -487,13 +525,11 @@ class RegisterPage(LoginPage):
         self.set_password(password)
         self.set_confirmation(confirmation)
 
-
     # success:
 
     def register_as(self, username, email, password, confirmation):
         self.set_user_data(username, email, password, confirmation)
         return self.submit()
-
 
     # failure:
 
@@ -513,27 +549,21 @@ class NewPostTemplate(LayoutTemplate):
     INPUT_ELEM_XPATH = '//input[@value="Post"]'
     POST_TEXT_DIV_ELEM_ID = "post-text-div"
 
-
-    def get_post_text_div(self):
-        return self.driver.find_element_by_id(self.POST_TEXT_DIV_ELEM_ID)
-
     def set_post_text(self, post_text):
         self.fill_form_by_id(self.POST_TEXTAREA_ELEM_ID, post_text)
-
 
     # success:
 
     def submit(self):
+        url = self.driver.find_element_by_id(self.USERID_ELEM_ID).get_attribute('href')
         self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return ProfilePage(self.driver, self.live_server_url)
+        return ProfilePage(self.driver, self.live_server_url, url=url)
 
     def post_text(self, text):
         self.set_post_text(text)
         return self.submit()
 
-
     # failure returns ProfilePage or does nothing
-
 
 
 class IndexTemplate(NewPostTemplate):
@@ -548,7 +578,6 @@ class IndexTemplate(NewPostTemplate):
     POST_PROFILE_LINK_TEXT = username #??
     one_like_str = 'Likes 1'
     no_likes_str = 'Likes 0' 
-
 
     def get_second_post(self):
         return self.driver.find_elements_by_id(self.POST_TEXT_ELEM_ID)[1]
@@ -584,7 +613,6 @@ class IndexTemplate(NewPostTemplate):
         self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
         return ProfilePage(self.driver, self.live_server_url)
 
-
     def click_first_post_edit_button(self):
         self.driver.find_element_by_id(self.EDIT_POST_BUTTON_ELEM_ID).click()
         WebDriverWait(self.driver, timeout=3).until(
@@ -607,6 +635,33 @@ class IndexTemplate(NewPostTemplate):
         textarea.clear()
         textarea.send_keys(post_text)
 
+    def get_pagination_first(self):
+        # WebDriverWait(self.driver, timeout=10).until(
+        #     presence_of_element_located((By.ID, 'first'))
+        #     )
+        return self.driver.find_element_by_id('first')
+
+    def get_pagination_previous(self):
+        # WebDriverWait(self.driver, timeout=10).until(
+        #     presence_of_element_located((By.ID, 'previous'))
+        #     )
+        return self.driver.find_element_by_id('previous')
+
+    def get_pagination_current(self):
+        return self.driver.find_element_by_id('current')
+
+    def get_pagination_next(self):
+        # WebDriverWait(self.driver, timeout=10).until(
+        #     presence_of_element_located((By.ID, 'next'))
+        #     )
+        return self.driver.find_element_by_id('next')
+
+    def get_pagination_last(self):
+        # WebDriverWait(self.driver, timeout=10).until(
+        #     presence_of_element_located((By.ID, 'last'))
+        #     )
+        return self.driver.find_element_by_id('last')
+
 
     def get_post_notification(self):
         pass
@@ -627,7 +682,6 @@ class ProfilePage(IndexTemplate):
         self.url = url
         if (navigate):
             self.navigate()
-
 
     # ELEMENTS:
     FOLLOWERS_COUNT_ELEM_ID = 'followers-count-div'
