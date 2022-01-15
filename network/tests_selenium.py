@@ -308,14 +308,22 @@ class IndexPaginationTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
 
-    # def test_pagination_two_pages(self):
-    #     # profile page has 1 post
-    #     profile_page = self.allposts_page.click_profile()
-    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
-    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_previous)
-    #     self.assertIn('1 of 1', profile_page.get_pagination_current().text)
-    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
-    #     self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
+    def test_pagination_two_pages(self):
+        # james' profile page has 2 pages
+        profile_page = self.allposts_page.click_second_post_profile_name()
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_previous)
+        self.assertIn('1 of 2', profile_page.get_pagination_current().text)
+        self.assertIn('next', self.allposts_page.get_pagination_next().text)
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
+
+        # click next
+        profile_page = profile_page.click_next()
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
+        self.assertIn('previous', self.allposts_page.get_pagination_previous().text)
+        self.assertIn('2 of 2', profile_page.get_pagination_current().text)
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_next)
+        self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
 
     def test_pagination_more_than_two_pages(self):
         # all posts page has many posts
@@ -622,6 +630,7 @@ class IndexTemplate(NewPostTemplate):
     PAGINATOR_LAST_LINK_TEXT = 'last'
     PAGINATOR_PREVIOUS_LINK_TEXT = 'previous'
     PAGINATOR_NEXT_LINK_TEXT = 'next'
+    POST_PROFILE_ELEM_ID = 'post-userid'
 
     def get_second_post(self):
         return self.driver.find_elements_by_id(self.POST_TEXT_ELEM_ID)[1]
@@ -632,6 +641,12 @@ class IndexTemplate(NewPostTemplate):
             text_to_be_present_in_element((By.ID, self.SAVE_POST_BUTTON_ELEM_ID), 'Save')
             )
         return 
+
+    def click_second_post_profile_name(self):
+        profile_link = self.driver.find_elements_by_id(self.POST_PROFILE_ELEM_ID)[1]
+        url = profile_link.get_attribute('href')
+        profile_link.click()
+        return ProfilePage(self.driver, self.live_server_url, url=url)
 
     def get_first_post(self):
         return self.driver.find_element_by_id(self.POST_TEXT_ELEM_ID)
@@ -711,7 +726,6 @@ class IndexTemplate(NewPostTemplate):
         return AllPostsPage(self.driver, self.live_server_url)
 
     def click_previous(self):
-        # self.driver.find_element_by_id('previous').click()
         link = self.driver.find_element_by_link_text(self.PAGINATOR_PREVIOUS_LINK_TEXT)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(
@@ -720,7 +734,6 @@ class IndexTemplate(NewPostTemplate):
         return AllPostsPage(self.driver, self.live_server_url)
 
     def click_first(self):
-        # self.driver.find_element_by_id('first').click()
         link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_FIRST_LINK_TEXT)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(

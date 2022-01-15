@@ -48,7 +48,7 @@
             {% for post in page_obj %}
                 <div id="{{ post.id }}" class="card mb-4 bg-transparent">
                     <div class="card-body">
-                        <a href="/profile/{{ post.user.id }}">{{ post.user.username }}</a>
+                        <a id="post-userid" href="/profile/{{ post.user.id }}">{{ post.user.username }}</a>
                         <div id="post-text-div">
                             <div id="post-text" class="card-text">{{ post.text }}</div>
                         </div>
