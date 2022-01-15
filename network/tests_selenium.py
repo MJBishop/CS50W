@@ -9,23 +9,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
 local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 
-# testuser
-username = 'testuser'
-password = '12345'
-email = 'testuser@test.com'
-# testuser2
-username2 = 'testuser2'
-password2 = '54321'
-email2 = 'testuser2@test.com'
 
 
 # Selenium Tests
 class SeleniumTests(StaticLiveServerTestCase):
 
-    # def setUp(self):
-    #     self.user = User.objects.create_user(
-    #         username=username, email=email, password=password)
-        
+    # testusers
+    USERNAME = 'testuser'
+    PASSWORD = '12345'
+    EMAIL = 'testuser@test.com'
+    USERNAME2 = 'testuser2'
+    PASSWORD2 = '54321'
+    EMAIL2 = 'testuser2@test.com'
+    
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -51,7 +47,7 @@ class SingleUserTests(SeleniumTests):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_user(
-            username=username, email=email, password=password)
+            username=self.USERNAME, email=self.EMAIL, password=self.PASSWORD)
 
 
 class AnnonymousLayoutTests(SingleUserTests):
@@ -94,8 +90,8 @@ class LoginTests(SingleUserTests):
         self.login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
 
     def test_login_success(self):
-        index_page = self.login_page.login_as(username, password)
-        self.assertIn(username, index_page.get_user().text)
+        index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
+        self.assertIn(self.USERNAME, index_page.get_user().text)
 
     def test_login_fail(self):
         login_page = self.login_page.expect_failure_to_login_as('foo', 'bar')
@@ -110,11 +106,11 @@ class RegisterTests(SingleUserTests):
         self.register_page = RegisterPage(self.selenium, self.live_server_url, navigate=True)
 
     def test_register_success(self):
-        index_page = self.register_page.register_as(username2, email2, password2, password2)
-        self.assertIn(username, index_page.get_user().text)
+        index_page = self.register_page.register_as(self.USERNAME2, self.EMAIL2, self.PASSWORD2, self.PASSWORD2)
+        self.assertIn(self.USERNAME2, index_page.get_user().text)
 
     def test_register_fail_username_exists(self):
-        register_page = self.register_page.expect_failure_to_register_as(username, email, password, password)
+        register_page = self.register_page.expect_failure_to_register_as(self.USERNAME, self.EMAIL, self.PASSWORD, self.PASSWORD)
         self.assertIn("Username", register_page.get_errors().text)
 
     def test_register_fail_unmatched_passwords(self):
@@ -128,7 +124,7 @@ class LayoutTests(SingleUserTests):
         super().setUp()
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        self.index_page = login_page.login_as(username, password)
+        self.index_page = login_page.login_as(self.USERNAME, self.PASSWORD)
 
     def test_allposts_heading(self):
         self.assertIn("All Posts", self.index_page.get_heading().text)
@@ -143,7 +139,7 @@ class LayoutTests(SingleUserTests):
 
     def test_profile(self):
         profile_page = self.index_page.click_profile()
-        self.assertIn(username, profile_page.get_heading().text)
+        self.assertIn(self.USERNAME, profile_page.get_heading().text)
 
     def test_register(self):
         self.assertRaises(NoSuchElementException, self.index_page.click_register)
@@ -162,18 +158,18 @@ class NewPostTests(SingleUserTests):
         super().setUp()
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        self.index_page = login_page.login_as(username, password)
+        self.index_page = login_page.login_as(self.USERNAME, self.PASSWORD)
     
     def test_post_success(self):
         string_to_test = "Hello World!"
         profile_page = self.index_page.post_text(string_to_test)
         self.assertIn(string_to_test, self.selenium.page_source)
-        self.assertIn(username, profile_page.get_heading().text)
+        self.assertIn(self.USERNAME, profile_page.get_heading().text)
 
     def test_post_fail_empty_string(self):
         string_to_test = ""
         profile_page = self.index_page.post_text(string_to_test)
-        self.assertNotIn(username, profile_page.get_heading().text)
+        self.assertNotIn(self.USERNAME, profile_page.get_heading().text)
         self.assertIn("All Posts", self.selenium.page_source) 
 
     def test_post_success_length_up_to_MAX_POST_LENGTH(self):
@@ -182,7 +178,7 @@ class NewPostTests(SingleUserTests):
         profile_page = self.index_page.post_text(string_to_test)
         self.assertNotIn(string_to_test, self.selenium.page_source)
         self.assertIn(accepted_string, self.selenium.page_source)
-        self.assertIn(username, profile_page.get_heading().text)
+        self.assertIn(self.USERNAME, profile_page.get_heading().text)
         
 
 class IndexTests(SingleUserTests):
@@ -191,7 +187,7 @@ class IndexTests(SingleUserTests):
         super().setUp()
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        index_page = login_page.login_as(username, password)
+        index_page = login_page.login_as(self.USERNAME, self.PASSWORD)
         self.string_to_test = "Hello World!"
         profile_page = index_page.post_text(self.string_to_test)
         self.allposts_page = profile_page.click_allposts()
@@ -211,7 +207,7 @@ class IndexTests(SingleUserTests):
 
     def test_post_profile_link(self):
         profile_page = self.allposts_page.click_first_post_profile_name()
-        self.assertIn(username, profile_page.get_heading().text)
+        self.assertIn(self.USERNAME, profile_page.get_heading().text)
     
     def test_edit_post_buttons(self):
         self.assertRaises(NoSuchElementException, self.allposts_page.click_post_save_button)
@@ -281,6 +277,7 @@ class IndexTests(SingleUserTests):
     def test_all_posts_in_all_posts_page(self):
         pass
 
+
 class IndexPaginationTests(SeleniumTests):
     fixtures = ['mydata.json']
 
@@ -288,7 +285,7 @@ class IndexPaginationTests(SeleniumTests):
         super().setUp()
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
-        self.allposts_page = login_page.login_as(username, password)
+        self.allposts_page = login_page.login_as(self.USERNAME, self.PASSWORD)
 
     def test_pagination_no_posts(self): 
         # follwing page has no posts
@@ -365,6 +362,7 @@ class IndexPaginationTests(SeleniumTests):
         self.assertIn('next', self.allposts_page.get_pagination_next().text)
         self.assertIn('last', self.allposts_page.get_pagination_last().text)
 
+
 class FollowingTests(SingleUserTests):
 
     def test_only_users_followed_posts_in_following(self):
@@ -377,24 +375,24 @@ class ProfileTests(SingleUserTests):
         super().setUp()
 
         self.user = User.objects.create_user(
-            username=username2, email=email2, password=password2)
+            username=self.USERNAME2, email=self.EMAIL2, password=self.PASSWORD2)
 
         login_page = LoginPage(self.selenium, self.live_server_url, navigate=True)
 
         # login user1
-        index_page = login_page.login_as(username, password)
+        index_page = login_page.login_as(self.USERNAME, self.PASSWORD)
         string_to_test = "Hello World!"
         profile_page = index_page.post_text(string_to_test)
         index_page = profile_page.logout()
         login_page = index_page.click_login()
 
         #login user2
-        index_page = login_page.login_as(username2, password2)
+        index_page = login_page.login_as(self.USERNAME2, self.PASSWORD2)
         self.profile_page = index_page.click_first_post_profile_name()
 
     def test_post_profile_link_to_other_user(self):
-        self.assertIn(username, self.profile_page.get_heading().text)
-        self.assertIn(username2, self.profile_page.get_user().text)
+        self.assertIn(self.USERNAME, self.profile_page.get_heading().text)
+        self.assertIn(self.USERNAME2, self.profile_page.get_user().text)
 
     def test_follow_user(self):
 
@@ -519,8 +517,8 @@ class LoginPage(LayoutTemplate):
     ERROR_ELEM_ID = 'error-message'
     INPUT_ELEM_XPATH = '//input[@value="Login"]'
 
-    def set_username(self, username):
-        self.fill_form_by_name(self.USERNAME_ELEM_NAME, username)
+    def set_username(self, uesrname):
+        self.fill_form_by_name(self.USERNAME_ELEM_NAME, uesrname)
 
     def set_password(self, password):
         self.fill_form_by_name(self.PASSWORD_ELEM_NAME, password)
@@ -623,7 +621,7 @@ class IndexTemplate(NewPostTemplate):
     EDIT_POST_BUTTON_ELEM_ID = 'update-post-button'
     SAVE_POST_BUTTON_ELEM_ID = 'save-updated-post-button'
     SAVE_POST_TEXTAREA_ELEM_ID = 'update-post-text'
-    POST_PROFILE_LINK_TEXT = username #??
+    # POST_PROFILE_LINK_TEXT = self.USERNAME #??
     one_like_str = 'Likes 1'
     no_likes_str = 'Likes 0' 
     PAGINATOR_FIRST_LINK_TEXT = 'first'
@@ -669,7 +667,7 @@ class IndexTemplate(NewPostTemplate):
         return self.no_likes_str
 
     def click_first_post_profile_name(self):
-        self.driver.find_element_by_link_text(self.POST_PROFILE_LINK_TEXT).click()
+        self.driver.find_element_by_id(self.POST_PROFILE_ELEM_ID).click()
         return ProfilePage(self.driver, self.live_server_url)
 
     def click_first_post_edit_button(self):
@@ -740,7 +738,6 @@ class IndexTemplate(NewPostTemplate):
             invisibility_of_element((By.ID, 'first'))
             )
         return AllPostsPage(self.driver, self.live_server_url)
-
 
     def get_post_notification(self):
         pass
