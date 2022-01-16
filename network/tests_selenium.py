@@ -1,4 +1,4 @@
-from typing import get_args
+# from typing import get_args 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import User, MAX_POST_LENGTH
 
@@ -7,8 +7,8 @@ from selenium.webdriver.support.expected_conditions import text_to_be_present_in
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
-local_chrome_driver_path = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 
+LOCAL_CHROME_DRIVER_PATH = '/Users/drinkslist/opt/anaconda3/lib/python3.8/site-packages/chromedriver_py/chromedriver'
 
 
 # Selenium Tests
@@ -31,21 +31,24 @@ class SeleniumTests(StaticLiveServerTestCase):
             cls.selenium = WebDriver()
         except:
             try:
-                cls.selenium = WebDriver(executable_path=local_chrome_driver_path)
+                cls.selenium = WebDriver(executable_path=LOCAL_CHROME_DRIVER_PATH)
             except Exception as e:
                 print(e)
-            
-        cls.selenium.implicitly_wait(3)
+        
+        # cls.selenium.maximize_window()
+        # cls.selenium.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
         super().tearDownClass()
 
+
 class SingleUserTests(SeleniumTests):
 
     def setUp(self):
         super().setUp()
+
         self.user = User.objects.create_user(
             username=self.USERNAME, email=self.EMAIL, password=self.PASSWORD)
 
@@ -297,7 +300,7 @@ class IndexPaginationTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, following_page.get_pagination_last)
 
     def test_pagination_one_page(self):
-        # profile page has 1 post
+        # profile page has 1 page
         profile_page = self.allposts_page.click_profile()
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_first)
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_previous)
@@ -323,7 +326,7 @@ class IndexPaginationTests(SeleniumTests):
         self.assertRaises(NoSuchElementException, profile_page.get_pagination_last)
 
     def test_pagination_more_than_two_pages(self):
-        # all posts page has many posts
+        # all posts page has many pages
         self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_first)
         self.assertRaises(NoSuchElementException, self.allposts_page.get_pagination_previous)
         self.assertIn('1 of ', self.allposts_page.get_pagination_current().text)
@@ -621,13 +624,13 @@ class IndexTemplate(NewPostTemplate):
     EDIT_POST_BUTTON_ELEM_ID = 'update-post-button'
     SAVE_POST_BUTTON_ELEM_ID = 'save-updated-post-button'
     SAVE_POST_TEXTAREA_ELEM_ID = 'update-post-text'
-    # POST_PROFILE_LINK_TEXT = self.USERNAME #??
-    one_like_str = 'Likes 1'
-    no_likes_str = 'Likes 0' 
-    PAGINATOR_FIRST_LINK_TEXT = 'first'
-    PAGINATOR_LAST_LINK_TEXT = 'last'
-    PAGINATOR_PREVIOUS_LINK_TEXT = 'previous'
-    PAGINATOR_NEXT_LINK_TEXT = 'next'
+    ONE_LIKE_STR = 'Likes 1'
+    NO_LIKES_STR = 'Likes 0' 
+    PAGINATOR_FIRST_LINK_ID = 'first'
+    PAGINATOR_LAST_LINK_ID = 'last'
+    PAGINATOR_PREVIOUS_LINK_ID = 'previous'
+    PAGINATOR_NEXT_LINK_ID = 'next'
+    PAGINATOR_CURRENT_LINK_ID = 'current'
     POST_PROFILE_ELEM_ID = 'post-userid'
 
     def get_second_post(self):
@@ -655,16 +658,16 @@ class IndexTemplate(NewPostTemplate):
     def click_first_post_like_button(self):
         self.get_first_post_like_button().click()
         WebDriverWait(self.driver, timeout=10).until(
-            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.one_like_str)
+            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.ONE_LIKE_STR)
             )
-        return self.one_like_str
+        return self.ONE_LIKE_STR
 
     def click_first_post_unlike_button(self):
         self.get_first_post_like_button().click()
         WebDriverWait(self.driver, timeout=10).until(
-            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.no_likes_str)
+            text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.NO_LIKES_STR)
             )
-        return self.no_likes_str
+        return self.NO_LIKES_STR
 
     def click_first_post_profile_name(self):
         self.driver.find_element_by_id(self.POST_PROFILE_ELEM_ID).click()
@@ -693,49 +696,49 @@ class IndexTemplate(NewPostTemplate):
         textarea.send_keys(post_text)
 
     def get_pagination_first(self):
-        return self.driver.find_element_by_id('first')
+        return self.driver.find_element_by_id(self.PAGINATOR_FIRST_LINK_ID)
 
     def get_pagination_previous(self):
-        return self.driver.find_element_by_id('previous')
+        return self.driver.find_element_by_id(self.PAGINATOR_PREVIOUS_LINK_ID)
 
     def get_pagination_current(self):
-        return self.driver.find_element_by_id('current')
+        return self.driver.find_element_by_id(self.PAGINATOR_CURRENT_LINK_ID)
 
     def get_pagination_next(self):
-        return self.driver.find_element_by_id('next')
+        return self.driver.find_element_by_id(self.PAGINATOR_NEXT_LINK_ID)
 
     def get_pagination_last(self):
-        return self.driver.find_element_by_id('last')
+        return self.driver.find_element_by_id(self.PAGINATOR_LAST_LINK_ID)
 
     def click_next(self):
-        link = self.driver.find_element_by_link_text(self.PAGINATOR_NEXT_LINK_TEXT)
+        link = self.driver.find_element_by_link_text(self.PAGINATOR_NEXT_LINK_ID)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(
-            presence_of_element_located((By.ID, 'previous'))
+            presence_of_element_located((By.ID, self.PAGINATOR_PREVIOUS_LINK_ID))
             )
         return AllPostsPage(self.driver, self.live_server_url)
 
     def click_last(self):
-        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_LAST_LINK_TEXT)
+        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_LAST_LINK_ID)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(
-            invisibility_of_element((By.ID, 'last'))
+            invisibility_of_element((By.ID, self.PAGINATOR_LAST_LINK_ID))
             )
         return AllPostsPage(self.driver, self.live_server_url)
 
     def click_previous(self):
-        link = self.driver.find_element_by_link_text(self.PAGINATOR_PREVIOUS_LINK_TEXT)
+        link = self.driver.find_element_by_link_text(self.PAGINATOR_PREVIOUS_LINK_ID)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(
-            presence_of_element_located((By.ID, 'next'))
+            presence_of_element_located((By.ID, self.PAGINATOR_NEXT_LINK_ID))
             )
         return AllPostsPage(self.driver, self.live_server_url)
 
     def click_first(self):
-        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_FIRST_LINK_TEXT)
+        link = self.driver.find_element_by_partial_link_text(self.PAGINATOR_FIRST_LINK_ID)
         self.driver.execute_script("arguments[0].click();", link)
         WebDriverWait(self.driver, timeout=10).until(
-            invisibility_of_element((By.ID, 'first'))
+            invisibility_of_element((By.ID, self.PAGINATOR_FIRST_LINK_ID))
             )
         return AllPostsPage(self.driver, self.live_server_url)
 
