@@ -146,12 +146,12 @@ function save_updated_post(post_id) {
             // end editing post - original text
             end_editing_post(post_id, null)
 
-            // Present general error alert - todo!
+            // Present general error alert - todo
 
         } 
         else if (data.validation_error) {
 
-            // Present warning alert - todo!
+            // Present warning alert - todo
 
         }
         else if (data.message) {
@@ -159,7 +159,7 @@ function save_updated_post(post_id) {
             // end editing post - new_text
             end_editing_post(post_id, new_text);
 
-            // Present success alert - todo!
+            // Present success alert - todo
         }
     })
 
@@ -227,7 +227,7 @@ function like_post(button) {
 
         if (data.error) {
 
-            // Present general error alert - todo!
+            // Present general error alert - todo
 
         } 
         else if (data.message) {
@@ -245,7 +245,7 @@ function like_post(button) {
                 button.classList.add('btn-outline-primary');
             }
 
-            // Present success alert - todo!
+            // Present success alert - todo
         }
     })
 
@@ -291,7 +291,7 @@ function toggle_follow(button) {
 
         if (data.error) {
 
-            // Present general error alert - todo!
+            // Present general error alert - todo
 
         } 
         else if (data.message) {
@@ -313,7 +313,7 @@ function toggle_follow(button) {
             // update count
             followers_count_div.innerText = "followers " + data.followers
 
-            // Present success alert - todo!
+            // Present success alert - todo
 
         }
     })

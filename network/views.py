@@ -33,7 +33,7 @@ def index(request):
     posts = Post.objects.posts_from_all_users()
 
     # page_obj (Paginator)
-    page = request.GET.get('page', 1) #problem here with request.GET ???
+    page = request.GET.get('page', 1)
     paginator = Paginator(posts, 10)
     page_obj = paginator.get_page(page)
 
@@ -49,8 +49,8 @@ def following(request):
 
     if request.method == "GET":
         # fetch all posts from users follwed by user
-        posts = Post.objects.posts_from_users_followed_by_user(user=request.user)#pass in the user?
-
+        posts = Post.objects.posts_from_users_followed_by_user(user=request.user)
+        
         # page_obj (Paginator)
         page = request.GET.get('page', 1)
         paginator = Paginator(posts, 10)
