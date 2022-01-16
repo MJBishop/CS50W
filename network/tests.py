@@ -6,7 +6,6 @@ from .models import User, Follow, Post, MAX_POST_LENGTH
 from .views import NewPostForm
 
 
-# Create your tests here.
 class FormsTestCase(TestCase):
 
     # NewPostForm
@@ -27,9 +26,6 @@ class FormsTestCase(TestCase):
             'text': ['This field is required.'],
         })
         
-
-
-
 
 class ViewsTestCase(TestCase):
 
@@ -87,6 +83,7 @@ class ViewsTestCase(TestCase):
 
         response = self.client.post(path)
         self.assertEqual(response.status_code, 302)
+
 
     # profile
     def test_profile(self):
@@ -220,6 +217,7 @@ class ViewsTestCase(TestCase):
         response = self.client.generic('POST', path, json.dumps({"text":updated_post_text}))
         self.assertEqual(response.status_code, 400)
 
+
     # toggle_like
     def test_like_post_returns_an_error_for_post_that_does_not_exist(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -276,6 +274,7 @@ class ViewsTestCase(TestCase):
         u1_posts = Post.objects.posts_from_user(self.user1)
         post = u1_posts[0]
         self.assertEqual(post.likes.count(), 0)
+
 
     # Follow / Unfollow
     def test_follow_returns_an_error_for_user_that_does_not_exist(self):
