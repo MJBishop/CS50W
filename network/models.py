@@ -118,7 +118,7 @@ class PostManager(models.Manager):
 
 class Post(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name='posts')
-    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')#test
+    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=MAX_POST_LENGTH)
 
