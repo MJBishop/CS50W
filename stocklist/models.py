@@ -28,3 +28,9 @@ class Session(models.Model):
         if self.end_date < self.start_date:
             raise ValidationError("End date cannot be before start date!")
         super(Session, self).save(*args, **kwargs)
+
+    def __str__(self):
+        if (self.start_date == self.end_date):
+            return "{} Session: {}".format(self.name, self.start_date)
+        else:
+            return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
