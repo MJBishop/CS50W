@@ -132,7 +132,7 @@ class ListTestCase(TestCase):
 
         return super().setUpTestData()
 
-    def test_create_list(self):
+    def test_create_addition_list(self):
         lists = List.objects.create(
             session=self.session, 
             owner=self.user1, 
