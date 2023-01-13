@@ -28,6 +28,8 @@ class StoreTestCase(TestCase):
 
         # create User
         cls.user1 = User.objects.create_user('Mike')
+        cls.user2 = User.objects.create_user('James')
+
         cls.store_name = "Test Store"
 
         return super().setUpTestData()
@@ -38,3 +40,16 @@ class StoreTestCase(TestCase):
         stores = Store.objects.all()
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, self.store_name)
+
+    def test_store_string(self):
+        store = Store.objects.create(owner=self.user1, name=self.store_name)
+
+        self.assertEqual(self.store_name, store.__str__())
+
+    # def test_store_queryset_only_returns_stores_from_ownwer(self):
+    #     # create stores
+    #     store1 = Store.objects.create(owner=self.user1, name=self.store_name)
+    #     store2 = Store.objects.create(owner=self.user2, name=self.store_name)
+
+    #     stores = Store.objects.all()
+    #     self.assertEqual(stores.count(), 1)
