@@ -144,3 +144,11 @@ class ListTestCase(TestCase):
         self.assertEqual(lists.count(), 1)
         self.assertEqual(lists[0].name, 'Starting Stock')
         self.assertEqual(lists[0].list_type, List.ADDITION)
+
+        additions = List.additions.all()
+        self.assertEqual(additions.count(), 1)
+        self.assertEqual(additions[0].name, 'Starting Stock')
+        self.assertEqual(additions[0].list_type, List.ADDITION)
+
+        counts = List.counts.all()
+        self.assertEqual(counts.count(), 0)

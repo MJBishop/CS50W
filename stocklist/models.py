@@ -47,11 +47,7 @@ class CountListManager(models.Manager):
         return super().get_queryset().filter(list_type='CO')
 
 class List(models.Model):
-    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
-    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
-    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
-    # date?
-
+    
     ADDITION = 'AD'
     COUNT = 'CO'
     # SUBTRACTION = 'SU'
@@ -60,6 +56,11 @@ class List(models.Model):
         (ADDITION, "Addition"),
         (COUNT, "Count"),
     ]
+
+    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
+    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
+    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
+    # date?
     list_type = models.CharField(blank=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
 
     objects = models.Manager()
