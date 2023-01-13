@@ -3,7 +3,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 MAX_STORE_NAME_LENGTH = 20
-MAX_SESSION_NAME_LENGTH = 20
+MAX_SESSION_NAME_LENGTH = 10
+MAX_LIST_NAME_LENGTH = 20
 
 
 class User(AbstractUser):
@@ -34,3 +35,33 @@ class Session(models.Model):
             return "{} Session: {}".format(self.name, self.start_date)
         else:
             return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
+
+
+
+class AdditionListManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(list_type='AD')
+
+class CountListManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(list_type='CO')
+
+class List(models.Model):
+    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
+    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
+    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
+    # date?
+
+    ADDITION = 'AD'
+    COUNT = 'CO'
+    # SUBTRACTION = 'SU'
+    # ORDER = 'OR'
+    LIST_TYPE_CHOICES = [
+        (ADDITION, "Addition"),
+        (COUNT, "Count"),
+    ]
+    list_type = models.CharField(blank=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
+
+    objects = models.Manager()
+    additions = AdditionListManager()
+    counts = CountListManager()

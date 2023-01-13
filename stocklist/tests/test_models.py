@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
 
-from stocklist.models import User, Store, Session
+from stocklist.models import User, Store, Session, List
 
 
 class UserTestCase(TestCase):
@@ -109,3 +109,38 @@ class SessionTestCase(TestCase):
 
         expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
         self.assertEqual(expected_string, session.__str__())
+
+
+class ListTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        cls.store_name = "Test Store"
+        cls.session_name = "Wednesday"
+
+        # Create User, Store
+        cls.user1 = User.objects.create_user('Mike')
+        store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+
+        start_date = datetime.date(year=2023, month=1, day=14)
+        end_date = datetime.date(year=2023, month=1, day=15)
+        cls.session = Session.objects.create(   store=store1, 
+                                                name=cls.session_name, 
+                                                start_date=start_date, 
+                                                end_date=end_date )
+
+        return super().setUpTestData()
+
+    def test_create_list(self):
+        lists = List.objects.create(
+            session=self.session, 
+            owner=self.user1, 
+            name='Starting Stock', 
+            list_type=List.ADDITION
+        )
+
+        lists = List.objects.all()
+        self.assertEqual(lists.count(), 1)
+        self.assertEqual(lists[0].name, 'Starting Stock')
+        self.assertEqual(lists[0].list_type, List.ADDITION)
