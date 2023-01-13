@@ -1,8 +1,10 @@
 import json
+import datetime
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
-from stocklist.models import User, Store
+
+from stocklist.models import User, Store, Session
 
 
 class UserTestCase(TestCase):
@@ -26,9 +28,9 @@ class StoreTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
 
-        # create User
+        # create Users
         cls.user1 = User.objects.create_user('Mike')
-        cls.user2 = User.objects.create_user('James')
+        # cls.user2 = User.objects.create_user('James')
 
         cls.store_name = "Test Store"
 
@@ -53,3 +55,28 @@ class StoreTestCase(TestCase):
 
     #     stores = Store.objects.all()
     #     self.assertEqual(stores.count(), 1)
+
+
+class SessionTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        cls.store_name = "Test Store"
+        cls.session_name = "Wednesday"
+
+        # Create User, Store, Session
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+
+        return super().setUpTestData()
+
+
+    def test_create_session(self):
+        session = Session.objects.create(   store=self.store1, 
+                                            name=self.session_name, 
+                                            start_date=datetime.date.today(), 
+                                            end_date=datetime.date.today())
+        sessions = Session.objects.all()
+        self.assertEqual(sessions.count(), 1)
+        self.assertEqual(sessions[0].name, self.session_name)

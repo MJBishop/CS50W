@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 MAX_STORE_NAME_LENGTH = 20
+MAX_SESSION_NAME_LENGTH = 20
 
 
 class User(AbstractUser):
@@ -14,3 +15,10 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Session(models.Model):
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions")
+    name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
+    start_date = models.DateField()
+    end_date = models.DateField()
