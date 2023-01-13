@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.exceptions import ValidationError
 
 MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 20
@@ -22,3 +23,8 @@ class Session(models.Model):
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
     start_date = models.DateField()
     end_date = models.DateField()
+
+    def save(self, *args, **kwargs):
+        if self.end_date < self.start_date:
+            raise ValidationError("End date cannot be before start date!")
+        super(Session, self).save(*args, **kwargs)

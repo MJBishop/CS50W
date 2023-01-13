@@ -65,7 +65,7 @@ class SessionTestCase(TestCase):
         cls.store_name = "Test Store"
         cls.session_name = "Wednesday"
 
-        # Create User, Store, Session
+        # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
         cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
 
@@ -76,7 +76,14 @@ class SessionTestCase(TestCase):
         session = Session.objects.create(   store=self.store1, 
                                             name=self.session_name, 
                                             start_date=datetime.date.today(), 
-                                            end_date=datetime.date.today())
+                                            end_date=datetime.date.today() )
         sessions = Session.objects.all()
         self.assertEqual(sessions.count(), 1)
         self.assertEqual(sessions[0].name, self.session_name)
+
+    def test_create_session_raises_validation_error_for_end_date_before_start_date(self):
+        with self.assertRaises(ValidationError):
+            Session.objects.create( store=self.store1,
+                                    name=self.session_name, 
+                                    start_date=datetime.date(year=2023, month=1, day=14), 
+                                    end_date=datetime.date(year=2023, month=1, day=13) )
