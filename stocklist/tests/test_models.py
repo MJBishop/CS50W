@@ -156,6 +156,9 @@ class ListTestCase(TestCase):
         self.assertEqual(additions.count(), 1)
         self.assertEqual(additions[0].list_type, List.ADDITION)
 
+        subtractions = List.subtractions.all()
+        self.assertEqual(subtractions.count(), 0)
+
         counts = List.counts.all()
         self.assertEqual(counts.count(), 0)
 
@@ -170,6 +173,27 @@ class ListTestCase(TestCase):
         additions = List.additions.all()
         self.assertEqual(additions.count(), 0)
 
+        subtractions = List.subtractions.all()
+        self.assertEqual(subtractions.count(), 0)
+
         counts = List.counts.all()
         self.assertEqual(counts.count(), 1)
         self.assertEqual(counts[0].list_type, List.COUNT)
+
+    def test_create_subtraction_list(self):
+        list_name = 'Sales'
+        lists = List.objects.create(
+            session=self.session, 
+            owner=self.user1, 
+            name=list_name, 
+            list_type=List.SUBTRACTION
+        )
+        additions = List.additions.all()
+        self.assertEqual(additions.count(), 0)
+
+        subtractions = List.subtractions.all()
+        self.assertEqual(subtractions.count(), 1)
+        self.assertEqual(counts[0].list_type, List.SUBTRACTION)
+
+        counts = List.counts.all()
+        self.assertEqual(counts.count(), 0)

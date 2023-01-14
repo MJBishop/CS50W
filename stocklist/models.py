@@ -22,7 +22,7 @@ class Store(models.Model):
 class Session(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions")
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
-    start_date = models.DateField()
+    start_date = models.DateField() #datetime?
     end_date = models.DateField()
 
     def save(self, *args, **kwargs):
@@ -37,10 +37,13 @@ class Session(models.Model):
             return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
 
 
-
 class AdditionListManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(list_type='AD')
+
+class SubtractionListManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(list_type='SU')
 
 class CountListManager(models.Manager):
     def get_queryset(self):
@@ -49,11 +52,12 @@ class CountListManager(models.Manager):
 class List(models.Model):
     
     ADDITION = 'AD'
+    SUBTRACTION = 'SU'
     COUNT = 'CO'
-    # SUBTRACTION = 'SU'
     # ORDER = 'OR'
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
+        (SUBTRACTION, "SU"),
         (COUNT, "Count"),
     ]
 
@@ -65,4 +69,5 @@ class List(models.Model):
 
     objects = models.Manager()
     additions = AdditionListManager()
+    subtractions = SubtractionListManager()
     counts = CountListManager()
