@@ -130,25 +130,30 @@ class ListTestCase(TestCase):
                                                 start_date=start_date, 
                                                 end_date=end_date )
 
+        cls.list_name = 'Starting Stock'
+
         return super().setUpTestData()
 
+    def test_create_list(self):
+        self.lists = List.objects.create(
+            session=self.session, 
+            owner=self.user1, 
+            name=self.list_name, 
+        )
+        lists = List.objects.all()
+        self.assertEqual(lists.count(), 1)
+        self.assertEqual(lists[0].name, self.list_name)
+        self.assertEqual(lists[0].list_type, List.ADDITION)
+
     def test_create_addition_list(self):
-        list_name = 'Starting Stock'
         lists = List.objects.create(
             session=self.session, 
             owner=self.user1, 
-            name=list_name, 
+            name=self.list_name, 
             list_type=List.ADDITION
         )
-
-        lists = List.objects.all()
-        self.assertEqual(lists.count(), 1)
-        self.assertEqual(lists[0].name, list_name)
-        self.assertEqual(lists[0].list_type, List.ADDITION)
-
         additions = List.additions.all()
         self.assertEqual(additions.count(), 1)
-        self.assertEqual(additions[0].name, list_name)
         self.assertEqual(additions[0].list_type, List.ADDITION)
 
         counts = List.counts.all()
@@ -162,16 +167,9 @@ class ListTestCase(TestCase):
             name=list_name, 
             list_type=List.COUNT
         )
-
-        lists = List.objects.all()
-        self.assertEqual(lists.count(), 1)
-        self.assertEqual(lists[0].name, list_name)
-        self.assertEqual(lists[0].list_type, List.COUNT)
-
         additions = List.additions.all()
         self.assertEqual(additions.count(), 0)
 
         counts = List.counts.all()
         self.assertEqual(counts.count(), 1)
-        self.assertEqual(counts[0].name, list_name)
         self.assertEqual(counts[0].list_type, List.COUNT)
