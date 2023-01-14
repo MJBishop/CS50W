@@ -1,6 +1,6 @@
 import json
 import datetime
-import decimal
+from decimal import Decimal
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
@@ -258,14 +258,24 @@ class AnnotatedItemManagerTestCase(TestCase):
         list_item_amount = '10'
         list_item1 = ListItem.objects.create(list=cls.list2, item=cls.item, amount=list_item_amount)
 
+        # List3, ListItem3
+        cls.list_name3 = 'Sales'
+        cls.list3 = List.objects.create(
+            session=cls.session, 
+            owner=cls.user1, 
+            name=cls.list_name3, 
+            list_type=List.SUBTRACTION
+        )
+        list_item_amount = '3.7'
+        list_item1 = ListItem.objects.create(list=cls.list3, item=cls.item, amount=list_item_amount)
+
         return super().setUpTestData()
 
     def test_annotated_item_manager_additions(self):
-        items = Item.objects.annotated_items_for_session(self.session).all()
-        self.assertEqual(items[0].total_added, decimal.Decimal('22.7'))
-        self.assertEqual(items[0].total_subtracted, decimal.Decimal('0'))
-        self.assertEqual(items[0].total_counted, decimal.Decimal('0'))
-        # None returned when none counted
+        items = Item.objects.annotated_items_for_session(self.session)
+        self.assertEqual(items[0].total_added, Decimal('22.7'))
+        self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
+        self.assertEqual(items[0].total_counted, Decimal('0'))
 
 
 class ListItemTestCase(TestCase):
@@ -304,7 +314,7 @@ class ListItemTestCase(TestCase):
         list_items = ListItem.objects.all()
         self.assertEqual(list_items[0].list, self.list)
         self.assertEqual(list_items[0].item, self.item)
-        self.assertEqual(list_items[0].amount, decimal.Decimal(list_item_amount))
+        self.assertEqual(list_items[0].amount, Decimal(list_item_amount))
 
 
         # test item.name is unique

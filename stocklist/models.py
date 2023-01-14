@@ -1,4 +1,4 @@
-import decimal
+from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Sum, Q
@@ -10,6 +10,8 @@ MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
 MAX_ITEM_NAME_LENGTH = 40 #enough?
+MIN_LIST_ITEM_AMOUNT = Decimal('0')
+MAX_LIST_ITEM_AMOUNT = Decimal('1000000')
 
 
 class User(AbstractUser):
@@ -88,9 +90,9 @@ class AnnotatedItemManager(models.Manager):
         countQ = Q(list_items__list__list_type=List.COUNT)
 
         return self.annotate(
-            total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & additionQ)), decimal.Decimal('0') ),
-            total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & subtractionQ)), decimal.Decimal('0') ),
-            total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), decimal.Decimal('0') ),
+            total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & additionQ)), Decimal('0') ),
+            total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & subtractionQ)), Decimal('0') ),
+            total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), Decimal('0') ),
         )#order_by (get_queryset?)
 
 class Item(models.Model):
@@ -107,6 +109,5 @@ class ListItem(models.Model):
     amount = models.DecimalField(
         max_digits=7, 
         decimal_places=1, 
-        validators=[MinValueValidator(0), MaxValueValidator(1000000)],
-        default=0
+        validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)]
     )
