@@ -77,13 +77,13 @@ class List(models.Model):
 
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
-    name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
+    name = models.CharField(unique=True, max_length=MAX_ITEM_NAME_LENGTH)
     # spare cols?
 
 
 class ListItem(models.Model):
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="list_items")
-    item = models.ForeignKey(Item, editable=False, on_delete=models.CASCADE, related_name="list_items")
+    item = models.ForeignKey(Item, to_field='name', editable=False, on_delete=models.CASCADE, related_name="list_items")
     amount = models.DecimalField(
         max_digits=7, 
         decimal_places=1, 
