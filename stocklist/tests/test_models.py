@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 
 
 from stocklist.models import User, Store, Session, List, ListItem, Item
@@ -216,6 +217,10 @@ class ItemTestCase(TestCase):
         self.assertEqual(items[0].name, self.item_name)
         self.assertEqual(items[0].store, self.store1)
 
+    def test_duplicate_item_name_raises_integrity_error(self):
+        with self.assertRaises(IntegrityError):
+            item2 = Item.objects.create(store=self.store1, name=self.item_name)
+
 
 class AnnotatedItemManagerTestCase(TestCase):
 
@@ -271,7 +276,7 @@ class AnnotatedItemManagerTestCase(TestCase):
 
         return super().setUpTestData()
 
-    def test_annotated_item_manager_additions(self):
+    def test_annotated_item_manager(self):
         items = Item.objects.annotated_items_for_session(self.session)
         self.assertEqual(items[0].total_added, Decimal('22.7'))
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
