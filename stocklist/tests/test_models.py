@@ -221,6 +221,12 @@ class ItemTestCase(TestCase):
         with self.assertRaises(IntegrityError):
             item2 = Item.objects.create(store=self.store1, name=self.item_name)
 
+    def test_duplicate_item_name_for_seperate_stores(self):
+        store_name2 = 'Test Store2'
+        store2 = Store.objects.create(owner=self.user1, name=store_name2)
+        item2 = Item.objects.create(store=store2, name=self.item_name)
+        self.assertEqual(item2.name, self.item.name)
+
 
 class AnnotatedItemManagerTestCase(TestCase):
 
