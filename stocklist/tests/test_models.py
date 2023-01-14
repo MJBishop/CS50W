@@ -1,5 +1,6 @@
 import json
 import datetime
+import decimal
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
@@ -220,28 +221,35 @@ class ListItemTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
 
-        cls.store_name = "Test Store"
-        cls.session_name = "Wednesday"
 
-        # Create User, Store
+        # Create User, Store, Session, List, Item
         cls.user1 = User.objects.create_user('Mike')
-        store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
-
+        cls.store_name = "Test Store"
+        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.session_name = "Wednesday"
         start_date = datetime.date(year=2023, month=1, day=14)
         end_date = datetime.date(year=2023, month=1, day=15)
-        cls.session = Session.objects.create(   store=store1, 
+        cls.session = Session.objects.create(   store=cls.store1, 
                                                 name=cls.session_name, 
                                                 start_date=start_date, 
                                                 end_date=end_date )
-
         cls.list_name = 'Starting Stock'
         cls.list = List.objects.create(
             session=cls.session, 
             owner=cls.user1, 
             name=cls.list_name, 
+            list_type=List.ADDITION
         )
+        cls.item_name = "Bacardi Superior 70CL BTL"
+        cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
 
         return super().setUpTestData()
 
-        def test_create_list_item(self):
-            pass
+    def test_create_list_item(self):
+        list_item_amount = '12.7'
+        list_item = ListItem.objects.create(list=self.list, item=self.item, amount=list_item_amount)
+
+        list_items = ListItem.objects.all()
+        self.assertEqual(list_items[0].list, self.list)
+        self.assertEqual(list_items[0].item, self.item)
+        self.assertEqual(list_items[0].amount, decimal.Decimal(list_item_amount))
