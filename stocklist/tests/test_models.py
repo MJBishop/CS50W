@@ -216,6 +216,58 @@ class ItemTestCase(TestCase):
         self.assertEqual(items[0].name, self.item_name)
         self.assertEqual(items[0].store, self.store1)
 
+
+class AnnotatedItemManagerTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        # Create User, Store, Item, Session
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store_name = "Test Store"
+        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.item_name = "Bacardi Superior 70CL BTL"
+        cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
+        cls.session_name = "Wednesday"
+        start_date = datetime.date(year=2023, month=1, day=14)
+        end_date = datetime.date(year=2023, month=1, day=15)
+        cls.session = Session.objects.create(   store=cls.store1, 
+                                                name=cls.session_name, 
+                                                start_date=start_date, 
+                                                end_date=end_date )
+        
+        # List1, ListItem1
+        cls.list_name1 = 'Starting Stock'
+        cls.list1 = List.objects.create(
+            session=cls.session, 
+            owner=cls.user1, 
+            name=cls.list_name1, 
+            list_type=List.ADDITION
+        )
+        list_item_amount = '12.7'
+        list_item1 = ListItem.objects.create(list=cls.list1, item=cls.item, amount=list_item_amount)
+
+        # List2, ListItem2
+        cls.list_name2 = 'Delivery'
+        cls.list2 = List.objects.create(
+            session=cls.session, 
+            owner=cls.user1, 
+            name=cls.list_name2, 
+            list_type=List.ADDITION
+        )
+        list_item_amount = '10'
+        list_item1 = ListItem.objects.create(list=cls.list2, item=cls.item, amount=list_item_amount)
+
+        return super().setUpTestData()
+
+    def test_annotated_item_manager_additions(self):
+        items = Item.objects.annotated_items_for_session(self.session).all()
+        self.assertEqual(items[0].total_added, decimal.Decimal('22.7'))
+        self.assertEqual(items[0].total_subtracted, decimal.Decimal('0'))
+        self.assertEqual(items[0].total_counted, decimal.Decimal('0'))
+        # None returned when none counted
+
+
 class ListItemTestCase(TestCase):
 
     @classmethod
@@ -253,3 +305,6 @@ class ListItemTestCase(TestCase):
         self.assertEqual(list_items[0].list, self.list)
         self.assertEqual(list_items[0].item, self.item)
         self.assertEqual(list_items[0].amount, decimal.Decimal(list_item_amount))
+
+
+        # test item.name is unique

@@ -1,5 +1,8 @@
+import decimal
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -75,10 +78,27 @@ class List(models.Model):
     counts = CountListManager()
 
 
+class AnnotatedItemManager(models.Manager):
+    def annotated_items_for_session(self, session):
+
+        storeQ = Q(store=session.store)
+        sessionQ = Q(list_items__list__session=session)
+        additionQ = Q(list_items__list__list_type=List.ADDITION)
+        subtractionQ = Q(list_items__list__list_type=List.SUBTRACTION)
+        countQ = Q(list_items__list__list_type=List.COUNT)
+
+        return self.annotate(
+            total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & additionQ)), decimal.Decimal('0') ),
+            total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & subtractionQ)), decimal.Decimal('0') ),
+            total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), decimal.Decimal('0') ),
+        )#order_by (get_queryset?)
+
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
     name = models.CharField(unique=True, max_length=MAX_ITEM_NAME_LENGTH)
     # spare cols?
+
+    objects = AnnotatedItemManager()
 
 
 class ListItem(models.Model):
@@ -87,5 +107,6 @@ class ListItem(models.Model):
     amount = models.DecimalField(
         max_digits=7, 
         decimal_places=1, 
-        validators=[MinValueValidator(0), MaxValueValidator(1000000)]
+        validators=[MinValueValidator(0), MaxValueValidator(1000000)],
+        default=0
     )
