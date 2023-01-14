@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
+MAX_ITEM_NAME_LENGTH = 40 #enough?
 
 
 class User(AbstractUser):
@@ -54,10 +56,10 @@ class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
     COUNT = 'CO'
-    # ORDER = 'OR'
+    # ORDER = 'OR', PAR = 'PA'
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
-        (SUBTRACTION, "SU"),
+        (SUBTRACTION, "Subtraction"),
         (COUNT, "Count"),
     ]
 
@@ -71,3 +73,18 @@ class List(models.Model):
     additions = AdditionListManager()
     subtractions = SubtractionListManager()
     counts = CountListManager()
+
+
+class Item(models.Model):
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
+    name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
+    # + spare cols?, group/subgroup?
+
+class ListItem(models.Model):
+    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="list_items")
+    item = models.ForeignKey(Item, editable=False, on_delete=models.CASCADE, related_name="item")
+    amount = models.DecimalField(
+        max_digits=7, 
+        decimal_places=2, 
+        validators=[MinValueValidator(0), MaxValueValidator(1000000)]
+    )

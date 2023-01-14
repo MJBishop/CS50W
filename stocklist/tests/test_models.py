@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
 
-from stocklist.models import User, Store, Session, List
+from stocklist.models import User, Store, Session, List, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -27,26 +27,23 @@ class StoreTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
-
-        # create Users
+        
+        # create User
         cls.user1 = User.objects.create_user('Mike')
-        # cls.user2 = User.objects.create_user('James')
 
+        # create Store
         cls.store_name = "Test Store"
+        cls.store = Store.objects.create(owner=cls.user1, name=cls.store_name)
 
         return super().setUpTestData()
 
     def test_create_store(self):
-        store = Store.objects.create(owner=self.user1, name=self.store_name)
-
         stores = Store.objects.all()
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, self.store_name)
 
     def test_store_string(self):
-        store = Store.objects.create(owner=self.user1, name=self.store_name)
-
-        self.assertEqual(self.store_name, store.__str__())
+        self.assertEqual(self.store_name, self.store.__str__())
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
     #     # create stores
@@ -146,7 +143,7 @@ class ListTestCase(TestCase):
         self.assertEqual(lists[0].list_type, List.ADDITION)
 
     def test_create_addition_list(self):
-        lists = List.objects.create(
+        list = List.objects.create(
             session=self.session, 
             owner=self.user1, 
             name=self.list_name, 
@@ -164,7 +161,7 @@ class ListTestCase(TestCase):
 
     def test_create_count_list(self):
         list_name = 'Final Count'
-        lists = List.objects.create(
+        list = List.objects.create(
             session=self.session, 
             owner=self.user1, 
             name=list_name, 
@@ -182,7 +179,7 @@ class ListTestCase(TestCase):
 
     def test_create_subtraction_list(self):
         list_name = 'Sales'
-        lists = List.objects.create(
+        list = List.objects.create(
             session=self.session, 
             owner=self.user1, 
             name=list_name, 
@@ -193,7 +190,58 @@ class ListTestCase(TestCase):
 
         subtractions = List.subtractions.all()
         self.assertEqual(subtractions.count(), 1)
-        self.assertEqual(counts[0].list_type, List.SUBTRACTION)
+        self.assertEqual(subtractions[0].list_type, List.SUBTRACTION)
 
         counts = List.counts.all()
         self.assertEqual(counts.count(), 0)
+
+
+class ItemTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        # Create User, Store, Item
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store_name = "Test Store"
+        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.item_name = "Bacardi Superior 70CL BTL"
+        cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
+
+        return super().setUpTestData()
+
+    def test_create_item(self):
+        items = Item.objects.all()
+        self.assertEqual(items[0].name, self.item_name)
+        self.assertEqual(items[0].store, self.store1)
+
+class ListItemTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        cls.store_name = "Test Store"
+        cls.session_name = "Wednesday"
+
+        # Create User, Store
+        cls.user1 = User.objects.create_user('Mike')
+        store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+
+        start_date = datetime.date(year=2023, month=1, day=14)
+        end_date = datetime.date(year=2023, month=1, day=15)
+        cls.session = Session.objects.create(   store=store1, 
+                                                name=cls.session_name, 
+                                                start_date=start_date, 
+                                                end_date=end_date )
+
+        cls.list_name = 'Starting Stock'
+        cls.list = List.objects.create(
+            session=cls.session, 
+            owner=cls.user1, 
+            name=cls.list_name, 
+        )
+
+        return super().setUpTestData()
+
+        def test_create_list_item(self):
+            pass
