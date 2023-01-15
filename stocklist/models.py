@@ -60,8 +60,7 @@ class List(models.Model):
     
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
-    COUNT = 'CO'
-    # ORDER = 'OR', PAR = 'PA'
+    COUNT = 'CO' # ORDER = 'OR', PAR = 'PA'
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
         (SUBTRACTION, "Subtraction"),
@@ -71,13 +70,16 @@ class List(models.Model):
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
-    # date?
     list_type = models.CharField(blank=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
+    # date?
 
     objects = models.Manager()
     additions = AdditionListManager()
     subtractions = SubtractionListManager()
     counts = CountListManager()
+
+    def __str__(self):
+        return '{} List - {} {}'.format(self.name, self.session.name, self.get_list_type_display())
 
 
 class AnnotatedItemManager(models.Manager):

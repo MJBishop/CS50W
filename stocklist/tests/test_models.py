@@ -128,7 +128,6 @@ class ListTestCase(TestCase):
                                                 name=cls.session_name, 
                                                 start_date=start_date, 
                                                 end_date=end_date )
-
         cls.list_name = 'Starting Stock'
 
         return super().setUpTestData()
@@ -196,6 +195,15 @@ class ListTestCase(TestCase):
 
         counts = List.counts.all()
         self.assertEqual(counts.count(), 0)
+
+    def test_list_string(self):
+        list = List.objects.create(
+            session=self.session, 
+            owner=self.user1, 
+            name=self.list_name, 
+            list_type=List.ADDITION
+        )
+        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.session.name, list.get_list_type_display()))
 
 
 class ItemTestCase(TestCase):
@@ -327,5 +335,3 @@ class ListItemTestCase(TestCase):
         self.assertEqual(list_items[0].item, self.item)
         self.assertEqual(list_items[0].amount, Decimal(list_item_amount))
 
-
-        # test item.name is unique
