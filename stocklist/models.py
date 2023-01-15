@@ -109,6 +109,9 @@ class Item(models.Model):
 
     objects = AnnotatedItemManager()
 
+    def __str__(self):
+        return self.name
+
 
 class ListItem(models.Model):
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="list_items")

@@ -235,6 +235,9 @@ class ItemTestCase(TestCase):
         item2 = Item.objects.create(store=store2, name=self.item_name)
         self.assertEqual(item2.name, self.item.name)
 
+    def test_item_string(self):
+        self.assertEqual(self.item.__str__(), self.item_name)
+
 
 class AnnotatedItemManagerTestCase(TestCase):
 
