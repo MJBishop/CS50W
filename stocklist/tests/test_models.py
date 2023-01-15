@@ -384,3 +384,10 @@ class ListItemTestCase(TestCase):
     def test_list_item_string(self):
         self.assertEqual(self.list_item.__str__(), '{} {}'.format(self.list_item_amount, self.item_name))
 
+    # edit list_item amount?
+
+    def test_max_list_item_name_length(self):
+        negative_amount = -1
+        with self.assertRaises(ValidationError):
+            list_item = ListItem.objects.create(list=self.list, item=self.item, amount=negative_amount)
+            list_item.full_clean()
