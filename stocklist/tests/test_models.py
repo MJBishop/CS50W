@@ -327,14 +327,18 @@ class ListItemTestCase(TestCase):
         cls.item_name = "Bacardi Superior 70CL BTL"
         cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
 
+        cls.list_item_amount = '12.7'
+        cls.list_item = ListItem.objects.create(list=cls.list, item=cls.item, amount=cls.list_item_amount)
+
         return super().setUpTestData()
 
     def test_create_list_item(self):
-        list_item_amount = '12.7'
-        list_item = ListItem.objects.create(list=self.list, item=self.item, amount=list_item_amount)
 
         list_items = ListItem.objects.all()
         self.assertEqual(list_items[0].list, self.list)
         self.assertEqual(list_items[0].item, self.item)
-        self.assertEqual(list_items[0].amount, Decimal(list_item_amount))
+        self.assertEqual(list_items[0].amount, Decimal(self.list_item_amount))
+
+    def test_list_item_string(self):
+        self.assertEqual(self.list_item.__str__(), '{} {}'.format(self.list_item_amount, self.item_name))
 

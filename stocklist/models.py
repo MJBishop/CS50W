@@ -121,3 +121,6 @@ class ListItem(models.Model):
         decimal_places=1, 
         validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)]
     )
+
+    def __str__(self):
+        return '{} {}'.format(self.amount, self.item.name)
