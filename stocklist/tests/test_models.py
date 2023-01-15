@@ -7,7 +7,7 @@ from django.db.utils import IntegrityError
 
 
 
-from stocklist.models import User, Store, Session, List, ListItem, Item, MAX_STORE_NAME_LENGTH
+from stocklist.models import User, Store, Session, List, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -52,7 +52,7 @@ class StoreTestCase(TestCase):
     # edit store.name?
 
     def test_max_store_name_length(self):
-        long_store_name = (MAX_STORE_NAME_LENGTH + 1)*'A'
+        long_store_name = (20 + 1)*'A'
         with self.assertRaises(ValidationError):
             store = Store.objects.create(owner=self.user1, name=long_store_name)
             store.full_clean()
@@ -118,6 +118,19 @@ class SessionTestCase(TestCase):
 
         expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
         self.assertEqual(expected_string, session.__str__())
+
+    # edit session name?
+
+    def test_max_session_name_length(self):
+        start_date = datetime.date(year=2023, month=1, day=14)
+        end_date = datetime.date(year=2023, month=1, day=15)
+        long_session_name = (10 + 1)*'A'
+        with self.assertRaises(ValidationError):
+            session = Session.objects.create(   store=self.store1, 
+                                                name=long_session_name, 
+                                                start_date=start_date, 
+                                                end_date=end_date )
+            session.full_clean()
 
 
 class ListTestCase(TestCase):
