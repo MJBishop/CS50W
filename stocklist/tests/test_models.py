@@ -91,6 +91,7 @@ class SessionTestCase(TestCase):
         self.assertEqual(sessions[0].name, self.session_name)
         self.assertEqual(sessions[0].start_date, datetime.date.today())
         self.assertEqual(sessions[0].end_date, datetime.date.today())
+        self.assertEqual(sessions[0].store, self.store1)
 
     def test_create_session_raises_validation_error_for_end_date_before_start_date(self):
         with self.assertRaises(ValidationError):
@@ -119,17 +120,15 @@ class SessionTestCase(TestCase):
         expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
         self.assertEqual(expected_string, session.__str__())
 
-    # edit session name?
+    # edit session name, start & end date?
 
     def test_max_session_name_length(self):
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
         long_session_name = (10 + 1)*'A'
         with self.assertRaises(ValidationError):
             session = Session.objects.create(   store=self.store1, 
                                                 name=long_session_name, 
-                                                start_date=start_date, 
-                                                end_date=end_date )
+                                                start_date=datetime.date.today(), 
+                                                end_date=datetime.date.today() )
             session.full_clean()
 
 
@@ -228,6 +227,18 @@ class ListTestCase(TestCase):
         )
         self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.session.name, list.get_list_type_display()))
 
+    # edit list name?
+
+    def test_max_list_name_length(self):
+        long_list_name = (20 + 1)*'A'
+        with self.assertRaises(ValidationError):
+            list = List.objects.create(
+                session=self.session, 
+                owner=self.user1, 
+                name=long_list_name, 
+                list_type=List.ADDITION
+        )
+            list.full_clean()
 
 class ItemTestCase(TestCase):
 
@@ -260,6 +271,14 @@ class ItemTestCase(TestCase):
 
     def test_item_string(self):
         self.assertEqual(self.item.__str__(), self.item_name)
+
+    # edit item name?
+
+    def test_max_item_name_length(self):
+        long_item_name = (40 + 1)*'A'
+        with self.assertRaises(ValidationError):
+            item = Item.objects.create(store=self.store1, name=long_item_name)
+            item.full_clean()
 
 
 class AnnotatedItemManagerTestCase(TestCase):

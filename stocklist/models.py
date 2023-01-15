@@ -9,7 +9,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
-MAX_ITEM_NAME_LENGTH = 40 #enough?
+MAX_ITEM_NAME_LENGTH = 40
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('1000000')
 
@@ -29,7 +29,7 @@ class Store(models.Model):
 class Session(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions")
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
-    start_date = models.DateField() #datetime?
+    start_date = models.DateField()
     end_date = models.DateField()
 
     def save(self, *args, **kwargs):
@@ -57,7 +57,6 @@ class CountListManager(models.Manager):
         return super().get_queryset().filter(list_type='CO')
 
 class List(models.Model):
-    
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
     COUNT = 'CO' # ORDER = 'OR', PAR = 'PA'
@@ -70,7 +69,7 @@ class List(models.Model):
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
-    list_type = models.CharField(blank=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
+    list_type = models.CharField(blank=False, editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     # date?
 
     objects = models.Manager()
@@ -83,8 +82,8 @@ class List(models.Model):
 
 
 class AnnotatedItemManager(models.Manager):
-    def annotated_items_for_session(self, session):
 
+    def annotated_items_for_session(self, session):
         storeQ = Q(store=session.store)
         sessionQ = Q(list_items__list__session=session)
         additionQ = Q(list_items__list__list_type=List.ADDITION)
@@ -102,12 +101,12 @@ class Item(models.Model):
     name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
     # spare cols?
 
+    objects = AnnotatedItemManager()
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['store', 'name',], name='unique name')
         ]
-
-    objects = AnnotatedItemManager()
 
     def __str__(self):
         return self.name
