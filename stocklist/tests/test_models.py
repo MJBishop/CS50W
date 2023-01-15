@@ -386,8 +386,14 @@ class ListItemTestCase(TestCase):
 
     # edit list_item amount?
 
-    def test_max_list_item_name_length(self):
-        negative_amount = -1
+    def test_min_list_item_amount(self):
+        negative_amount = '-1'
         with self.assertRaises(ValidationError):
             list_item = ListItem.objects.create(list=self.list, item=self.item, amount=negative_amount)
+            list_item.full_clean()
+
+    def test_max_list_item_amount(self):
+        v_large_amount = '100001'
+        with self.assertRaises(ValidationError):
+            list_item = ListItem.objects.create(list=self.list, item=self.item, amount=v_large_amount)
             list_item.full_clean()
