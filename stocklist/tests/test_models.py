@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
 
-from stocklist.models import User, Store, Session, List, ListItem, Item
+
+from stocklist.models import User, Store, Session, List, ListItem, Item, MAX_STORE_NAME_LENGTH
 
 
 class UserTestCase(TestCase):
@@ -43,9 +44,18 @@ class StoreTestCase(TestCase):
         stores = Store.objects.all()
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, self.store_name)
+        self.assertEqual(self.store.owner, self.user1)
 
     def test_store_string(self):
         self.assertEqual(self.store_name, self.store.__str__())
+
+    # edit store.name?
+
+    def test_max_store_name_length(self):
+        long_store_name = (MAX_STORE_NAME_LENGTH + 1)*'A'
+        with self.assertRaises(ValidationError):
+            store = Store.objects.create(owner=self.user1, name=long_store_name)
+            store.full_clean()
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
     #     # create stores
