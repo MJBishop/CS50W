@@ -144,11 +144,7 @@ class SessionTestCase(TestCase):
                                             end_date=datetime.date(year=2023, month=1, day=16), 
                                             previous_session=session)
         self.assertEqual(session2.previous_session, session)
-        # self.assertEqual(session.next_session, session2) ??
-        
-
-    def test_session_previous_session(self):
-        pass
+        # self.assertEqual(session.next_session, session2) ??fails??    
 
 
 class ListTestCase(TestCase):
@@ -305,58 +301,69 @@ class AnnotatedItemManagerTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
 
-        # Create User, Store, Item, Session
+        # Create User, Store, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
         cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
         cls.item_name = "Bacardi Superior 70CL BTL"
         cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
-        cls.session_name = "Wednesday"
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
-        cls.session = Session.objects.create(   store=cls.store1, 
-                                                name=cls.session_name, 
-                                                start_date=start_date, 
-                                                end_date=end_date )
-        
+
+        # Session1
+        cls.session1 = Session.objects.create(  store=cls.store1, 
+                                                name="Tuesday", 
+                                                start_date=datetime.date(year=2023, month=1, day=13), 
+                                                end_date=datetime.date(year=2023, month=1, day=14) 
+        )
         # List1, ListItem1
-        cls.list_name1 = 'Starting Stock'
-        cls.list1 = List.objects.create(
-            session=cls.session, 
+        cls.list = List.objects.create(
+            session=cls.session1, 
             owner=cls.user1, 
-            name=cls.list_name1, 
+            name='Closing Stock', 
+            list_type=List.COUNT
+        )
+        list_item = ListItem.objects.create(list=cls.list, item=cls.item, amount='4.5')
+
+
+        # Session2
+        cls.session2 = Session.objects.create(  store=cls.store1, 
+                                                name="Wednesday", 
+                                                start_date=datetime.date(year=2023, month=1, day=14), 
+                                                end_date=datetime.date(year=2023, month=1, day=15),
+                                                previous_session=cls.session1,
+        )
+
+        # List1, ListItem1
+        cls.list1 = List.objects.create(
+            session=cls.session2, 
+            owner=cls.user1, 
+            name='Starting Stock', 
             list_type=List.ADDITION
         )
-        list_item_amount = '12.7'
-        list_item1 = ListItem.objects.create(list=cls.list1, item=cls.item, amount=list_item_amount)
+        list_item1 = ListItem.objects.create(list=cls.list1, item=cls.item, amount='12.7')
 
         # List2, ListItem2
-        cls.list_name2 = 'Delivery'
         cls.list2 = List.objects.create(
-            session=cls.session, 
+            session=cls.session2, 
             owner=cls.user1, 
-            name=cls.list_name2, 
+            name='Delivery', 
             list_type=List.ADDITION
         )
-        list_item_amount = '10'
-        list_item1 = ListItem.objects.create(list=cls.list2, item=cls.item, amount=list_item_amount)
+        list_item2 = ListItem.objects.create(list=cls.list2, item=cls.item, amount='10')
 
         # List3, ListItem3
-        cls.list_name3 = 'Sales'
         cls.list3 = List.objects.create(
-            session=cls.session, 
+            session=cls.session2, 
             owner=cls.user1, 
-            name=cls.list_name3, 
+            name='Sales', 
             list_type=List.SUBTRACTION
         )
-        list_item_amount = '3.7'
-        list_item1 = ListItem.objects.create(list=cls.list3, item=cls.item, amount=list_item_amount)
+        list_item3 = ListItem.objects.create(list=cls.list3, item=cls.item, amount='3.7')
 
         return super().setUpTestData()
 
     def test_annotated_item_manager(self):
-        items = Item.objects.annotated_items_for_session(self.session)
-        self.assertEqual(items[0].total_previous, Decimal('0'))
+        items = Item.objects.annotated_items_for_session(self.session2)
+        self.assertEqual(items[0].total_previous, Decimal('4.5'))
         self.assertEqual(items[0].total_added, Decimal('22.7'))
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
         self.assertEqual(items[0].total_counted, Decimal('0'))
