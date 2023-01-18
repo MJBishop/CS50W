@@ -131,6 +131,25 @@ class SessionTestCase(TestCase):
                                                 end_date=datetime.date.today() )
             session.full_clean()
 
+    def test_create_session_with_previous_session(self):
+        start_date = datetime.date(year=2023, month=1, day=14)
+        end_date = datetime.date(year=2023, month=1, day=15)
+        session = Session.objects.create(   store=self.store1, 
+                                            name=self.session_name, 
+                                            start_date=datetime.date(year=2023, month=1, day=14), 
+                                            end_date=datetime.date(year=2023, month=1, day=15))
+        session2 = Session.objects.create(  store=self.store1, 
+                                            name=self.session_name, 
+                                            start_date=datetime.date(year=2023, month=1, day=15), 
+                                            end_date=datetime.date(year=2023, month=1, day=16), 
+                                            previous_session=session)
+        self.assertEqual(session2.previous_session, session)
+        # self.assertEqual(session.next_session, session2) ??
+        
+
+    def test_session_previous_session(self):
+        pass
+
 
 class ListTestCase(TestCase):
 
@@ -337,6 +356,7 @@ class AnnotatedItemManagerTestCase(TestCase):
 
     def test_annotated_item_manager(self):
         items = Item.objects.annotated_items_for_session(self.session)
+        self.assertEqual(items[0].total_previous, Decimal('0'))
         self.assertEqual(items[0].total_added, Decimal('22.7'))
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
         self.assertEqual(items[0].total_counted, Decimal('0'))

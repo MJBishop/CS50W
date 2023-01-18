@@ -31,6 +31,9 @@ class Session(models.Model):
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
     start_date = models.DateField()
     end_date = models.DateField()
+    previous_session = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_session') # set null?
+
+    objects = models.Manager()
 
     def save(self, *args, **kwargs):
         if self.end_date < self.start_date:
@@ -59,7 +62,7 @@ class CountListManager(models.Manager):
 class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
-    COUNT = 'CO' # ORDER = 'OR', PAR = 'PA'
+    COUNT = 'CO' # ORDER = 'OR', PAR = 'PA', CHECKLIST = 'CH'
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
         (SUBTRACTION, "Subtraction"),
@@ -85,12 +88,14 @@ class AnnotatedItemManager(models.Manager):
 
     def annotated_items_for_session(self, session):
         storeQ = Q(store=session.store)
+        previous_sessionQ = Q(list_items__list__session=session.previous_session)
         sessionQ = Q(list_items__list__session=session)
         additionQ = Q(list_items__list__list_type=List.ADDITION)
         subtractionQ = Q(list_items__list__list_type=List.SUBTRACTION)
         countQ = Q(list_items__list__list_type=List.COUNT)
 
         return self.annotate(
+            total_previous=Coalesce( Sum('list_items__amount', filter=(storeQ & previous_sessionQ & countQ)), Decimal('0') ),
             total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & additionQ)), Decimal('0') ),
             total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & subtractionQ)), Decimal('0') ),
             total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), Decimal('0') ),
@@ -105,7 +110,7 @@ class Item(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['store', 'name',], name='unique name')
+            models.UniqueConstraint(fields=['store', 'name',], name='unique name store')
         ]
 
     def __str__(self):
