@@ -10,6 +10,8 @@ MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
 MAX_ITEM_NAME_LENGTH = 40
+MAX_ITEM_DEPARTMENT_NAME_LENGTH = 10
+MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
 
@@ -72,7 +74,7 @@ class List(models.Model):
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
-    list_type = models.CharField(blank=False, editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
+    list_type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     # date?
 
     objects = models.Manager()
@@ -104,6 +106,8 @@ class AnnotatedItemManager(models.Manager):
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
     name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
+    department = models.CharField(blank=True, max_length=MAX_ITEM_DEPARTMENT_NAME_LENGTH) # both blank?
+    origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank?
     # spare cols?
 
     objects = AnnotatedItemManager()
