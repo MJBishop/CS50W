@@ -5,6 +5,8 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
+from django.core import serializers
+
 
 
 from stocklist.models import User, Store, Session, List, ListItem, Item
@@ -287,8 +289,6 @@ class ItemTestCase(TestCase):
     def test_item_string(self):
         self.assertEqual(self.item.__str__(), self.item_name)
 
-    # edit item name?
-
     def test_max_item_name_length(self):
         long_item_name = (40 + 1)*'A'
         with self.assertRaises(ValidationError):
@@ -306,7 +306,6 @@ class ItemTestCase(TestCase):
         with self.assertRaises(ValidationError):
             item = Item.objects.create(store=self.store1, name='test', department=long_department_name)
             item.full_clean()
-
 
 class AnnotatedItemManagerTestCase(TestCase):
 
@@ -380,6 +379,13 @@ class AnnotatedItemManagerTestCase(TestCase):
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
         self.assertEqual(items[0].total_counted, Decimal('0'))
 
+    def test_serialize_annotated_item_manager(self):
+        serialized_items = Item.objects.serialized_annotated_items_for_session(self.session2)
+        dict = serialized_items[0]
+        self.assertEqual(dict['total_previous'], '4.5')
+        self.assertEqual(dict['total_added'], '22.7')
+        self.assertEqual(dict['total_subtracted'], '3.7')
+        self.assertEqual(dict['total_counted'], '0.0')
 
 class ListItemTestCase(TestCase):
 
@@ -422,8 +428,6 @@ class ListItemTestCase(TestCase):
 
     def test_list_item_string(self):
         self.assertEqual(self.list_item.__str__(), '{} {}'.format(self.list_item_amount, self.item_name))
-
-    # edit list_item amount?
 
     def test_min_list_item_amount(self):
         negative_amount = '-1'

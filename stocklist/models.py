@@ -103,6 +103,23 @@ class AnnotatedItemManager(models.Manager):
             total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), Decimal('0') ),
         )#order_by (get_queryset?)
 
+    def serialized_annotated_items_for_session(self, session):
+        annotated_items = self.annotated_items_for_session(session)
+        serialized_annotated_items = []
+        for item in annotated_items:
+            serialized_annotated_items.append({
+                    'id':item.id,
+                    'store_id':item.store.id,
+                    'name':item.name,
+                    'department':item.department,
+                    'origin':item.origin,
+                    'total_added':'{:.1f}'.format(item.total_added),
+                    'total_previous':'{:.1f}'.format(item.total_previous),
+                    'total_subtracted':'{:.1f}'.format(item.total_subtracted),
+                    'total_counted':'{:.1f}'.format(item.total_counted),
+            })
+        return serialized_annotated_items 
+
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
     name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
