@@ -301,6 +301,12 @@ class ItemTestCase(TestCase):
             item = Item.objects.create(store=self.store1, name='test', origin=long_origin_name)
             item.full_clean()
 
+    def test_max_item_department_length(self):
+        long_department_name = (10 + 1)*'A'
+        with self.assertRaises(ValidationError):
+            item = Item.objects.create(store=self.store1, name='test', department=long_department_name)
+            item.full_clean()
+
 
 class AnnotatedItemManagerTestCase(TestCase):
 
