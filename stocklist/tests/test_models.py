@@ -1,12 +1,8 @@
-import json
 import datetime
 from decimal import Decimal
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
-
-from django.core import serializers
-
 
 
 from stocklist.models import User, Store, Session, List, ListItem, Item
