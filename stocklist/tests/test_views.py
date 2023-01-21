@@ -7,6 +7,7 @@ from django.db.utils import IntegrityError
 
 from stocklist.models import User, Store, Session, List, ListItem, Item
 
+
 class BaseTestCase(TestCase):
 
     TEST_USER = 'testuser'
@@ -22,10 +23,12 @@ class BaseTestCase(TestCase):
         # Every test needs a client.
         self.client = Client()
 
+
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
+
 
 class LoginTestCase(BaseTestCase):
     def test_user_login(self):
@@ -49,6 +52,7 @@ class LoginTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/") 
 
+
 class LogoutTestCase(BaseTestCase):
     def test_user_logout(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -56,6 +60,11 @@ class LogoutTestCase(BaseTestCase):
         self.assertEqual(response.url, "/") 
 
 
+class RegisterTestCase(BaseTestCase):
     def test_register_view(self):
         response = self.client.get("/register")
         self.assertEqual(response.status_code, 200)
+    
+    def test_register_view_GET_renders_register_html(self):
+        response = self.client.get("/register")
+        self.assertEquals(response.templates[0].name, 'stocklist/register.html')

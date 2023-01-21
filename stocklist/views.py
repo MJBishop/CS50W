@@ -34,6 +34,5 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-
 def register_view(request):
-    return HttpResponse("Hello, register!")
+    return render(request, "stocklist/register.html")
