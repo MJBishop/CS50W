@@ -9,3 +9,6 @@ def index(request):
 
 def login_view(request):
     return HttpResponse("Hello, login!")
+
+def register_view(request):
+    return HttpResponse("Hello, register!")
