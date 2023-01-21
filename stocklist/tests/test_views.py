@@ -77,3 +77,8 @@ class RegisterTestCase(BaseTestCase):
     def test_register_view_POST_displays_error_message_for_username_taken(self):
         response = self.client.post("/register", {'username':self.TEST_USER, 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
         self.assertContains(response, "Username already taken.")
+
+    def test_register_view_POST_success_reverse_to_index(self):
+        response = self.client.post("/register", {'username':'someone', 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/") 

@@ -58,5 +58,7 @@ def register_view(request):
             return render(request, "stocklist/register.html", {
                 "message": "Username already taken."
             })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
 
     return render(request, "stocklist/register.html")
