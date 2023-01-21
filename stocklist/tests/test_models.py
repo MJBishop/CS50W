@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-
 from stocklist.models import User, Store, Session, List, ListItem, Item
 
 
@@ -176,18 +175,18 @@ class ListTestCase(TestCase):
         lists = List.objects.all()
         self.assertEqual(lists.count(), 1)
         self.assertEqual(lists[0].name, self.list_name)
-        self.assertEqual(lists[0].list_type, List.ADDITION)
+        self.assertEqual(lists[0].type, List.ADDITION)
 
     def test_create_addition_list(self):
         list = List.objects.create(
             session=self.session, 
             owner=self.user1, 
             name=self.list_name, 
-            list_type=List.ADDITION
+            type=List.ADDITION
         )
         additions = List.additions.all()
         self.assertEqual(additions.count(), 1)
-        self.assertEqual(additions[0].list_type, List.ADDITION)
+        self.assertEqual(additions[0].type, List.ADDITION)
 
         subtractions = List.subtractions.all()
         self.assertEqual(subtractions.count(), 0)
@@ -201,7 +200,7 @@ class ListTestCase(TestCase):
             session=self.session, 
             owner=self.user1, 
             name=list_name, 
-            list_type=List.COUNT
+            type=List.COUNT
         )
         additions = List.additions.all()
         self.assertEqual(additions.count(), 0)
@@ -211,7 +210,7 @@ class ListTestCase(TestCase):
 
         counts = List.counts.all()
         self.assertEqual(counts.count(), 1)
-        self.assertEqual(counts[0].list_type, List.COUNT)
+        self.assertEqual(counts[0].type, List.COUNT)
 
     def test_create_subtraction_list(self):
         list_name = 'Sales'
@@ -219,14 +218,14 @@ class ListTestCase(TestCase):
             session=self.session, 
             owner=self.user1, 
             name=list_name, 
-            list_type=List.SUBTRACTION
+            type=List.SUBTRACTION
         )
         additions = List.additions.all()
         self.assertEqual(additions.count(), 0)
 
         subtractions = List.subtractions.all()
         self.assertEqual(subtractions.count(), 1)
-        self.assertEqual(subtractions[0].list_type, List.SUBTRACTION)
+        self.assertEqual(subtractions[0].type, List.SUBTRACTION)
 
         counts = List.counts.all()
         self.assertEqual(counts.count(), 0)
@@ -236,9 +235,9 @@ class ListTestCase(TestCase):
             session=self.session, 
             owner=self.user1, 
             name=self.list_name, 
-            list_type=List.ADDITION
+            type=List.ADDITION
         )
-        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.session.name, list.get_list_type_display()))
+        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.session.name, list.get_type_display()))
 
     # edit list name?
 
@@ -249,7 +248,7 @@ class ListTestCase(TestCase):
                 session=self.session, 
                 owner=self.user1, 
                 name=long_list_name, 
-                list_type=List.ADDITION
+                type=List.ADDITION
         )
             list.full_clean()
 
@@ -303,7 +302,7 @@ class ItemTestCase(TestCase):
             item = Item.objects.create(store=self.store1, name='test', department=long_department_name)
             item.full_clean()
 
-class AnnotatedItemManagerTestCase(TestCase):
+class SessionItemsManagerTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -326,7 +325,7 @@ class AnnotatedItemManagerTestCase(TestCase):
             session=cls.session1, 
             owner=cls.user1, 
             name='Closing Stock', 
-            list_type=List.COUNT
+            type=List.COUNT
         )
         list_item = ListItem.objects.create(list=cls.list, item=cls.item, amount='4.5')
 
@@ -344,7 +343,7 @@ class AnnotatedItemManagerTestCase(TestCase):
             session=cls.session2, 
             owner=cls.user1, 
             name='Starting Stock', 
-            list_type=List.ADDITION
+            type=List.ADDITION
         )
         list_item1 = ListItem.objects.create(list=cls.list1, item=cls.item, amount='12.7')
 
@@ -353,7 +352,7 @@ class AnnotatedItemManagerTestCase(TestCase):
             session=cls.session2, 
             owner=cls.user1, 
             name='Delivery', 
-            list_type=List.ADDITION
+            type=List.ADDITION
         )
         list_item2 = ListItem.objects.create(list=cls.list2, item=cls.item, amount='10')
 
@@ -362,21 +361,21 @@ class AnnotatedItemManagerTestCase(TestCase):
             session=cls.session2, 
             owner=cls.user1, 
             name='Sales', 
-            list_type=List.SUBTRACTION
+            type=List.SUBTRACTION
         )
         list_item3 = ListItem.objects.create(list=cls.list3, item=cls.item, amount='3.7')
 
         return super().setUpTestData()
 
-    def test_annotated_item_manager(self):
-        items = Item.objects.annotated_items_for_session(self.session2)
+    def test_session_items_manager(self):
+        items = Item.objects.session_items(self.session2)
         self.assertEqual(items[0].total_previous, Decimal('4.5'))
         self.assertEqual(items[0].total_added, Decimal('22.7'))
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
         self.assertEqual(items[0].total_counted, Decimal('0'))
 
-    def test_serialize_annotated_item_manager(self):
-        serialized_items = Item.objects.serialized_annotated_items_for_session(self.session2)
+    def test_serialize_session_items_manager(self):
+        serialized_items = Item.objects.serialized_session_items(self.session2)
         dict = serialized_items[0]
         self.assertEqual(dict['total_previous'], '4.5')
         self.assertEqual(dict['total_added'], '22.7')
@@ -405,7 +404,7 @@ class ListItemTestCase(TestCase):
             session=cls.session, 
             owner=cls.user1, 
             name=cls.list_name, 
-            list_type=List.ADDITION
+            type=List.ADDITION
         )
         cls.item_name = "Bacardi Superior 70CL BTL"
         cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)

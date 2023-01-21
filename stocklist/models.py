@@ -38,6 +38,9 @@ class Session(models.Model):
     objects = models.Manager()
 
     def save(self, *args, **kwargs):
+        '''
+        Overides Save to Validate end_date >= start_date
+        '''
         if self.end_date < self.start_date:
             raise ValidationError("End date cannot be before start date!")
         super(Session, self).save(*args, **kwargs)
@@ -51,15 +54,30 @@ class Session(models.Model):
 
 class AdditionListManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(list_type='AD')
+        '''
+        Filters for Lists with type=ADDITION
+
+        Return: QuerySet
+        '''
+        return super().get_queryset().filter(type='AD')
 
 class SubtractionListManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(list_type='SU')
+        '''
+        Filters for Lists with type=SUBTRACTION
+
+        Return: QuerySet
+        '''
+        return super().get_queryset().filter(type='SU')
 
 class CountListManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(list_type='CO')
+        '''
+        Filters for Lists with type=COUNT 
+
+        Return: QuerySet
+        '''
+        return super().get_queryset().filter(type='CO')
 
 class List(models.Model):
     ADDITION = 'AD'
@@ -74,7 +92,7 @@ class List(models.Model):
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
-    list_type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
+    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     # date?
 
     objects = models.Manager()
@@ -83,18 +101,29 @@ class List(models.Model):
     counts = CountListManager()
 
     def __str__(self):
-        return '{} List - {} {}'.format(self.name, self.session.name, self.get_list_type_display())
+        return '{} List - {} {}'.format(self.name, self.session.name, self.get_type_display())
 
 
-class AnnotatedItemManager(models.Manager):
+class SessionItemsManager(models.Manager):
 
-    def annotated_items_for_session(self, session):
+    def session_items(self, session):
+        '''
+        Annotates the total list_item.amount from lists for the given session:
+        total_previous:     List.type=count totals for the previous session (opening stock)
+        total_added:        List.type=addition totals for this session (additions)
+        total_subtracted:   List.type=subtraction totals for this session (subtractions)
+        total_counted:      List.type=count totals for this session (closing stock)
+
+        session (Session): The Session
+
+        Return: QuerySet
+        '''
         storeQ = Q(store=session.store)
         previous_sessionQ = Q(list_items__list__session=session.previous_session)
         sessionQ = Q(list_items__list__session=session)
-        additionQ = Q(list_items__list__list_type=List.ADDITION)
-        subtractionQ = Q(list_items__list__list_type=List.SUBTRACTION)
-        countQ = Q(list_items__list__list_type=List.COUNT)
+        additionQ = Q(list_items__list__type=List.ADDITION)
+        subtractionQ = Q(list_items__list__type=List.SUBTRACTION)
+        countQ = Q(list_items__list__type=List.COUNT)
 
         return self.annotate(
             total_previous=Coalesce( Sum('list_items__amount', filter=(storeQ & previous_sessionQ & countQ)), Decimal('0') ),
@@ -103,11 +132,19 @@ class AnnotatedItemManager(models.Manager):
             total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), Decimal('0') ),
         )#order_by (get_queryset?)
 
-    def serialized_annotated_items_for_session(self, session):
-        annotated_items = self.annotated_items_for_session(session)
-        serialized_annotated_items = []
-        for item in annotated_items:
-            serialized_annotated_items.append({
+    def serialized_session_items(self, session):
+        '''
+        Calls session_items(session)
+        Serializes the annotated items
+
+        session (Session): The Session
+
+        Return: An Array of serialized, annotated items
+        '''
+        session_items = self.session_items(session)
+        serialized_session_items = []
+        for item in session_items:
+            serialized_session_items.append({
                     'id':item.id,
                     'store_id':item.store.id,
                     'name':item.name,
@@ -118,7 +155,7 @@ class AnnotatedItemManager(models.Manager):
                     'total_subtracted':'{:.1f}'.format(item.total_subtracted),
                     'total_counted':'{:.1f}'.format(item.total_counted),
             })
-        return serialized_annotated_items 
+        return serialized_session_items 
 
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
@@ -127,7 +164,7 @@ class Item(models.Model):
     origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank?
     # spare cols?
 
-    objects = AnnotatedItemManager()
+    objects = SessionItemsManager()
 
     class Meta:
         constraints = [
