@@ -24,6 +24,15 @@ class BaseTestCase(TestCase):
         self.client = Client()
 
 
+class StoreTestCase(BaseTestCase):
+    def test_store_path_returms_404_for_invalid_store_id(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/store/1")
+        self.assertEqual(response.status_code, 404)
+    
+    # def test_store_path_returns_404_for_
+
+
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -40,8 +49,6 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
     
-
-
 
 class LoginTestCase(BaseTestCase):
     def test_user_login(self):

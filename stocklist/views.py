@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.db.utils import IntegrityError
 
-from .models import User
+from .models import User, Store
 
 # Create your views here.
 
@@ -12,9 +12,16 @@ def index(request):
     # Users must sign in for index
     if request.user.is_authenticated:
         return render(request, "stocklist/index.html")
-        
+
     return HttpResponseRedirect(reverse("login"))
 
+
+def store(request, store_id):
+    
+    try:
+        store = Store.objects.get(user=request.user, pk=store_id)
+    except Store.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
 
 
 def login_view(request):
