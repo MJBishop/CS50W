@@ -18,6 +18,7 @@ class BaseTestCase(TestCase):
 
         cls.user1 = User.objects.create_user(
             username=cls.TEST_USER, email='testuser@test.com', password=cls.PASSWORD)
+        cls.user1.save()
 
     def setUp(self):
         # Every test needs a client.
@@ -72,3 +73,7 @@ class RegisterTestCase(BaseTestCase):
     def test_register_view_POST_displays_error_message_for_unmatching_password_confirmation(self):
         response = self.client.post("/register", {'username':'someone', 'confirmation':'other', 'password':'something', 'email':'test@test.com'})
         self.assertContains(response, "Passwords must match.")
+    
+    def test_register_view_POST_displays_error_message_for_username_taken(self):
+        response = self.client.post("/register", {'username':self.TEST_USER, 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
+        self.assertContains(response, "Username already taken.")
