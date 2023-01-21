@@ -68,3 +68,7 @@ class RegisterTestCase(BaseTestCase):
     def test_register_view_GET_renders_register_html(self):
         response = self.client.get("/register")
         self.assertEquals(response.templates[0].name, 'stocklist/register.html')
+
+    def test_register_view_POST_displays_error_message_for_unmatching_password_confirmation(self):
+        response = self.client.post("/register", {'username':'someone', 'confirmation':'other', 'password':'something', 'email':'test@test.com'})
+        self.assertContains(response, "Passwords must match.")

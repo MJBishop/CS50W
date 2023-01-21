@@ -35,4 +35,16 @@ def logout_view(request):
 
 
 def register_view(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "stocklist/register.html", {
+                "message": "Passwords must match."
+            })
+
     return render(request, "stocklist/register.html")
