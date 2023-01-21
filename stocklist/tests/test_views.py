@@ -30,6 +30,11 @@ class IndexTestCase(BaseTestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
+    def test_index_GET_renders_index_html(self):
+        response = self.client.get("/")
+        self.assertEquals(response.templates[0].name, 'stocklist/index.html')
+    
+
 
 class LoginTestCase(BaseTestCase):
     def test_user_login(self):
