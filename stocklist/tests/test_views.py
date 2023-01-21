@@ -13,12 +13,11 @@ class BaseTestCase(TestCase):
     TEST_USER = 'testuser'
     PASSWORD = '12345'
 
-    @classmethod
+    @classmethod 
     def setUpTestData(cls):
 
         cls.user1 = User.objects.create_user(
             username=cls.TEST_USER, email='testuser@test.com', password=cls.PASSWORD)
-        cls.user1.save()
 
     def setUp(self):
         # Every test needs a client.
@@ -27,13 +26,21 @@ class BaseTestCase(TestCase):
 
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
     def test_index_GET_renders_index_html(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/")
         self.assertEquals(response.templates[0].name, 'stocklist/index.html')
+
+    def test_index_GET_redirects_to_login_when_not_signed_in(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login") 
     
+
 
 
 class LoginTestCase(BaseTestCase):

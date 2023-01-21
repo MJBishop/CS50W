@@ -9,9 +9,11 @@ from .models import User
 # Create your views here.
 
 def index(request):
-    return render(request, "stocklist/index.html")
-
-
+    # Users must sign in for index
+    if request.user.is_authenticated:
+        return render(request, "stocklist/index.html")
+        
+    return HttpResponseRedirect(reverse("login"))
 
 
 
