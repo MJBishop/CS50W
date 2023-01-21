@@ -8,7 +8,10 @@ def index(request):
 
 
 def login_view(request):
-    return HttpResponse("Hello, login!")
+    return render(request, "stocklist/login.html")
+
+
+
 
 def register_view(request):
     return HttpResponse("Hello, register!")
