@@ -108,7 +108,7 @@ class SessionItemsManager(models.Manager):
 
     def session_items(self, session):
         '''
-        Annotates the total list_item.amount from lists for the given session:
+        Annotates total list_item.amount for lists, by type, for the given session:
         total_previous:     List.type=count totals for the previous session (opening stock)
         total_added:        List.type=addition totals for this session (additions)
         total_subtracted:   List.type=subtraction totals for this session (subtractions)

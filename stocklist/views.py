@@ -5,3 +5,7 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("Hello, world!")
+
+
+def login_view(request):
+    return HttpResponse("Hello, login!")
