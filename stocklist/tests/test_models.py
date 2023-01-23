@@ -81,11 +81,10 @@ class StoreTestCase(TestCase):
         current_session = default_store.current_session()
         self.assertEqual(session2, current_session)
 
-    def test_current_session_created_if_store_sessions(self):
-        pass
-
-
-
+    def test_current_session_created_if_no_store_sessions(self):
+        user2 = User.objects.create_user('James')
+        current_session = user2.default_store().current_session()
+        self.assertEqual('Session', current_session.name)
 
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
@@ -150,6 +149,8 @@ class SessionTestCase(TestCase):
 
         expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
         self.assertEqual(expected_string, session.__str__())
+
+    # def test_session_string_no_end_date(self):
 
     # edit session name, start & end date?
 

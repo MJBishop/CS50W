@@ -45,8 +45,12 @@ class Store(models.Model):
         return self.name
 
     def current_session(self):
-        return Session.objects.filter(store=self).last() #or Session.objects.create(store=self, name='Today?')
-        pass
+        '''
+        Lazy load current session
+
+        Return: Current Session
+        '''
+        return Session.objects.filter(store=self).last() or Session.objects.create(store=self, name='Session')
 
 
 class Session(models.Model):
@@ -67,7 +71,7 @@ class Session(models.Model):
         super(Session, self).save(*args, **kwargs)
 
     def __str__(self):
-        if (not self.end_date or self.start_date == self.end_date): # or no self.end_date
+        if (self.start_date == self.end_date): # or no self.end_date
             return "{} Session: {}".format(self.name, self.start_date)
         else:
             return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
