@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 from decimal import Decimal
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -28,10 +28,9 @@ class UserTestCase(TestCase):
         default_store = self.user1.default_store()
         self.assertEqual(first_store, default_store)
     
-    def test_default_store_created_if_no_stores(self):
+    def test_default_store_created_if_no_user_stores(self):
         default_store = self.user1.default_store()
         self.assertEqual(default_store.name, 'Stocklist')
-
 
 
 class StoreTestCase(TestCase):
@@ -60,7 +59,7 @@ class StoreTestCase(TestCase):
         self.assertEqual(self.store.owner, self.user1)
 
     def test_unique_store_name_for_owner(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(IntegrityError):
             store = Store.objects.create(owner=self.user1, name=self.store_name)
             store.full_clean()
 
@@ -74,6 +73,16 @@ class StoreTestCase(TestCase):
         with self.assertRaises(ValidationError):
             store = Store.objects.create(owner=self.user1, name=long_store_name)
             store.full_clean()
+
+    def test_current_session_returns_stores_last_session(self):
+        default_store = self.user1.default_store()
+        session1 = Session.objects.create( store=default_store, name='Sesion 1')
+        session2 = Session.objects.create( store=default_store, name='Sesion 2', previous_session=session1)
+        current_session = default_store.current_session()
+        self.assertEqual(session2, current_session)
+
+    def test_current_session_created_if_store_sessions(self):
+        pass
 
 
 
@@ -106,34 +115,34 @@ class SessionTestCase(TestCase):
     def test_create_session(self):
         session = Session.objects.create(   store=self.store1, 
                                             name=self.session_name, 
-                                            start_date=datetime.date.today(), 
-                                            end_date=datetime.date.today() )
+                                            start_date=date.today(), 
+                                            end_date=date.today() )
         sessions = Session.objects.all()
         self.assertEqual(sessions.count(), 1)
         self.assertEqual(sessions[0].name, self.session_name)
-        self.assertEqual(sessions[0].start_date, datetime.date.today())
-        self.assertEqual(sessions[0].end_date, datetime.date.today())
+        self.assertEqual(sessions[0].start_date, date.today())
+        self.assertEqual(sessions[0].end_date, date.today())
         self.assertEqual(sessions[0].store, self.store1)
 
     def test_create_session_raises_validation_error_for_end_date_before_start_date(self):
         with self.assertRaises(ValidationError):
             Session.objects.create( store=self.store1,
                                     name=self.session_name, 
-                                    start_date=datetime.date(year=2023, month=1, day=14), 
-                                    end_date=datetime.date(year=2023, month=1, day=13) )
+                                    start_date=date(year=2023, month=1, day=14), 
+                                    end_date=date(year=2023, month=1, day=13) )
 
     def test_session_string_start_date_equals_end_date(self):
         session = Session.objects.create(   store=self.store1, 
                                             name=self.session_name, 
-                                            start_date=datetime.date.today(), 
-                                            end_date=datetime.date.today() )
+                                            start_date=date.today(), 
+                                            end_date=date.today() )
 
-        expected_string = "{} Session: {}".format(self.session_name, datetime.date.today())
+        expected_string = "{} Session: {}".format(self.session_name, date.today())
         self.assertEqual(expected_string, session.__str__())
 
     def test_session_string_start_date_before_end_date(self):
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
+        start_date = date(year=2023, month=1, day=14)
+        end_date = date(year=2023, month=1, day=15)
         session = Session.objects.create(   store=self.store1, 
                                             name=self.session_name, 
                                             start_date=start_date, 
@@ -149,21 +158,21 @@ class SessionTestCase(TestCase):
         with self.assertRaises(ValidationError):
             session = Session.objects.create(   store=self.store1, 
                                                 name=long_session_name, 
-                                                start_date=datetime.date.today(), 
-                                                end_date=datetime.date.today() )
+                                                start_date=date.today(), 
+                                                end_date=date.today() )
             session.full_clean()
 
     def test_create_session_with_previous_session(self):
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
+        start_date = date(year=2023, month=1, day=14)
+        end_date = date(year=2023, month=1, day=15)
         session = Session.objects.create(   store=self.store1, 
                                             name=self.session_name, 
-                                            start_date=datetime.date(year=2023, month=1, day=14), 
-                                            end_date=datetime.date(year=2023, month=1, day=15))
+                                            start_date=date(year=2023, month=1, day=14), 
+                                            end_date=date(year=2023, month=1, day=15))
         session2 = Session.objects.create(  store=self.store1, 
                                             name=self.session_name, 
-                                            start_date=datetime.date(year=2023, month=1, day=15), 
-                                            end_date=datetime.date(year=2023, month=1, day=16), 
+                                            start_date=date(year=2023, month=1, day=15), 
+                                            end_date=date(year=2023, month=1, day=16), 
                                             previous_session=session)
         self.assertEqual(session2.previous_session, session)
         # self.assertEqual(session.next_session, session2) ??fails??    
@@ -181,8 +190,8 @@ class ListTestCase(TestCase):
         cls.user1 = User.objects.create_user('Mike')
         store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
 
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
+        start_date = date(year=2023, month=1, day=14)
+        end_date = date(year=2023, month=1, day=15)
         cls.session = Session.objects.create(   store=store1, 
                                                 name=cls.session_name, 
                                                 start_date=start_date, 
@@ -342,8 +351,8 @@ class SessionItemsManagerTestCase(TestCase):
         # Session1
         cls.session1 = Session.objects.create(  store=cls.store1, 
                                                 name="Tuesday", 
-                                                start_date=datetime.date(year=2023, month=1, day=13), 
-                                                end_date=datetime.date(year=2023, month=1, day=14) 
+                                                start_date=date(year=2023, month=1, day=13), 
+                                                end_date=date(year=2023, month=1, day=14) 
         )
         # List1, ListItem1
         cls.list = List.objects.create(
@@ -358,8 +367,8 @@ class SessionItemsManagerTestCase(TestCase):
         # Session2
         cls.session2 = Session.objects.create(  store=cls.store1, 
                                                 name="Wednesday", 
-                                                start_date=datetime.date(year=2023, month=1, day=14), 
-                                                end_date=datetime.date(year=2023, month=1, day=15),
+                                                start_date=date(year=2023, month=1, day=14), 
+                                                end_date=date(year=2023, month=1, day=15),
                                                 previous_session=cls.session1,
         )
 
@@ -418,8 +427,8 @@ class ListItemTestCase(TestCase):
         cls.store_name = "Test Store"
         cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
         cls.session_name = "Wednesday"
-        start_date = datetime.date(year=2023, month=1, day=14)
-        end_date = datetime.date(year=2023, month=1, day=15)
+        start_date = date(year=2023, month=1, day=14)
+        end_date = date(year=2023, month=1, day=15)
         cls.session = Session.objects.create(   store=cls.store1, 
                                                 name=cls.session_name, 
                                                 start_date=start_date, 
