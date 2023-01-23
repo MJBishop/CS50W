@@ -35,6 +35,11 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def default_store(self, owner):
+        #lazy load store here?!
+        return Store.objects.first() or Store.objects.create(owner=self, name='Stocklist')
+
 
 class Session(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions") #m2m!?

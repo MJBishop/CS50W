@@ -22,6 +22,13 @@ class UserTestCase(TestCase):
         self.assertEqual(users.count(), 1)
         self.assertEqual(users[0].username, 'Mike')
 
+    # def test_default_store_returns_users_first_store(self):
+    #     first_store = Store.objects.create(owner=self.user1, name="Test Store 1")
+    #     other_store = Store.objects.create(owner=self.user1, name="Test Store 2")
+    #     default_store = self.user1.default_store()
+    #     self.assertEqual(first_store, default_store)
+
+
 
 class StoreTestCase(TestCase):
 
@@ -63,6 +70,11 @@ class StoreTestCase(TestCase):
         with self.assertRaises(ValidationError):
             store = Store.objects.create(owner=self.user1, name=long_store_name)
             store.full_clean()
+
+    def test_default_store_returns_users_first_store(self):
+        other_store = Store.objects.create(owner=self.user1, name="Test Store 2")
+        default_store = Store.default_store(self.user1)
+        self.assertEqual(self.store, default_store)
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
     #     # create stores
