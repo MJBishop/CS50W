@@ -1,4 +1,5 @@
 from datetime import date
+# from django.utils import timezone
 from decimal import Decimal
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -150,7 +151,13 @@ class SessionTestCase(TestCase):
         expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
         self.assertEqual(expected_string, session.__str__())
 
-    # def test_session_string_no_end_date(self):
+    def test_session_string_no_end_date(self):
+        session = Session.objects.create(   store=self.store1, 
+                                            name=self.session_name)
+        
+        expected_string = "{} Session: {}".format(self.session_name, date.today())
+        self.assertEqual(expected_string, session.__str__())
+
 
     # edit session name, start & end date?
 

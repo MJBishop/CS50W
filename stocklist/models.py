@@ -56,7 +56,7 @@ class Store(models.Model):
 class Session(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions") #m2m!?
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
-    start_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(default=timezone.localdate)
     end_date = models.DateField(null=True)
     previous_session = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_session') # set null?
 
@@ -71,7 +71,7 @@ class Session(models.Model):
         super(Session, self).save(*args, **kwargs)
 
     def __str__(self):
-        if (self.start_date == self.end_date): # or no self.end_date
+        if (not self.end_date or self.start_date == self.end_date): 
             return "{} Session: {}".format(self.name, self.start_date)
         else:
             return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
