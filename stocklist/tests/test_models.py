@@ -37,11 +37,21 @@ class StoreTestCase(TestCase):
 
         return super().setUpTestData()
 
+    def test_create_store_fails_for_no_store_name(self):
+        with self.assertRaises(ValidationError):
+            store = Store.objects.create(owner=self.user1)
+            store.full_clean()
+
     def test_create_store(self):
         stores = Store.objects.all()
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, self.store_name)
         self.assertEqual(self.store.owner, self.user1)
+
+    def test_unique_store_name_for_owner(self):
+        with self.assertRaises(ValidationError):
+            store = Store.objects.create(owner=self.user1, name=self.store_name)
+            store.full_clean()
 
     def test_store_string(self):
         self.assertEqual(self.store_name, self.store.__str__())
