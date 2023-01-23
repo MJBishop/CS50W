@@ -17,12 +17,16 @@ MAX_LIST_ITEM_AMOUNT = Decimal('100000')
 
 
 class User(AbstractUser):
-    pass
+    def default_store(self):
+        '''
+        Lazy load default store
+        '''
+        return Store.objects.filter(owner=self).first() or Store.objects.create(owner=self, name='Stocklist')
 
 
 class Store(models.Model):
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
-    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH) # default='Stocklist'
+    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)
 
     class Meta:
         '''
@@ -34,11 +38,6 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
-
-    @classmethod
-    def default_store(self, owner):
-        #lazy load store here?!
-        return Store.objects.first() or Store.objects.create(owner=self, name='Stocklist')
 
 
 class Session(models.Model):
