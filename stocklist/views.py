@@ -16,12 +16,14 @@ def index(request):
         return render(request, "stocklist/index.html")
     return HttpResponseRedirect(reverse("login"))
 
+
 # @login_required
 def home(request):
     pass
     # active_session = request.user.active_store().active_session()
     # serialized_items = Item.objects.session_items(active_session) #or_none? dont add them..?
     # return JsonResponse(serialized_items)  # store.name session.date/name
+
 
 @login_required
 def store(request, store_id):
@@ -30,10 +32,11 @@ def store(request, store_id):
     except Store.DoesNotExist:
         return JsonResponse({"error": "Store not found."}, status=404)
 
-    # ....:
     session = store.active_session()
-    serialized_items = Item.objects.session_items(session) #or_none? dont add them..?
-    return JsonResponse(serialized_items)  # store.name session.date/name
+    serialized_items = Item.objects.serialized_session_items(session) #or_none? dont add them..?
+    print(type(serialized_items))
+    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name
+
 
 def next_session(request, session_id):
     pass

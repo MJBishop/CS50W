@@ -24,22 +24,34 @@ class BaseTestCase(TestCase):
         self.client = Client()
 
 
-class StoreTestCase(BaseTestCase):
-    def test_store_path_returns_404_for_invalid_store(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/store/1")
-        self.assertEqual(response.status_code, 404)
-
-    def test_store_path_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/store/1")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/store/1") 
-
+class HomeTestCase(BaseTestCase):
+    pass
 
     # def test_store_path_creates_default_store_if_no_stores_exist(self):
     #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
     #     response = self.client.get("/store/")
     #     self.user1.stores[0]
+
+
+
+class StoreTestCase(BaseTestCase):
+    def test_store_path_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/store/1")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/store/1") 
+
+    def test_store_path_returns_404_for_invalid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/store/1")
+        self.assertEqual(response.status_code, 404)
+
+    def test_store_path_returns_200_for_valid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        path = "/store/{}".format(store.pk)
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
 
     
 
