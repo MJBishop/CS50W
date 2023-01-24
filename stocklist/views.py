@@ -19,9 +19,11 @@ def index(request):
 
 @login_required
 def home(request):
+
+    # lazy load active store and session
     active_session = request.user.active_store().active_session()
-    serialized_items = Item.objects.serialized_session_items(active_session) #or_none? dont add them..?
-    return JsonResponse(serialized_items)  # store.name session.date/name
+    serialized_items = Item.objects.serialized_session_items(active_session)
+    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
 
 @login_required
@@ -33,7 +35,7 @@ def store(request, store_id):
 
     session = store.active_session()
     serialized_items = Item.objects.serialized_session_items(session)
-    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name
+    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
 
 def next_session(request, session_id):

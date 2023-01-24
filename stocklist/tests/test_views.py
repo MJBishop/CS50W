@@ -30,6 +30,12 @@ class HomeTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/home") 
 
+    def test_home_path_returns_status_200_when_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/home")
+        self.assertEqual(response.status_code, 200)
+
+
 
 
     # def test_home_path_creates_default_store_if_no_stores_exist(self):
