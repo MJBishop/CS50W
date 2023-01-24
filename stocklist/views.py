@@ -50,6 +50,10 @@ def session(request, session_id):
     except Session.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
 
+    # 
+    serialized_items = Item.objects.serialized_session_items(session)
+    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+
     
 
 def count_item(request):

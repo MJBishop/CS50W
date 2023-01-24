@@ -34,7 +34,14 @@ class SessionTestCase(BaseTestCase):
         response = self.client.get("/session/1")
         self.assertEqual(response.status_code, 404)
 
+    def test_session_path_returns_200_for_valid_session(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
 
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        path = "/session/{}".format(session.pk)
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
 
 class HomeTestCase(BaseTestCase):
     def test_home_path_redirects_to_login_if_not_logged_in(self):
