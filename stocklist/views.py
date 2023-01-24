@@ -28,24 +28,29 @@ def home(request):
 
 @login_required
 def store(request, store_id):
+
+    # check for valid store
     try:
         store = Store.objects.get(owner=request.user, pk=store_id)
     except Store.DoesNotExist:
         return JsonResponse({"error": "Store not found."}, status=404)
 
+    # 
     session = store.active_session()
     serialized_items = Item.objects.serialized_session_items(session)
     return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
-@login_required
-def next_session(request, session_id):
-        return JsonResponse({"error": "Session not found."}, status=404)
-    # check for session_id
-    # check if next exists
-    # 
 
-def previous_session(request, session_id):
-    pass
+@login_required
+def session(request, session_id):
+
+    # check for valid session
+    try:
+        session = Session.objects.get(store__owner=request.user, pk=session_id)
+    except Session.DoesNotExist:
+        return JsonResponse({"error": "Session not found."}, status=404)
+
+    
 
 def count_item(request):
     pass

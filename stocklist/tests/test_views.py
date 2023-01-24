@@ -23,11 +23,17 @@ class BaseTestCase(TestCase):
         # Every test needs a client.
         self.client = Client()
 
-class NextSessionTestCase(BaseTestCase):
-    def test_next_session_path_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/next_session/1")
+class SessionTestCase(BaseTestCase):
+    def test_session_path_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/session/1")
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/next_session/1") 
+        self.assertEqual(response.url, "/login/?next=/session/1") 
+    
+    def test_session_path_returns_404_for_invalid_session(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/session/1")
+        self.assertEqual(response.status_code, 404)
+
 
 
 class HomeTestCase(BaseTestCase):
