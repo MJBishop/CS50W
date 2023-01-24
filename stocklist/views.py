@@ -20,7 +20,7 @@ def index(request):
 @login_required
 def home(request):
 
-    # lazy load active store and session
+    # load active store and session (lazy)
     active_session = request.user.active_store().active_session()
     serialized_items = Item.objects.serialized_session_items(active_session)
     return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
@@ -37,9 +37,12 @@ def store(request, store_id):
     serialized_items = Item.objects.serialized_session_items(session)
     return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
-
+@login_required
 def next_session(request, session_id):
-    pass
+        return JsonResponse({"error": "Session not found."}, status=404)
+    # check for session_id
+    # check if next exists
+    # 
 
 def previous_session(request, session_id):
     pass

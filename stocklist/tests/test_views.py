@@ -23,6 +23,12 @@ class BaseTestCase(TestCase):
         # Every test needs a client.
         self.client = Client()
 
+class NextSessionTestCase(BaseTestCase):
+    def test_next_session_path_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/next_session/1")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/next_session/1") 
+
 
 class HomeTestCase(BaseTestCase):
     def test_home_path_redirects_to_login_if_not_logged_in(self):
@@ -59,8 +65,6 @@ class HomeTestCase(BaseTestCase):
         self.assertEqual(store_sessions[0].name, 'Session')
         
 
-
-
 class StoreTestCase(BaseTestCase):
     def test_store_path_redirects_to_login_if_not_logged_in(self):
         response = self.client.get("/store/1")
@@ -78,6 +82,7 @@ class StoreTestCase(BaseTestCase):
         path = "/store/{}".format(store.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
+
 
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
