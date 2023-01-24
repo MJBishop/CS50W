@@ -23,6 +23,10 @@ class BaseTestCase(TestCase):
         # Every test needs a client.
         self.client = Client()
 
+
+
+
+
 class SessionTestCase(BaseTestCase):
     def test_session_path_redirects_to_login_if_not_logged_in(self):
         response = self.client.get("/session/1")
@@ -42,6 +46,29 @@ class SessionTestCase(BaseTestCase):
         path = "/session/{}".format(session.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
+
+    def test_session_path_redirects_to_index_for_post(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        path = "/session/{}".format(session.pk)
+        response = self.client.post(path)
+        self.assertEqual(response.status_code, 405)
+
+    def test_session_path_redirects_to_index_for_put(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        path = "/session/{}".format(session.pk)
+        response = self.client.put(path)
+        self.assertEqual(response.status_code, 405)
+
+    # NB: Need to test all the others?
+    
+
+
 
 class HomeTestCase(BaseTestCase):
     def test_home_path_redirects_to_login_if_not_logged_in(self):

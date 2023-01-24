@@ -7,7 +7,6 @@ from django.db.utils import IntegrityError
 
 from .models import User, Store, Item, Session, List, ListItem
 
-# Create your views here.
 
 def index(request):
 
@@ -44,20 +43,31 @@ def store(request, store_id):
 @login_required
 def session(request, session_id):
 
-    # check for valid session
-    try:
-        session = Session.objects.get(store__owner=request.user, pk=session_id)
-    except Session.DoesNotExist:
-        return JsonResponse({"error": "Session not found."}, status=404)
+    if request.method == "GET":
+        # check for valid session
+        try:
+            session = Session.objects.get(store__owner=request.user, pk=session_id)
+        except Session.DoesNotExist:
+            return JsonResponse({"error": "Session not found."}, status=404)
 
-    # 
-    serialized_items = Item.objects.serialized_session_items(session)
-    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+        # 
+        serialized_items = Item.objects.serialized_session_items(session)
+        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
+    return JsonResponse({"error": "Requires GET method."}, status=405)
     
 
 def count_item(request):
     pass
+
+
+
+
+
+
+
+
+
 
 
     # get all stores?
