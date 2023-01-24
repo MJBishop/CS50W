@@ -35,13 +35,16 @@ class HomeTestCase(BaseTestCase):
         response = self.client.get("/home")
         self.assertEqual(response.status_code, 200)
 
+    def test_home_path_creates_default_store_if_no_stores_exist(self):
+        stores = Store.objects.filter(owner=self.user1)
+        self.assertEqual(stores.count(), 0)
 
-
-
-    # def test_home_path_creates_default_store_if_no_stores_exist(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     response = self.client.get("/store/")
-    #     self.user1.stores[0]
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/home")
+        stores = Store.objects.filter(owner=self.user1)
+        self.assertEqual(stores.count(), 1)
+        self.assertEqual(stores[0].name, 'Stocklist')
+        
 
 
 
