@@ -16,17 +16,18 @@ MAX_ITEM_DEPARTMENT_NAME_LENGTH = 10
 MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
+DEFAULT_STORE_NAME = 'Stocklist'
+DEFAULT_SESSION_NAME = 'Session'
 
 
 class User(AbstractUser):
-    def default_store(self):
+    def active_store(self):
         '''
-        Lazy load default store
+        Lazy load active Store
 
-        Return: Default Store
+        Return: Store
         '''
-        return Store.objects.filter(owner=self).first() or Store.objects.create(owner=self, name='Stocklist')
-        # NB: default store or active store???
+        return Store.objects.filter(owner=self).last() or Store.objects.create(owner=self, name=DEFAULT_STORE_NAME)
 
 
 class Store(models.Model):
@@ -44,13 +45,13 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-    def current_session(self):
+    def active_session(self):
         '''
-        Lazy load current session
+        Lazy load active Session
 
-        Return: Current Session
+        Return: Session
         '''
-        return Session.objects.filter(store=self).last() or Session.objects.create(store=self, name='Session')
+        return Session.objects.filter(store=self).last() or Session.objects.create(store=self, name=DEFAULT_SESSION_NAME)
 
 
 class Session(models.Model):
@@ -58,7 +59,7 @@ class Session(models.Model):
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
     start_date = models.DateField(default=timezone.localdate)
     end_date = models.DateField(null=True)
-    previous_session = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_session') # set null?
+    previous_session = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_session') #checks!?
 
     objects = models.Manager()
 
@@ -104,6 +105,18 @@ class CountListManager(models.Manager):
         '''
         return super().get_queryset().filter(type='CO')
 
+# class SessionListManager(models.Manager):
+#     def session_lists(self, session):
+#         return List.objects.filter(session=session)#group?
+#     def serialized_session_lists(self, session):
+#         session_lists = self.session_lists(session)
+#         serialized_session_lists = []
+#         for list in session_lists:
+#             serialized_session_lists.append({
+#                 # todo
+#             })
+
+
 class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
@@ -116,7 +129,7 @@ class List(models.Model):
 
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
-    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) #optional?
+    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     # date?
 
@@ -130,7 +143,6 @@ class List(models.Model):
 
 
 class SessionItemsManager(models.Manager):
-
     def session_items(self, session):
         '''
         Annotates total list_item.amount for lists, by type, for the given session:
@@ -189,7 +201,7 @@ class Item(models.Model):
     origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     # spare cols?
 
-    objects = SessionItemsManager()
+    objects = SessionItemsManager() #items?
 
     class Meta:
         constraints = [

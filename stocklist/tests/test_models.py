@@ -23,15 +23,15 @@ class UserTestCase(TestCase):
         self.assertEqual(users.count(), 1)
         self.assertEqual(users[0].username, 'Mike')
 
-    def test_default_store_returns_users_first_store(self):
+    def test_active_store_returns_users_last_store(self):
         first_store = Store.objects.create(owner=self.user1, name="Test Store 1")
-        other_store = Store.objects.create(owner=self.user1, name="Test Store 2")
-        default_store = self.user1.default_store()
-        self.assertEqual(first_store, default_store)
+        last_store = Store.objects.create(owner=self.user1, name="Test Store 2")
+        active_store = self.user1.active_store()
+        self.assertEqual(last_store, active_store)
     
-    def test_default_store_created_if_no_user_stores(self):
-        default_store = self.user1.default_store()
-        self.assertEqual(default_store.name, 'Stocklist')
+    def test_active_store_created_if_no_user_stores(self):
+        active_store = self.user1.active_store()
+        self.assertEqual(active_store.name, 'Stocklist')
 
 
 class StoreTestCase(TestCase):
@@ -75,17 +75,17 @@ class StoreTestCase(TestCase):
             store = Store.objects.create(owner=self.user1, name=long_store_name)
             store.full_clean()
 
-    def test_current_session_returns_stores_last_session(self):
-        default_store = self.user1.default_store()
-        session1 = Session.objects.create( store=default_store, name='Sesion 1')
-        session2 = Session.objects.create( store=default_store, name='Sesion 2', previous_session=session1)
-        current_session = default_store.current_session()
-        self.assertEqual(session2, current_session)
+    def test_active_session_returns_stores_last_session(self):
+        active_store = self.user1.active_store()
+        session1 = Session.objects.create( store=active_store, name='Sesion 1')
+        session2 = Session.objects.create( store=active_store, name='Sesion 2', previous_session=session1)
+        active_session = active_store.active_session()
+        self.assertEqual(session2, active_session)
 
-    def test_current_session_created_if_no_store_sessions(self):
+    def test_active_session_created_if_no_store_sessions(self):
         user2 = User.objects.create_user('James')
-        current_session = user2.default_store().current_session()
-        self.assertEqual('Session', current_session.name)
+        active_session = user2.active_store().active_session()
+        self.assertEqual('Session', active_session.name)
 
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
