@@ -41,9 +41,22 @@ class HomeTestCase(BaseTestCase):
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/home")
+
         stores = Store.objects.filter(owner=self.user1)
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, 'Stocklist')
+
+    def test_home_path_creates_default_session_if_no_store_sessions_exist(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store_sessions = Session.objects.filter(store=store)
+        self.assertEqual(store_sessions.count(), 0)
+
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/home")
+        
+        store_sessions = Session.objects.filter(store=store)
+        self.assertEqual(store_sessions.count(), 1)
+        self.assertEqual(store_sessions[0].name, 'Session')
         
 
 
