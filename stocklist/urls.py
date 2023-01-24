@@ -7,6 +7,9 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register_view, name="register"),
 
-    # API
+    # FREE API
+    path("home", views.home, name="home"),
+
+    # PAID API
     path("store/<int:store_id>", views.store, name="store")
 ]

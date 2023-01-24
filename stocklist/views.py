@@ -17,12 +17,11 @@ def index(request):
     return HttpResponseRedirect(reverse("login"))
 
 
-# @login_required
+@login_required
 def home(request):
-    pass
-    # active_session = request.user.active_store().active_session()
-    # serialized_items = Item.objects.session_items(active_session) #or_none? dont add them..?
-    # return JsonResponse(serialized_items)  # store.name session.date/name
+    active_session = request.user.active_store().active_session()
+    serialized_items = Item.objects.serialized_session_items(active_session) #or_none? dont add them..?
+    return JsonResponse(serialized_items)  # store.name session.date/name
 
 
 @login_required
@@ -33,8 +32,7 @@ def store(request, store_id):
         return JsonResponse({"error": "Store not found."}, status=404)
 
     session = store.active_session()
-    serialized_items = Item.objects.serialized_session_items(session) #or_none? dont add them..?
-    print(type(serialized_items))
+    serialized_items = Item.objects.serialized_session_items(session)
     return JsonResponse(serialized_items, safe=False)  # store.name session.date/name
 
 

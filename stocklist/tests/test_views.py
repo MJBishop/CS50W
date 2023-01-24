@@ -25,9 +25,14 @@ class BaseTestCase(TestCase):
 
 
 class HomeTestCase(BaseTestCase):
-    pass
+    def test_home_path_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/home")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/home") 
 
-    # def test_store_path_creates_default_store_if_no_stores_exist(self):
+
+
+    # def test_home_path_creates_default_store_if_no_stores_exist(self):
     #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
     #     response = self.client.get("/store/")
     #     self.user1.stores[0]
@@ -51,10 +56,6 @@ class StoreTestCase(BaseTestCase):
         path = "/store/{}".format(store.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-
-
-    
-
 
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
