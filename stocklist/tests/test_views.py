@@ -147,6 +147,7 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
+        self.assertEqual(response.status_code, 201)
 
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -235,6 +236,7 @@ class CountItemTestCase(ImportTestCase):
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(list_items.count(), 1)
         self.assertEqual(list_items[0].amount, 1)
+        self.assertEqual(response.status_code, 201)
 
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -259,10 +261,6 @@ class CountItemTestCase(ImportTestCase):
         response = self.client.generic('POST', path, json.dumps({'amount':'1000001'}))
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(response.status_code, 400)
-
-    
-
-
 
 
 class SessionTestCase(BaseTestCase):
@@ -303,10 +301,6 @@ class SessionTestCase(BaseTestCase):
         new_session_name = "New Session Name"*3
         response = self.client.generic('PUT', path, json.dumps({"name":new_session_name}))
         self.assertEqual(response.status_code, 400)
-
-    # NB: Need to test all the others?
-
-
 
 
 class HomeTestCase(BaseTestCase):
@@ -361,6 +355,13 @@ class StoreTestCase(BaseTestCase):
         path = "/store/{}".format(store.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
+
+    def test_POST_store_returns_400(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        path = "/store/{}".format(store.pk)
+        response = self.client.post(path)
+        self.assertEqual(response.status_code, 400)
 
 
 class IndexTestCase(BaseTestCase):

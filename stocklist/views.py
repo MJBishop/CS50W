@@ -40,10 +40,12 @@ def store(request, store_id):
     except Store.DoesNotExist:
         return JsonResponse({"error": "Store not found."}, status=404)
 
-    # 
-    session = store.active_session()
-    serialized_items = Item.objects.serialized_session_items(session)
-    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+    if request.method == "GET":
+        session = store.active_session()
+        serialized_items = Item.objects.serialized_session_items(session)
+        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+    
+    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
@@ -139,11 +141,9 @@ def count_item(request, list_id, item_id):
         except ValidationError as e:
                 return JsonResponse({"error": e.messages}, status=400)
 
+        return JsonResponse({"message": "Import successful."}, status=201)
+
     return JsonResponse({"error": "POST request Required."}, status=400)
-
-
-def delete_store(request, store_id):
-    pass
 
 
 def login_view(request):
