@@ -169,7 +169,6 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(list_items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
-    
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
@@ -212,6 +211,18 @@ class CountItemTestCase(ImportTestCase):
         path = "/count_item/{}/1".format(list.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 404)
+
+    def test_GET_count_items_returns_400_for_user_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+
+        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('GET', path, json.dumps({'amount':'1'}))
+        self.assertEqual(response.status_code, 400)
+
 
 
 class SessionTestCase(BaseTestCase):

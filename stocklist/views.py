@@ -126,8 +126,10 @@ def count_item(request, list_id, item_id):
     except Item.DoesNotExist:
         return JsonResponse({"error": "Item not found."}, status=404)
 
+    if request.method == 'POST':
+        pass
 
-
+    return JsonResponse({"error": "POST request Required."}, status=400)
 
 
 
