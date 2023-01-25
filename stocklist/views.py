@@ -60,43 +60,23 @@ def session(request, session_id):
         return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
     return JsonResponse({"error": "GET request Required."}, status=400)
-    
-    
+
+
 @login_required
 def import_items(request, session_id):
+    
+    # check for valid session
+    try:
+        session = Session.objects.get(store__owner=request.user, pk=session_id)
+    except Session.DoesNotExist:
+        return JsonResponse({"error": "Session not found."}, status=404)
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
 
+
 def count_item(request):
     pass
-    # json - no form
-
-
-
-
-
-
-
-
-
-
-    # get all stores?
-    # get active store?
-    # only 1 store for free account
-    # Signal?
-
-    # User has default Store?
-
-
-
-
-
-
-
-
-
-
 
 
 
