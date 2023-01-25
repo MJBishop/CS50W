@@ -130,9 +130,12 @@ def count_item(request, list_id, item_id):
         data = json.loads(request.body)
         item_amount = data.get("amount", "")
 
-        list_item = ListItem(item=item, list=list, amount=item_amount)
-        list_item.full_clean()
-        list_item.save()
+        try:
+            list_item = ListItem(item=item, list=list, amount=item_amount)
+            list_item.full_clean()
+            list_item.save()
+        except ValidationError as e:
+                return JsonResponse({"error": e.messages}, status=400)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 

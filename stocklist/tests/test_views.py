@@ -236,6 +236,32 @@ class CountItemTestCase(ImportTestCase):
         self.assertEqual(list_items.count(), 1)
         self.assertEqual(list_items[0].amount, 1)
 
+    def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+
+        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'-1'}))
+        list_items = ListItem.objects.filter(list=list, item=item)
+        self.assertEqual(response.status_code, 400)
+
+    def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+
+        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'1000001'}))
+        list_items = ListItem.objects.filter(list=list, item=item)
+        self.assertEqual(response.status_code, 400)
+
+    
+
 
 
 
