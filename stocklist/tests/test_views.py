@@ -336,6 +336,12 @@ class HomeTestCase(BaseTestCase):
         store_sessions = Session.objects.filter(store=store)
         self.assertEqual(store_sessions.count(), 1)
         self.assertEqual(store_sessions[0].name, 'Session')
+
+    def test_POST_store_returns_400(self):
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.post("/home")
+        self.assertEqual(response.status_code, 400)
         
 
 class StoreTestCase(BaseTestCase):

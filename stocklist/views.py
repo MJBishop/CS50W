@@ -26,9 +26,12 @@ def home(request):
 
     # load active Store and Session (lazy) 
     # !! invited user will only access list!
-    active_session = request.user.active_store().active_session()
-    serialized_items = Item.objects.serialized_session_items(active_session)
-    return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+    if request.method == "GET":
+        active_session = request.user.active_store().active_session()
+        serialized_items = Item.objects.serialized_session_items(active_session)
+        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+
+    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
