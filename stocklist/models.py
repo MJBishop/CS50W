@@ -11,8 +11,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 MAX_STORE_NAME_LENGTH = 20
 MAX_SESSION_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
-MAX_ITEM_NAME_LENGTH = 40
-MAX_ITEM_DEPARTMENT_NAME_LENGTH = 10
+MAX_ITEM_NAME_LENGTH = 80
 MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
@@ -57,9 +56,9 @@ class Store(models.Model):
 class Session(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions") #m2m!?
     name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
-    start_date = models.DateField(default=timezone.localdate)
-    end_date = models.DateField(null=True)
-    previous_session = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_session') #checks!?
+    start_date = models.DateField(default=timezone.localdate) #sequential sessions can have same start date??
+    end_date = models.DateField(null=True, blank=True)
+    previous_session = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_session') #checks!?, editable?
 
     objects = models.Manager()
 
@@ -185,7 +184,6 @@ class SessionItemsManager(models.Manager):
                     'id':item.id,
                     'store_id':item.store.id,
                     'name':item.name,
-                    'department':item.department,
                     'origin':item.origin,
                     'total_added':'{:.1f}'.format(item.total_added),
                     'total_previous':'{:.1f}'.format(item.total_previous),
@@ -197,7 +195,6 @@ class SessionItemsManager(models.Manager):
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
     name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
-    department = models.CharField(blank=True, max_length=MAX_ITEM_DEPARTMENT_NAME_LENGTH) # both blank? editable?
     origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     # spare cols?
 

@@ -327,7 +327,7 @@ class ItemTestCase(TestCase):
         self.assertEqual(self.item.__str__(), self.item_name)
 
     def test_max_item_name_length(self):
-        long_item_name = (40 + 1)*'A'
+        long_item_name = (80 + 1)*'A'
         with self.assertRaises(ValidationError):
             item = Item.objects.create(store=self.store1, name=long_item_name)
             item.full_clean()
@@ -336,12 +336,6 @@ class ItemTestCase(TestCase):
         long_origin_name = (30 + 1)*'A'
         with self.assertRaises(ValidationError):
             item = Item.objects.create(store=self.store1, name='test', origin=long_origin_name)
-            item.full_clean()
-
-    def test_max_item_department_length(self):
-        long_department_name = (10 + 1)*'A'
-        with self.assertRaises(ValidationError):
-            item = Item.objects.create(store=self.store1, name='test', department=long_department_name)
             item.full_clean()
 
 class SessionItemsManagerTestCase(TestCase):
