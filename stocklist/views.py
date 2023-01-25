@@ -75,21 +75,21 @@ def import_items(request, session_id):
         
         data = json.loads(request.body)
         # origin = data.get("origin", "") - not implemented!
-        name = data.get("name", "")
-        type = data.get("type", "")
+        list_name = data.get("name", "")
+        list_type = data.get("type", "")
         items = data.get("items", "")
 
         # create List
         try:
-            list = List(name=name, type=type, session=session, owner=request.user)
+            list = List(name=list_name, type=list_type, session=session, owner=request.user)
             list.full_clean()
             list.save()
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-        for item_data in items:
 
-            # create Item
+        # create Items & ListItems
+        for item_data in items:
             item_name = item_data.get("name", "")
             try:
                 item = Item(name=item_name, store=session.store)
@@ -101,6 +101,8 @@ def import_items(request, session_id):
             # create ListItem
             item_amount = item_data.get("amount", "")
             list_item = ListItem(item=item, list=list, amount=item_amount)
+            list_item.full_clean()
+            list_item.save()
 
         return JsonResponse({"message": "Import successful."}, status=201)
     

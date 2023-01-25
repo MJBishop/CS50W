@@ -101,7 +101,6 @@ class ImportItemsTestCase(BaseTestCase):
         self.assertEqual(lists.count(), 0)
         self.assertEqual(response.status_code, 400)
 
-
     def test_POST_import_items_creates_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
@@ -134,7 +133,18 @@ class ImportItemsTestCase(BaseTestCase):
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
+    def test_POST_import_items_creates_list_items(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
 
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        
+        lists = List.objects.filter(session=session)
+        self.assertEqual(lists.count(), 1)
+        list_items = ListItem.objects.filter(list=lists[0].pk)
+        self.assertEqual(list_items.count(), 3)
 
 
 class SessionTestCase(BaseTestCase):
