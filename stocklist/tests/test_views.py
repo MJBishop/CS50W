@@ -45,7 +45,6 @@ class ImportItemsTestCase(BaseTestCase):
         ]
     }
 
-
     def test_POST_import_items_redirects_to_login_if_not_logged_in(self):
         response = self.client.post("/import_items/1")
         self.assertEqual(response.status_code, 302)
@@ -56,11 +55,26 @@ class ImportItemsTestCase(BaseTestCase):
         response = self.client.post("/import_items/1")
         self.assertEqual(response.status_code, 404)
 
+    def test_GET_import_items_returns_400_for_user_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
 
-    # def test_GET_import_items_returns_400_for_user_logged_in(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     response = self.client.generic("POST", "/import_items/1" ,json.dumps(self.json_data))
-    #     self.assertEqual(response.status_code, 400)
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 400)
+
+    def test_POST_import_items_creates_list(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        lists = List.objects.filter(session=session)
+        self.assertEqual(lists.count(), 1)
+        self.assertEqual(response.status_code, 201)
+
 
 
 

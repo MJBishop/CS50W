@@ -64,12 +64,29 @@ def session(request, session_id):
 
 @login_required
 def import_items(request, session_id):
-    
+
     # check for valid session
     try:
         session = Session.objects.get(store__owner=request.user, pk=session_id)
     except Session.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
+
+    if request.method == "POST":
+        
+        # data
+        data = json.loads(request.body)
+        # origin = data.get("origin", "") - not implemented!
+        name = data.get("name", "")
+        type = data.get("type", "")
+        items = data.get("items", "")
+
+        # create list
+        list = List.objects.create(name=name, type=type, session=session, owner=request.user)
+
+        # create item & list_item
+
+
+        return JsonResponse({"message": "Import successful."}, status=201)
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
