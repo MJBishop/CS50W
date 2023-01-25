@@ -127,7 +127,12 @@ def count_item(request, list_id, item_id):
         return JsonResponse({"error": "Item not found."}, status=404)
 
     if request.method == 'POST':
-        pass
+        data = json.loads(request.body)
+        item_amount = data.get("amount", "")
+
+        list_item = ListItem(item=item, list=list, amount=item_amount)
+        list_item.full_clean()
+        list_item.save()
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 

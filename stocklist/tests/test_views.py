@@ -212,7 +212,7 @@ class CountItemTestCase(ImportTestCase):
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 404)
 
-    def test_GET_count_items_returns_400_for_user_logged_in(self):
+    def test_GET_count_item_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
@@ -222,6 +222,20 @@ class CountItemTestCase(ImportTestCase):
         path = "/count_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('GET', path, json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 400)
+
+    def test_POST_count_item_creates_list_item(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+
+        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
+        list_items = ListItem.objects.filter(list=list, item=item)
+        self.assertEqual(list_items.count(), 1)
+        self.assertEqual(list_items[0].amount, 1)
+
 
 
 
