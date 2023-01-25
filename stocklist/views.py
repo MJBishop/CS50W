@@ -112,8 +112,19 @@ def import_items(request, session_id):
     return JsonResponse({"error": "POST request Required."}, status=400)
 
 @login_required
-def count_item(request):
-    pass
+def count_item(request, list_id, item_id):
+
+    # check for valid List
+    try:
+        list = List.objects.get(owner=request.user, pk=list_id)
+    except List.DoesNotExist:
+        return JsonResponse({"error": "List not found."}, status=404)
+
+    # check for valid Item
+    try:
+        item = Item.objects.get(pk=item_id)
+    except Item.DoesNotExist:
+        return JsonResponse({"error": "Item not found."}, status=404)
 
 
 

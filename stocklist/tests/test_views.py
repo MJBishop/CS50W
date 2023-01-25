@@ -193,10 +193,25 @@ class ImportItemsTestCase(ImportTestCase):
 
 
 class CountItemTestCase(ImportTestCase):
-    def test_GET_count_item_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/count_item")
+    def test_POST_count_item_redirects_to_login_if_not_logged_in(self):
+        response = self.client.generic('POST', "/count_item/1/1", json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/count_item") 
+        self.assertEqual(response.url, "/login/?next=/count_item/1/1") 
+
+    def test_POST_count_item_returns_404_for_invalid_list(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.generic('POST', "/count_item/1/1", json.dumps({'amount':'1'}))
+        self.assertEqual(response.status_code, 404) 
+
+    def test_POST_count_item_returns_404_for_invalid_item(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+
+        path = "/count_item/{}/1".format(list.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
+        self.assertEqual(response.status_code, 404)
 
 
 class SessionTestCase(BaseTestCase):
