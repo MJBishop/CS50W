@@ -14,6 +14,9 @@ def index(request):
 
     # Users must authenticate
     if request.user.is_authenticated:
+
+        # TODO - Add forms to template
+
         return render(request, "stocklist/index.html")
     return HttpResponseRedirect(reverse("login"))
 
@@ -21,7 +24,8 @@ def index(request):
 @login_required
 def home(request):
 
-    # load active store and session (lazy)
+    # load active store and session (lazy) 
+    # !! invited user will only access list!
     active_session = request.user.active_store().active_session()
     serialized_items = Item.objects.serialized_session_items(active_session)
     return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
@@ -55,25 +59,18 @@ def session(request, session_id):
         serialized_items = Item.objects.serialized_session_items(session)
         return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
-    # should be form!? easier to 
-    # if request.method == "PUT":
-    #     data = json.loads(request.body)
-    #     if data.get("name") is not None:
-    #         session.name = data["name"]
-            
-    #     try:
-    #         session.full_clean()
-    #         session.save()
-    #     except ValidationError as e:    
-    #             return JsonResponse({"validation_error": e}, status=400)
-    #     return JsonResponse(status=204)
-
-    return JsonResponse({"error": "GET or PUT method Required."}, status=400)
+    return JsonResponse({"error": "GET request Required."}, status=400)
     
+    
+@login_required
+def import_items(request, session_id):
+    
+    return JsonResponse({"error": "POST request Required."}, status=400)
+
 
 def count_item(request):
     pass
-
+    # json - no form
 
 
 

@@ -24,6 +24,36 @@ class BaseTestCase(TestCase):
         self.client = Client()
 
 
+class ImportItemsTestCase(BaseTestCase):
+    json_data = {
+        'origin':'test_data.csv',
+        'name':'Stock',
+        'type':'AD',
+        'items':[
+            {
+                'name':'Absolut Vodka 70CL BTL',
+                'amoumt':'12'
+            },
+            {
+                'name':'Bacardi Superior Rum 70CL BTL',
+                'amoumt':'9'
+            },
+            {
+                'name':'Cazadores Reposado Tequila Vodka 70CL BTL',
+                'amoumt':'6'
+            },
+        ]
+    }
+
+
+    def test_POST_import_items_redirects_to_login_if_not_logged_in(self):
+        response = self.client.post("/import_items/1")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/import_items/1") 
+
+    # def test_GET_import_items_returns_400(self):
+    #     response = self.client.generic("POST", "/import_items/1" ,json.dumps(self.json_data))
+    #     self.assertEqual(response.status_code, 400)
 
 
 
