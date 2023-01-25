@@ -100,9 +100,12 @@ def import_items(request, session_id):
 
             # create ListItem
             item_amount = item_data.get("amount", "")
-            list_item = ListItem(item=item, list=list, amount=item_amount)
-            list_item.full_clean()
-            list_item.save()
+            try:
+                list_item = ListItem(item=item, list=list, amount=item_amount)
+                list_item.full_clean()
+                list_item.save()
+            except ValidationError as e:
+                return JsonResponse({"error": e.messages}, status=400)
 
         return JsonResponse({"message": "Import successful."}, status=201)
     
