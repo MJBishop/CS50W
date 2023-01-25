@@ -77,14 +77,16 @@ def import_items(request, session_id):
         data = json.loads(request.body)
         # origin = data.get("origin", "") - not implemented!
         name = data.get("name", "")
-        type = data.get("type", "") # test for error?
+        type = data.get("type", "") # test for error?!
         items = data.get("items", "")
 
         # create list
         try:
-            list = List.objects.create(name=name, type=type, session=session, owner=request.user)
-        except ValidationError:
-            return JsonResponse({"error": "List name must be 20 characters max"}, status=400)
+            list = List(name=name, type=type, session=session, owner=request.user)
+            list.full_clean()
+            list.save()
+        except ValidationError as e:
+            return JsonResponse({"error": e.messages}, status=400)
 
         # create item & list_item
 
