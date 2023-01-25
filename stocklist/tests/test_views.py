@@ -24,7 +24,7 @@ class BaseTestCase(TestCase):
         self.client = Client()
 
 
-class ImportItemsTestCase(BaseTestCase):
+class ImportTestCase(BaseTestCase):
     json_data = {
         'origin':'test_data.csv',
         'name':'Stock',
@@ -45,6 +45,8 @@ class ImportItemsTestCase(BaseTestCase):
         ]
     }
 
+class ImportItemsTestCase(ImportTestCase):
+    
     def test_POST_import_items_redirects_to_login_if_not_logged_in(self):
         response = self.client.post("/import_items/1")
         self.assertEqual(response.status_code, 302)
@@ -188,6 +190,13 @@ class ImportItemsTestCase(BaseTestCase):
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
         self.assertEqual(response.status_code, 400)
+
+
+class CountItemTestCase(ImportTestCase):
+    def test_GET_count_item_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/count_item")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/count_item") 
 
 
 class SessionTestCase(BaseTestCase):

@@ -87,7 +87,6 @@ def import_items(request, session_id):
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-
         # create Items & ListItems
         for item_data in items:
             item_name = item_data.get("name", "")
@@ -95,7 +94,8 @@ def import_items(request, session_id):
                 item = Item(name=item_name, store=session.store)
                 item.full_clean()
                 item.save()
-            except ValidationError as e: # we want to collect these all up? currently stops loop when after 1st ValidationError
+            except ValidationError as e: 
+                # Collect these all up? currently stops loop after 1st ValidationError!
                 return JsonResponse({"error": e.messages}, status=400)
 
             # create ListItem
@@ -111,8 +111,7 @@ def import_items(request, session_id):
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
-
-
+@login_required
 def count_item(request):
     pass
 
