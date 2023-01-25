@@ -75,6 +75,18 @@ class ImportItemsTestCase(BaseTestCase):
         self.assertEqual(lists.count(), 1)
         self.assertEqual(response.status_code, 201)
 
+    def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+
+        self.json_data['name'] = 'A'*(20 + 1)
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        lists = List.objects.filter(session=session)
+        self.assertEqual(lists.count(), 1)
+        self.assertEqual(response.status_code, 201)
+
 
 
 
