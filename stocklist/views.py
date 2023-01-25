@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 
 from .models import User, Store, Item, Session, List, ListItem
 
@@ -43,18 +45,30 @@ def store(request, store_id):
 @login_required
 def session(request, session_id):
 
-    if request.method == "GET":
-        # check for valid session
-        try:
-            session = Session.objects.get(store__owner=request.user, pk=session_id)
-        except Session.DoesNotExist:
-            return JsonResponse({"error": "Session not found."}, status=404)
+    # check for valid session
+    try:
+        session = Session.objects.get(store__owner=request.user, pk=session_id)
+    except Session.DoesNotExist:
+        return JsonResponse({"error": "Session not found."}, status=404)
 
-        # 
+    if request.method == "GET":
         serialized_items = Item.objects.serialized_session_items(session)
         return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
-    return JsonResponse({"error": "Requires GET method."}, status=405)
+    # should be form!? easier to 
+    # if request.method == "PUT":
+    #     data = json.loads(request.body)
+    #     if data.get("name") is not None:
+    #         session.name = data["name"]
+            
+    #     try:
+    #         session.full_clean()
+    #         session.save()
+    #     except ValidationError as e:    
+    #             return JsonResponse({"validation_error": e}, status=400)
+    #     return JsonResponse(status=204)
+
+    return JsonResponse({"error": "GET or PUT method Required."}, status=400)
     
 
 def count_item(request):

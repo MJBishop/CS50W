@@ -28,17 +28,17 @@ class BaseTestCase(TestCase):
 
 
 class SessionTestCase(BaseTestCase):
-    def test_session_path_redirects_to_login_if_not_logged_in(self):
+    def test_GET_session_redirects_to_login_if_not_logged_in(self):
         response = self.client.get("/session/1")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/session/1") 
     
-    def test_session_path_returns_404_for_invalid_session(self):
+    def test_GET_session_returns_404_for_invalid_session(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/session/1")
         self.assertEqual(response.status_code, 404)
 
-    def test_session_path_returns_200_for_valid_session(self):
+    def test_GET_session_returns_200_for_valid_session(self):
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
@@ -47,26 +47,27 @@ class SessionTestCase(BaseTestCase):
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
-    def test_session_path_redirects_to_index_for_post(self):
+    def test_POST_session_returns_400(self):
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         path = "/session/{}".format(session.pk)
         response = self.client.post(path)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 400)
 
-    def test_session_path_redirects_to_index_for_put(self):
+    def test_PUT_session_returns_400(self):
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         path = "/session/{}".format(session.pk)
-        response = self.client.put(path)
-        self.assertEqual(response.status_code, 405)
+        new_session_name = "New Session Name"*3
+        response = self.client.generic('PUT', path, json.dumps({"name":new_session_name}))
+        self.assertEqual(response.status_code, 400)
 
     # NB: Need to test all the others?
-    
+
 
 
 
