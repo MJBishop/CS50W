@@ -24,7 +24,7 @@ def index(request):
 @login_required
 def home(request):
 
-    # load active store and session (lazy) 
+    # load active Store and Session (lazy) 
     # !! invited user will only access list!
     active_session = request.user.active_store().active_session()
     serialized_items = Item.objects.serialized_session_items(active_session)
@@ -34,7 +34,7 @@ def home(request):
 @login_required
 def store(request, store_id):
 
-    # check for valid store
+    # check for valid Store
     try:
         store = Store.objects.get(owner=request.user, pk=store_id)
     except Store.DoesNotExist:
@@ -49,7 +49,7 @@ def store(request, store_id):
 @login_required
 def session(request, session_id):
 
-    # check for valid session
+    # check for valid Session
     try:
         session = Session.objects.get(store__owner=request.user, pk=session_id)
     except Session.DoesNotExist:
@@ -65,7 +65,7 @@ def session(request, session_id):
 @login_required
 def import_items(request, session_id):
 
-    # check for valid session
+    # check for valid Session
     try:
         session = Session.objects.get(store__owner=request.user, pk=session_id)
     except Session.DoesNotExist:
@@ -73,14 +73,13 @@ def import_items(request, session_id):
 
     if request.method == "POST":
         
-        # data
         data = json.loads(request.body)
         # origin = data.get("origin", "") - not implemented!
         name = data.get("name", "")
-        type = data.get("type", "") # test for error?!
+        type = data.get("type", "")
         items = data.get("items", "")
 
-        # create list
+        # create List
         try:
             list = List(name=name, type=type, session=session, owner=request.user)
             list.full_clean()
@@ -88,8 +87,20 @@ def import_items(request, session_id):
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-        # create item & list_item
+        for item_data in items:
 
+            # create Item
+            item_name = item_data.get("name", "")
+            try:
+                item = Item(name=item_name, store=session.store)
+                item.full_clean()
+                item.save()
+            except ValidationError as e: # we want to collect these all up? currently stops loop when after 1st ValidationError
+                return JsonResponse({"error": e.messages}, status=400)
+
+            # create ListItem
+            item_amount = item_data.get("amount", "")
+            list_item = ListItem(item=item, list=list, amount=item_amount)
 
         return JsonResponse({"message": "Import successful."}, status=201)
     

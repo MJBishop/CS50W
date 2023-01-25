@@ -32,15 +32,15 @@ class ImportItemsTestCase(BaseTestCase):
         'items':[
             {
                 'name':'Absolut Vodka 70CL BTL',
-                'amoumt':'12'
+                'amount':'12'
             },
             {
                 'name':'Bacardi Superior Rum 70CL BTL',
-                'amoumt':'9'
+                'amount':'9'
             },
             {
                 'name':'Cazadores Reposado Tequila Vodka 70CL BTL',
-                'amoumt':'6'
+                'amount':'6'
             },
         ]
     }
@@ -99,6 +99,39 @@ class ImportItemsTestCase(BaseTestCase):
         
         lists = List.objects.filter(session=session)
         self.assertEqual(lists.count(), 0)
+        self.assertEqual(response.status_code, 400)
+
+
+    def test_POST_import_items_creates_items(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        
+        items = Item.objects.filter(store=session.store)
+        self.assertEqual(items.count(), 3)
+
+    def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', owner=self.user1)
+        session = Session.objects.create(name='Test Session', store=store)
+
+        items = list(self.json_data["items"])
+        items.append({
+            'name':'A'*(80+1),
+            'amount':'6'
+        })
+        self.json_data['items'] = items
+
+        path = "/import_items/{}".format(session.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        
+        lists = List.objects.filter(session=session)
+        self.assertEqual(lists.count(), 1)
+        items = Item.objects.filter(store=session.store)
+        self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
 
