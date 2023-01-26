@@ -126,7 +126,7 @@ class List(models.Model):
         (COUNT, "Count"),
     ]
 
-    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="lists")
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
@@ -138,7 +138,12 @@ class List(models.Model):
     counts = CountListManager()
 
     def __str__(self):
-        return '{} List - {} {}'.format(self.name, self.session.name, self.get_type_display())
+        return '{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
+
+
+class SessionList(models.Model):
+    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="session_lists")
+    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="session_list")
 
 
 class SessionItemsManager(models.Manager):
@@ -155,8 +160,8 @@ class SessionItemsManager(models.Manager):
         Return: QuerySet
         '''
         storeQ = Q(store=session.store)
-        previous_sessionQ = Q(list_items__list__session=session.previous_session)
-        sessionQ = Q(list_items__list__session=session)
+        previous_sessionQ = Q(list_items__list__session_list__session=session.previous_session)
+        sessionQ = Q(list_items__list__session_list__session=session)
         additionQ = Q(list_items__list__type=List.ADDITION)
         subtractionQ = Q(list_items__list__type=List.SUBTRACTION)
         countQ = Q(list_items__list__type=List.COUNT)

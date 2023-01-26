@@ -73,7 +73,7 @@ class ImportItemsTestCase(ImportTestCase):
 
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
         self.assertEqual(response.status_code, 201)
 
@@ -86,7 +86,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 0)
         self.assertEqual(response.status_code, 400)
 
@@ -99,7 +99,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 0)
         self.assertEqual(response.status_code, 400)
 
@@ -129,7 +129,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
         items = Item.objects.filter(store=session.store)
         self.assertEqual(items.count(), 3)
@@ -143,7 +143,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -164,7 +164,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -185,7 +185,7 @@ class ImportItemsTestCase(ImportTestCase):
         path = "/import_items/{}".format(session.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(session=session)
+        lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -207,7 +207,7 @@ class CountItemTestCase(ImportTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
-        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store, owner=self.user1)
 
         path = "/count_item/{}/1".format(list.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
@@ -217,7 +217,7 @@ class CountItemTestCase(ImportTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
-        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store, owner=self.user1)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
         path = "/count_item/{}/{}".format(list.pk, item.pk)
@@ -228,7 +228,7 @@ class CountItemTestCase(ImportTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
-        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store, owner=self.user1)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
         path = "/count_item/{}/{}".format(list.pk, item.pk)
@@ -242,7 +242,7 @@ class CountItemTestCase(ImportTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
-        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store, owner=self.user1)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
         path = "/count_item/{}/{}".format(list.pk, item.pk)
@@ -254,7 +254,7 @@ class CountItemTestCase(ImportTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', owner=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
-        list = List.objects.create(name='Test List', type='CO', session=session, owner=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store, owner=self.user1)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
         path = "/count_item/{}/{}".format(list.pk, item.pk)

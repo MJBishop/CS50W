@@ -25,13 +25,14 @@ def index(request):
 def home(request):
 
     # load active Store and Session (lazy) 
-    # !! invited user will only access list!
     if request.method == "GET":
         active_session = request.user.active_store().active_session()
         serialized_items = Item.objects.serialized_session_items(active_session)
         return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
 
     return JsonResponse({"error": "GET request Required."}, status=400)
+
+    # !! invited user will only access list!
 
 
 @login_required
@@ -86,7 +87,7 @@ def import_items(request, session_id):
 
         # create List
         try:
-            list = List(name=list_name, type=list_type, session=session, owner=request.user)
+            list = List(name=list_name, type=list_type, store=session.store, owner=request.user)
             list.full_clean()
             list.save()
         except ValidationError as e:
@@ -95,6 +96,7 @@ def import_items(request, session_id):
         # create Items & ListItems
         for item_data in items:
             item_name = item_data.get("name", "")
+            # TODO - item = Item.objects.filter(name=item_name, store=session.store)
             try:
                 item = Item(name=item_name, store=session.store)
                 item.full_clean()
@@ -132,7 +134,7 @@ def count_item(request, list_id, item_id):
     except Item.DoesNotExist:
         return JsonResponse({"error": "Item not found."}, status=404)
 
-    # Try to save Item amount
+    # save Item amount: create ListItem
     if request.method == 'POST':
         data = json.loads(request.body)
         item_amount = data.get("amount", "")
@@ -142,7 +144,7 @@ def count_item(request, list_id, item_id):
             list_item.full_clean()
             list_item.save()
         except ValidationError as e:
-                return JsonResponse({"error": e.messages}, status=400)
+            return JsonResponse({"error": e.messages}, status=400)
 
         return JsonResponse({"message": "Import successful."}, status=201)
 

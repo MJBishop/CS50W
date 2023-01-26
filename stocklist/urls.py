@@ -9,10 +9,11 @@ urlpatterns = [
 
     # FREE API
     path("home", views.home, name="home"),
-    path("session/<int:session_id>", views.session, name="session"),
     path("import_items/<int:session_id>", views.import_items, name="import_items"),
     path("count_item/<int:list_id>/<int:item_id>", views.count_item, name="count_item"),
 
     # PAID API
-    path("store/<int:store_id>", views.store, name="store")
+    path("store/<int:store_id>", views.store, name="store"),
+    path("session/<int:session_id>", views.session, name="session"),
+
 ]

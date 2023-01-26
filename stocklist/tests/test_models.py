@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Session, List, ListItem, Item
+from stocklist.models import User, Store, Session, List, SessionList, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -170,6 +170,7 @@ class SessionTestCase(TestCase):
                                                 end_date=date.today() )
             session.full_clean()
 
+    # test for next session dates!
     def test_create_session_with_previous_session(self):
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
@@ -196,11 +197,11 @@ class ListTestCase(TestCase):
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
-        store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
 
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.session = Session.objects.create(   store=store1, 
+        cls.session = Session.objects.create(   store=cls.store1, 
                                                 name=cls.session_name, 
                                                 start_date=start_date, 
                                                 end_date=end_date )
@@ -210,7 +211,7 @@ class ListTestCase(TestCase):
 
     def test_create_list(self):
         self.lists = List.objects.create(
-            session=self.session, 
+            store=self.store1, 
             owner=self.user1, 
             name=self.list_name, 
         )
@@ -221,7 +222,7 @@ class ListTestCase(TestCase):
 
     def test_create_addition_list(self):
         list = List.objects.create(
-            session=self.session, 
+            store=self.store1, 
             owner=self.user1, 
             name=self.list_name, 
             type=List.ADDITION
@@ -239,7 +240,7 @@ class ListTestCase(TestCase):
     def test_create_count_list(self):
         list_name = 'Final Count'
         list = List.objects.create(
-            session=self.session, 
+            store=self.store1, 
             owner=self.user1, 
             name=list_name, 
             type=List.COUNT
@@ -257,7 +258,7 @@ class ListTestCase(TestCase):
     def test_create_subtraction_list(self):
         list_name = 'Sales'
         list = List.objects.create(
-            session=self.session, 
+            store=self.store1, 
             owner=self.user1, 
             name=list_name, 
             type=List.SUBTRACTION
@@ -274,12 +275,12 @@ class ListTestCase(TestCase):
 
     def test_list_string(self):
         list = List.objects.create(
-            session=self.session, 
+            store=self.store1, 
             owner=self.user1, 
             name=self.list_name, 
             type=List.ADDITION
         )
-        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.session.name, list.get_type_display()))
+        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.store1.name, list.get_type_display()))
 
     # edit list name?
 
@@ -287,7 +288,7 @@ class ListTestCase(TestCase):
         long_list_name = (20 + 1)*'A'
         with self.assertRaises(ValidationError):
             list = List.objects.create(
-                session=self.session, 
+                store=self.store1, 
                 owner=self.user1, 
                 name=long_list_name, 
                 type=List.ADDITION
@@ -346,60 +347,90 @@ class SessionItemsManagerTestCase(TestCase):
         # Create User, Store, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
-        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store = Store.objects.create(owner=cls.user1, name=cls.store_name)
         cls.item_name = "Bacardi Superior 70CL BTL"
-        cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
+        cls.item = Item.objects.create(store=cls.store, name=cls.item_name)
 
-        # Session1
-        cls.session1 = Session.objects.create(  store=cls.store1, 
-                                                name="Tuesday", 
-                                                start_date=date(year=2023, month=1, day=13), 
-                                                end_date=date(year=2023, month=1, day=14) 
+        # 1
+        cls.session1 = Session.objects.create(  
+            store=cls.store, 
+            name="Tuesday", 
+            start_date=date(year=2023, month=1, day=13), 
+            end_date=date(year=2023, month=1, day=14) 
         )
-        # List1, ListItem1
-        cls.list = List.objects.create(
-            session=cls.session1, 
+        cls.list1 = List.objects.create(
+            store=cls.store, 
             owner=cls.user1, 
             name='Closing Stock', 
             type=List.COUNT
         )
-        list_item = ListItem.objects.create(list=cls.list, item=cls.item, amount='4.5')
-
-
-        # Session2
-        cls.session2 = Session.objects.create(  store=cls.store1, 
-                                                name="Wednesday", 
-                                                start_date=date(year=2023, month=1, day=14), 
-                                                end_date=date(year=2023, month=1, day=15),
-                                                previous_session=cls.session1,
+        session_list1 = SessionList.objects.create(  
+            list = cls.list1,
+            session = cls.session1
         )
+        list_item1 = ListItem.objects.create(
+            list=cls.list1, 
+            item=cls.item, 
+            amount='4.5'
+            )
 
-        # List1, ListItem1
-        cls.list1 = List.objects.create(
-            session=cls.session2, 
-            owner=cls.user1, 
-            name='Starting Stock', 
-            type=List.ADDITION
+
+        # 2
+        cls.session2 = Session.objects.create(  
+            store=cls.store, 
+            name="Wednesday", 
+            start_date=date(year=2023, month=1, day=14), 
+            end_date=date(year=2023, month=1, day=15),
+            previous_session=cls.session1,
         )
-        list_item1 = ListItem.objects.create(list=cls.list1, item=cls.item, amount='12.7')
-
-        # List2, ListItem2
         cls.list2 = List.objects.create(
-            session=cls.session2, 
+            store=cls.store, 
             owner=cls.user1, 
-            name='Delivery', 
+            name="Gerry's Delivery", 
             type=List.ADDITION
         )
-        list_item2 = ListItem.objects.create(list=cls.list2, item=cls.item, amount='10')
+        session_list2 = SessionList.objects.create(  
+            list = cls.list2,
+            session = cls.session2
+        )
+        list_item2 = ListItem.objects.create(
+            list=cls.list2, 
+            item=cls.item, 
+            amount='12.7')
 
-        # List3, ListItem3
+        # 3
         cls.list3 = List.objects.create(
-            session=cls.session2, 
+            store=cls.store, 
+            owner=cls.user1, 
+            name='Amathus Delivery', 
+            type=List.ADDITION
+        )
+        session_list3 = SessionList.objects.create(  
+            list = cls.list3,
+            session = cls.session2
+        )
+        list_item3 = ListItem.objects.create(
+            list=cls.list3, 
+            item=cls.item, 
+            amount='10'
+        )
+
+        # 4
+        cls.list4 = List.objects.create(
+            store=cls.store, 
             owner=cls.user1, 
             name='Sales', 
             type=List.SUBTRACTION
         )
-        list_item3 = ListItem.objects.create(list=cls.list3, item=cls.item, amount='3.7')
+        session_list4 = SessionList.objects.create(  
+            list = cls.list4,
+            session = cls.session2
+        )
+        list_item4 = ListItem.objects.create(
+            list=cls.list4, 
+            item=cls.item, 
+            amount='3.7'
+        )
 
         return super().setUpTestData()
 
@@ -437,7 +468,7 @@ class ListItemTestCase(TestCase):
                                                 end_date=end_date )
         cls.list_name = 'Starting Stock'
         cls.list = List.objects.create(
-            session=cls.session, 
+            store=cls.store1, 
             owner=cls.user1, 
             name=cls.list_name, 
             type=List.ADDITION
