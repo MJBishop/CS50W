@@ -113,15 +113,18 @@ class CountTestCase(TestCase):
 
 
     def test_create_count(self):
-        count = Count.objects.create(   store=self.store1, 
-                                            name=self.count_name, 
-                                            end_date=date.today() )
+        count = Count.objects.create(   
+            store=self.store1, 
+            name=self.count_name, 
+            end_date=date.today() 
+        )
         counts = Count.objects.all()
         self.assertEqual(counts.count(), 1)
         self.assertEqual(counts[0].name, self.count_name)
-        # self.assertEqual(counts[0].start_date, date.today())
         self.assertEqual(counts[0].end_date, date.today())
         self.assertEqual(counts[0].store, self.store1)
+        self.assertEqual(counts[0].frequency, Count.DAILY)
+        self.assertEqual(counts[0].previous_count, None)
 
     # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
     #     with self.assertRaises(ValidationError):

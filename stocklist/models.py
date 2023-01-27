@@ -63,7 +63,7 @@ class Count(models.Model):
         (DAILY, "Daily"),
     ]
 
-    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts") #m2m!?
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts")
     name = models.CharField(max_length=MAX_COUNT_NAME_LENGTH)
     previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
     end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
@@ -72,12 +72,7 @@ class Count(models.Model):
     objects = models.Manager()
 
     # def save(self, *args, **kwargs):
-    #     '''
-    #     Overides Save to Validate end_date >= start_date
-    #     '''
-    #     if self.end_date and self.end_date < self.start_date:
-    #         raise ValidationError("End date cannot be before start date!")
-    #     super(Count, self).save(*args, **kwargs)
+    #     check that previous.end_date is before self.end_date
 
     # def __str__(self):
     #     if (not self.end_date or self.start_date == self.end_date): 
@@ -168,6 +163,9 @@ class CountItemsManager(models.Manager):
 
         Return: QuerySet
         '''
+
+        # TODO - filter between dates
+
         storeQ = Q(store=count.store)
         previous_countQ = Q(list_items__list__count_list__count=count.previous_count)
         countQ = Q(list_items__list__count_list__count=count)
