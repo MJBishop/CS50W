@@ -127,7 +127,6 @@ class List(models.Model):
     ]
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
-    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     # date?

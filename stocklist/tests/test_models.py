@@ -212,7 +212,6 @@ class ListTestCase(TestCase):
     def test_create_list(self):
         self.lists = List.objects.create(
             store=self.store1, 
-            owner=self.user1, 
             name=self.list_name, 
         )
         lists = List.objects.all()
@@ -223,7 +222,6 @@ class ListTestCase(TestCase):
     def test_create_addition_list(self):
         list = List.objects.create(
             store=self.store1, 
-            owner=self.user1, 
             name=self.list_name, 
             type=List.ADDITION
         )
@@ -241,7 +239,6 @@ class ListTestCase(TestCase):
         list_name = 'Final Count'
         list = List.objects.create(
             store=self.store1, 
-            owner=self.user1, 
             name=list_name, 
             type=List.COUNT
         )
@@ -259,7 +256,6 @@ class ListTestCase(TestCase):
         list_name = 'Sales'
         list = List.objects.create(
             store=self.store1, 
-            owner=self.user1, 
             name=list_name, 
             type=List.SUBTRACTION
         )
@@ -276,7 +272,6 @@ class ListTestCase(TestCase):
     def test_list_string(self):
         list = List.objects.create(
             store=self.store1, 
-            owner=self.user1, 
             name=self.list_name, 
             type=List.ADDITION
         )
@@ -289,7 +284,6 @@ class ListTestCase(TestCase):
         with self.assertRaises(ValidationError):
             list = List.objects.create(
                 store=self.store1, 
-                owner=self.user1, 
                 name=long_list_name, 
                 type=List.ADDITION
         )
@@ -360,7 +354,6 @@ class SessionItemsManagerTestCase(TestCase):
         )
         cls.list1 = List.objects.create(
             store=cls.store, 
-            owner=cls.user1, 
             name='Closing Stock', 
             type=List.COUNT
         )
@@ -385,7 +378,6 @@ class SessionItemsManagerTestCase(TestCase):
         )
         cls.list2 = List.objects.create(
             store=cls.store, 
-            owner=cls.user1, 
             name="Gerry's Delivery", 
             type=List.ADDITION
         )
@@ -401,7 +393,6 @@ class SessionItemsManagerTestCase(TestCase):
         # 3
         cls.list3 = List.objects.create(
             store=cls.store, 
-            owner=cls.user1, 
             name='Amathus Delivery', 
             type=List.ADDITION
         )
@@ -418,7 +409,6 @@ class SessionItemsManagerTestCase(TestCase):
         # 4
         cls.list4 = List.objects.create(
             store=cls.store, 
-            owner=cls.user1, 
             name='Sales', 
             type=List.SUBTRACTION
         )
@@ -469,7 +459,6 @@ class ListItemTestCase(TestCase):
         cls.list_name = 'Starting Stock'
         cls.list = List.objects.create(
             store=cls.store1, 
-            owner=cls.user1, 
             name=cls.list_name, 
             type=List.ADDITION
         )

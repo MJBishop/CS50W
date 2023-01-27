@@ -87,7 +87,7 @@ def import_items(request, session_id):
 
         # create List
         try:
-            list = List(name=list_name, type=list_type, store=session.store, owner=request.user)
+            list = List(name=list_name, type=list_type, store=session.store)
             list.full_clean()
             list.save()
         except ValidationError as e:
@@ -124,7 +124,7 @@ def count_item(request, list_id, item_id):
 
     # check for valid List
     try:
-        list = List.objects.get(owner=request.user, pk=list_id)
+        list = List.objects.get(pk=list_id)
     except List.DoesNotExist:
         return JsonResponse({"error": "List not found."}, status=404)
 
