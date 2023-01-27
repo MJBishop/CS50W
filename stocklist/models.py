@@ -9,14 +9,14 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 MAX_STORE_NAME_LENGTH = 20
-MAX_SESSION_NAME_LENGTH = 10
+MAX_COUNT_NAME_LENGTH = 10
 MAX_LIST_NAME_LENGTH = 20
 MAX_ITEM_NAME_LENGTH = 80
 MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
 DEFAULT_STORE_NAME = 'Stocklist'
-DEFAULT_SESSION_NAME = 'Session'
+DEFAULT_COUNT_NAME = 'Count'
 
 
 class User(AbstractUser):
@@ -44,21 +44,21 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-    def active_session(self):
+    def active_count(self):
         '''
-        Lazy load active Session
+        Lazy load active Count
 
-        Return: Session
+        Return: Count
         '''
-        return Session.objects.filter(store=self).last() or Session.objects.create(store=self, name=DEFAULT_SESSION_NAME)
+        return Count.objects.filter(store=self).last() or Count.objects.create(store=self, name=DEFAULT_COUNT_NAME)
 
 
-class Session(models.Model):
-    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="sessions") #m2m!?
-    name = models.CharField(max_length=MAX_SESSION_NAME_LENGTH)
-    start_date = models.DateField(default=timezone.localdate) #sequential sessions can have same start date??
+class Count(models.Model):
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts") #m2m!?
+    name = models.CharField(max_length=MAX_COUNT_NAME_LENGTH)
+    start_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
     end_date = models.DateField(null=True, blank=True)
-    previous_session = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_session') #checks!?, editable?
+    previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
 
     objects = models.Manager()
 
@@ -68,13 +68,13 @@ class Session(models.Model):
         '''
         if self.end_date and self.end_date < self.start_date:
             raise ValidationError("End date cannot be before start date!")
-        super(Session, self).save(*args, **kwargs)
+        super(Count, self).save(*args, **kwargs)
 
     def __str__(self):
         if (not self.end_date or self.start_date == self.end_date): 
-            return "{} Session: {}".format(self.name, self.start_date)
+            return "{} Count: {}".format(self.name, self.start_date)
         else:
-            return "{} Session - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
+            return "{} Count - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
 
 
 class AdditionListManager(models.Manager):
@@ -104,14 +104,14 @@ class CountListManager(models.Manager):
         '''
         return super().get_queryset().filter(type='CO')
 
-# class SessionListManager(models.Manager):
-#     def session_lists(self, session):
-#         return List.objects.filter(session=session)#group?
-#     def serialized_session_lists(self, session):
-#         session_lists = self.session_lists(session)
-#         serialized_session_lists = []
-#         for list in session_lists:
-#             serialized_session_lists.append({
+# class countListManager(models.Manager):
+#     def count_lists(self, count):
+#         return List.objects.filter(count=count)#group?
+#     def serialized_count_lists(self, count):
+#         count_lists = self.count_lists(count)
+#         serialized_count_lists = []
+#         for list in count_lists:
+#             serialized_count_lists.append({
 #                 # todo
 #             })
 
@@ -141,51 +141,51 @@ class List(models.Model):
 
 
 class CountList(models.Model):
-    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="count_lists")
+    count = models.ForeignKey(Count, editable=False, on_delete=models.CASCADE, related_name="count_lists")
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="count_list")
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="count_lists")
 
 
-class SessionItemsManager(models.Manager):
-    def session_items(self, session):
+class CountItemsManager(models.Manager):
+    def count_items(self, count):
         '''
-        Annotates total list_item.amount for lists, by type, for the given session:
-        total_previous:     List.type=count totals for the previous session (opening stock)
-        total_added:        List.type=addition totals for this session (additions)
-        total_subtracted:   List.type=subtraction totals for this session (subtractions)
-        total_counted:      List.type=count totals for this session (closing stock)
+        Annotates total list_item.amount for lists, by type, for the given count:
+        total_previous:     List.type=count totals for the previous count (opening stock)
+        total_added:        List.type=addition totals for this count (additions)
+        total_subtracted:   List.type=subtraction totals for this count (subtractions)
+        total_counted:      List.type=count totals for this count (closing stock)
 
-        session (Session): The Session
+        count (Count): The Count
 
         Return: QuerySet
         '''
-        storeQ = Q(store=session.store)
-        previous_sessionQ = Q(list_items__list__count_list__session=session.previous_session)
-        sessionQ = Q(list_items__list__count_list__session=session)
-        additionQ = Q(list_items__list__type=List.ADDITION)
-        subtractionQ = Q(list_items__list__type=List.SUBTRACTION)
-        countQ = Q(list_items__list__type=List.COUNT)
+        storeQ = Q(store=count.store)
+        previous_countQ = Q(list_items__list__count_list__count=count.previous_count)
+        countQ = Q(list_items__list__count_list__count=count)
+        additionTypeQ = Q(list_items__list__type=List.ADDITION)
+        subtractionTypeQ = Q(list_items__list__type=List.SUBTRACTION)
+        countTypeQ = Q(list_items__list__type=List.COUNT)
 
         return self.annotate(
-            total_previous=Coalesce( Sum('list_items__amount', filter=(storeQ & previous_sessionQ & countQ)), Decimal('0') ),
-            total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & additionQ)), Decimal('0') ),
-            total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & subtractionQ)), Decimal('0') ),
-            total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & sessionQ & countQ)), Decimal('0') ),
+            total_previous=Coalesce( Sum('list_items__amount', filter=(storeQ & previous_countQ & countTypeQ)), Decimal('0') ),
+            total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & additionTypeQ)), Decimal('0') ),
+            total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & subtractionTypeQ)), Decimal('0') ),
+            total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & countTypeQ)), Decimal('0') ),
         )#order_by (get_queryset?)
 
-    def serialized_session_items(self, session):
+    def serialized_count_items(self, count):
         '''
-        Calls session_items(session)
+        Calls count_items(count)
         Serializes the annotated items
 
-        session (Session): The Session
+        count (Count): The count
 
         Return: An Array of serialized, annotated items
         '''
-        session_items = self.session_items(session)
-        serialized_session_items = []
-        for item in session_items:
-            serialized_session_items.append({
+        count_items = self.count_items(count)
+        serialized_count_items = []
+        for item in count_items:
+            serialized_count_items.append({
                     'id':item.id,
                     'store_id':item.store.id,
                     'name':item.name,
@@ -195,7 +195,7 @@ class SessionItemsManager(models.Manager):
                     'total_subtracted':'{:.1f}'.format(item.total_subtracted),
                     'total_counted':'{:.1f}'.format(item.total_counted),
             })
-        return serialized_session_items 
+        return serialized_count_items 
 
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
@@ -203,7 +203,7 @@ class Item(models.Model):
     origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     # spare cols?
 
-    objects = SessionItemsManager() #items?
+    objects = CountItemsManager() #items?
 
     class Meta:
         constraints = [

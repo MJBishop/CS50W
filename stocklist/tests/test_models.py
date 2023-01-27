@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Session, List, CountList, ListItem, Item
+from stocklist.models import User, Store, Count, List, CountList, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -75,17 +75,17 @@ class StoreTestCase(TestCase):
             store = Store.objects.create(user=self.user1, name=long_store_name)
             store.full_clean()
 
-    def test_active_session_returns_stores_last_session(self):
+    def test_active_count_returns_stores_last_count(self):
         active_store = self.user1.active_store()
-        session1 = Session.objects.create( store=active_store, name='Sesion 1')
-        session2 = Session.objects.create( store=active_store, name='Sesion 2', previous_session=session1)
-        active_session = active_store.active_session()
-        self.assertEqual(session2, active_session)
+        count1 = Count.objects.create( store=active_store, name='Sesion 1')
+        count2 = Count.objects.create( store=active_store, name='Sesion 2', previous_count=count1)
+        active_count = active_store.active_count()
+        self.assertEqual(count2, active_count)
 
-    def test_active_session_created_if_no_store_sessions(self):
+    def test_active_count_created_if_no_store_counts(self):
         user2 = User.objects.create_user('James')
-        active_session = user2.active_store().active_session()
-        self.assertEqual('Session', active_session.name)
+        active_count = user2.active_store().active_count()
+        self.assertEqual('Count', active_count.name)
 
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
@@ -97,13 +97,13 @@ class StoreTestCase(TestCase):
     #     self.assertEqual(stores.count(), 1)
 
 
-class SessionTestCase(TestCase):
+class CountTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
 
         cls.store_name = "Test Store"
-        cls.session_name = "Wednesday"
+        cls.count_name = "Wednesday"
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
@@ -112,79 +112,79 @@ class SessionTestCase(TestCase):
         return super().setUpTestData()
 
 
-    def test_create_session(self):
-        session = Session.objects.create(   store=self.store1, 
-                                            name=self.session_name, 
+    def test_create_count(self):
+        count = Count.objects.create(   store=self.store1, 
+                                            name=self.count_name, 
                                             start_date=date.today(), 
                                             end_date=date.today() )
-        sessions = Session.objects.all()
-        self.assertEqual(sessions.count(), 1)
-        self.assertEqual(sessions[0].name, self.session_name)
-        self.assertEqual(sessions[0].start_date, date.today())
-        self.assertEqual(sessions[0].end_date, date.today())
-        self.assertEqual(sessions[0].store, self.store1)
+        counts = Count.objects.all()
+        self.assertEqual(counts.count(), 1)
+        self.assertEqual(counts[0].name, self.count_name)
+        self.assertEqual(counts[0].start_date, date.today())
+        self.assertEqual(counts[0].end_date, date.today())
+        self.assertEqual(counts[0].store, self.store1)
 
-    def test_create_session_raises_validation_error_for_end_date_before_start_date(self):
+    def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
         with self.assertRaises(ValidationError):
-            Session.objects.create( store=self.store1,
-                                    name=self.session_name, 
+            Count.objects.create( store=self.store1,
+                                    name=self.count_name, 
                                     start_date=date(year=2023, month=1, day=14), 
                                     end_date=date(year=2023, month=1, day=13) )
 
-    def test_session_string_start_date_equals_end_date(self):
-        session = Session.objects.create(   store=self.store1, 
-                                            name=self.session_name, 
+    def test_count_string_start_date_equals_end_date(self):
+        count = Count.objects.create(   store=self.store1, 
+                                            name=self.count_name, 
                                             start_date=date.today(), 
                                             end_date=date.today() )
 
-        expected_string = "{} Session: {}".format(self.session_name, date.today())
-        self.assertEqual(expected_string, session.__str__())
+        expected_string = "{} Count: {}".format(self.count_name, date.today())
+        self.assertEqual(expected_string, count.__str__())
 
-    def test_session_string_start_date_before_end_date(self):
+    def test_count_string_start_date_before_end_date(self):
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        session = Session.objects.create(   store=self.store1, 
-                                            name=self.session_name, 
+        count = Count.objects.create(   store=self.store1, 
+                                            name=self.count_name, 
                                             start_date=start_date, 
                                             end_date=end_date )
 
-        expected_string = "{} Session - starts: {}, ends: {}".format(self.session_name, start_date, end_date)
-        self.assertEqual(expected_string, session.__str__())
+        expected_string = "{} Count - starts: {}, ends: {}".format(self.count_name, start_date, end_date)
+        self.assertEqual(expected_string, count.__str__())
 
-    def test_session_string_no_end_date(self):
-        session = Session.objects.create(   store=self.store1, 
-                                            name=self.session_name)
+    def test_count_string_no_end_date(self):
+        count = Count.objects.create(   store=self.store1, 
+                                            name=self.count_name)
         
-        expected_string = "{} Session: {}".format(self.session_name, date.today())
-        self.assertEqual(expected_string, session.__str__())
+        expected_string = "{} Count: {}".format(self.count_name, date.today())
+        self.assertEqual(expected_string, count.__str__())
 
 
-    # edit session name, start & end date?
+    # edit count name, start & end date?
 
-    def test_max_session_name_length(self):
-        long_session_name = (10 + 1)*'A'
+    def test_max_count_name_length(self):
+        long_count_name = (10 + 1)*'A'
         with self.assertRaises(ValidationError):
-            session = Session.objects.create(   store=self.store1, 
-                                                name=long_session_name, 
+            count = Count.objects.create(   store=self.store1, 
+                                                name=long_count_name, 
                                                 start_date=date.today(), 
                                                 end_date=date.today() )
-            session.full_clean()
+            count.full_clean()
 
-    # test for next session dates!
-    def test_create_session_with_previous_session(self):
+    # test for next count dates!
+    def test_create_count_with_previous_count(self):
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        session = Session.objects.create(   store=self.store1, 
-                                            name=self.session_name, 
+        count = Count.objects.create(   store=self.store1, 
+                                            name=self.count_name, 
                                             start_date=date(year=2023, month=1, day=14), 
                                             end_date=date(year=2023, month=1, day=15))
-        session2 = Session.objects.create(  store=self.store1, 
-                                            name=self.session_name, 
+        count2 = Count.objects.create(  store=self.store1, 
+                                            name=self.count_name, 
                                             start_date=date(year=2023, month=1, day=15), 
                                             end_date=date(year=2023, month=1, day=16), 
-                                            previous_session=session)
-        self.assertEqual(session2.previous_session, session)
-        # self.assertEqual(session.next_session, session2) ??fails??    
+                                            previous_count=count)
+        self.assertEqual(count2.previous_count, count)
+        # self.assertEqual(count.next_count, count2) ??fails??    
 
 
 class ListTestCase(TestCase):
@@ -193,7 +193,7 @@ class ListTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
         cls.store_name = "Test Store"
-        cls.session_name = "Wednesday"
+        cls.count_name = "Wednesday"
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
@@ -201,8 +201,8 @@ class ListTestCase(TestCase):
 
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.session = Session.objects.create(   store=cls.store1, 
-                                                name=cls.session_name, 
+        cls.count = Count.objects.create(   store=cls.store1, 
+                                                name=cls.count_name, 
                                                 start_date=start_date, 
                                                 end_date=end_date )
         cls.list_name = 'Starting Stock'
@@ -333,7 +333,7 @@ class ItemTestCase(TestCase):
             item = Item.objects.create(store=self.store1, name='test', origin=long_origin_name)
             item.full_clean()
 
-class SessionItemsManagerTestCase(TestCase):
+class CountItemsManagerTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -346,7 +346,7 @@ class SessionItemsManagerTestCase(TestCase):
         cls.item = Item.objects.create(store=cls.store, name=cls.item_name)
 
         # 1
-        cls.session1 = Session.objects.create(  
+        cls.count1 = Count.objects.create(  
             store=cls.store, 
             name="Tuesday", 
             start_date=date(year=2023, month=1, day=13), 
@@ -359,7 +359,7 @@ class SessionItemsManagerTestCase(TestCase):
         )
         count_list1 = CountList.objects.create(  
             list = cls.list1,
-            session = cls.session1,
+            count = cls.count1,
             user=cls.user1
         )
         list_item1 = ListItem.objects.create(
@@ -370,12 +370,12 @@ class SessionItemsManagerTestCase(TestCase):
 
 
         # 2
-        cls.session2 = Session.objects.create(  
+        cls.count2 = Count.objects.create(  
             store=cls.store, 
             name="Wednesday", 
             start_date=date(year=2023, month=1, day=14), 
             end_date=date(year=2023, month=1, day=15),
-            previous_session=cls.session1,
+            previous_count=cls.count1,
         )
         cls.list2 = List.objects.create(
             store=cls.store, 
@@ -384,7 +384,7 @@ class SessionItemsManagerTestCase(TestCase):
         )
         count_list2 = CountList.objects.create(  
             list = cls.list2,
-            session = cls.session2,
+            count = cls.count2,
             user=cls.user1
         )
         list_item2 = ListItem.objects.create(
@@ -400,7 +400,7 @@ class SessionItemsManagerTestCase(TestCase):
         )
         count_list3 = CountList.objects.create(  
             list = cls.list3,
-            session = cls.session2,
+            count = cls.count2,
             user=cls.user1
         )
         list_item3 = ListItem.objects.create(
@@ -417,7 +417,7 @@ class SessionItemsManagerTestCase(TestCase):
         )
         count_list4 = CountList.objects.create(  
             list = cls.list4,
-            session = cls.session2,
+            count = cls.count2,
             user=cls.user1
         )
         list_item4 = ListItem.objects.create(
@@ -428,15 +428,15 @@ class SessionItemsManagerTestCase(TestCase):
 
         return super().setUpTestData()
 
-    def test_session_items_manager(self):
-        items = Item.objects.session_items(self.session2)
-        self.assertEqual(items[0].total_previous, Decimal('4.5'))
+    def test_count_items_manager(self):
+        items = Item.objects.count_items(self.count2)
         self.assertEqual(items[0].total_added, Decimal('22.7'))
         self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
         self.assertEqual(items[0].total_counted, Decimal('0'))
+        self.assertEqual(items[0].total_previous, Decimal('4.5'))
 
-    def test_serialize_session_items_manager(self):
-        serialized_items = Item.objects.serialized_session_items(self.session2)
+    def test_serialize_count_items_manager(self):
+        serialized_items = Item.objects.serialized_count_items(self.count2)
         dict = serialized_items[0]
         self.assertEqual(dict['total_previous'], '4.5')
         self.assertEqual(dict['total_added'], '22.7')
@@ -449,15 +449,15 @@ class ListItemTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
 
-        # Create User, Store, Session, List, Item
+        # Create User, Store, count, List, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
-        cls.session_name = "Wednesday"
+        cls.count_name = "Wednesday"
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.session = Session.objects.create(   store=cls.store1, 
-                                                name=cls.session_name, 
+        cls.count = Count.objects.create(   store=cls.store1, 
+                                                name=cls.count_name, 
                                                 start_date=start_date, 
                                                 end_date=end_date )
         cls.list_name = 'Starting Stock'

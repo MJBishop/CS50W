@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
-from .models import User, Store, Item, Session, List, ListItem
+from .models import User, Store, Item, Count, List, ListItem
 
 
 def index(request):
@@ -24,11 +24,11 @@ def index(request):
 @login_required
 def home(request):
 
-    # load active Store and Session (lazy) 
+    # load active Store and Count (lazy) 
     if request.method == "GET":
-        active_session = request.user.active_store().active_session()
-        serialized_items = Item.objects.serialized_session_items(active_session)
-        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+        active_count = request.user.active_store().active_count()
+        serialized_items = Item.objects.serialized_count_items(active_count)
+        return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
 
     return JsonResponse({"error": "GET request Required."}, status=400)
 
@@ -45,37 +45,37 @@ def store(request, store_id):
         return JsonResponse({"error": "Store not found."}, status=404)
 
     if request.method == "GET":
-        session = store.active_session()
-        serialized_items = Item.objects.serialized_session_items(session)
-        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+        count = store.active_count()
+        serialized_items = Item.objects.serialized_count_items(count)
+        return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
     
     return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
-def session(request, session_id):
+def count(request, count_id):
 
-    # check for valid Session
+    # check for valid count
     try:
-        session = Session.objects.get(store__user=request.user, pk=session_id)
-    except Session.DoesNotExist:
-        return JsonResponse({"error": "Session not found."}, status=404)
+        count = Count.objects.get(store__user=request.user, pk=count_id)
+    except Count.DoesNotExist:
+        return JsonResponse({"error": "Count not found."}, status=404)
 
     if request.method == "GET":
-        serialized_items = Item.objects.serialized_session_items(session)
-        return JsonResponse(serialized_items, safe=False)  # store.name session.date/name?
+        serialized_items = Item.objects.serialized_count_items(count)
+        return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
 
     return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
-def import_items(request, session_id):
+def import_items(request, count_id):
 
-    # check for valid Session
+    # check for valid count
     try:
-        session = Session.objects.get(store__user=request.user, pk=session_id)
-    except Session.DoesNotExist:
-        return JsonResponse({"error": "Session not found."}, status=404)
+        count = Count.objects.get(store__user=request.user, pk=count_id)
+    except Count.DoesNotExist:
+        return JsonResponse({"error": "Count not found."}, status=404)
 
     if request.method == "POST":
         
@@ -87,7 +87,7 @@ def import_items(request, session_id):
 
         # create List
         try:
-            list = List(name=list_name, type=list_type, store=session.store)
+            list = List(name=list_name, type=list_type, store=count.store)
             list.full_clean()
             list.save()
         except ValidationError as e:
@@ -96,9 +96,9 @@ def import_items(request, session_id):
         # create Items & ListItems
         for item_data in items:
             item_name = item_data.get("name", "")
-            # TODO - item = Item.objects.filter(name=item_name, store=session.store)
+            # TODO - item = Item.objects.filter(name=item_name, store=count.store)
             try:
-                item = Item(name=item_name, store=session.store)
+                item = Item(name=item_name, store=count.store)
                 item.full_clean()
                 item.save()
             except ValidationError as e: 
