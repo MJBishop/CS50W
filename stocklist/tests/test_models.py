@@ -115,48 +115,47 @@ class CountTestCase(TestCase):
     def test_create_count(self):
         count = Count.objects.create(   store=self.store1, 
                                             name=self.count_name, 
-                                            start_date=date.today(), 
                                             end_date=date.today() )
         counts = Count.objects.all()
         self.assertEqual(counts.count(), 1)
         self.assertEqual(counts[0].name, self.count_name)
-        self.assertEqual(counts[0].start_date, date.today())
+        # self.assertEqual(counts[0].start_date, date.today())
         self.assertEqual(counts[0].end_date, date.today())
         self.assertEqual(counts[0].store, self.store1)
 
-    def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
-        with self.assertRaises(ValidationError):
-            Count.objects.create( store=self.store1,
-                                    name=self.count_name, 
-                                    start_date=date(year=2023, month=1, day=14), 
-                                    end_date=date(year=2023, month=1, day=13) )
+    # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
+    #     with self.assertRaises(ValidationError):
+    #         Count.objects.create( store=self.store1,
+    #                                 name=self.count_name, 
+    #                                 start_date=date(year=2023, month=1, day=14), 
+    #                                 end_date=date(year=2023, month=1, day=13) )
 
-    def test_count_string_start_date_equals_end_date(self):
-        count = Count.objects.create(   store=self.store1, 
-                                            name=self.count_name, 
-                                            start_date=date.today(), 
-                                            end_date=date.today() )
+    # def test_count_string_start_date_equals_end_date(self):
+    #     count = Count.objects.create(   store=self.store1, 
+    #                                         name=self.count_name, 
+    #                                         start_date=date.today(), 
+    #                                         end_date=date.today() )
 
-        expected_string = "{} Count: {}".format(self.count_name, date.today())
-        self.assertEqual(expected_string, count.__str__())
+        # expected_string = "{} Count: {}".format(self.count_name, date.today())
+        # self.assertEqual(expected_string, count.__str__())
 
-    def test_count_string_start_date_before_end_date(self):
-        start_date = date(year=2023, month=1, day=14)
-        end_date = date(year=2023, month=1, day=15)
-        count = Count.objects.create(   store=self.store1, 
-                                            name=self.count_name, 
-                                            start_date=start_date, 
-                                            end_date=end_date )
+    # def test_count_string_start_date_before_end_date(self):
+    #     start_date = date(year=2023, month=1, day=14)
+    #     end_date = date(year=2023, month=1, day=15)
+    #     count = Count.objects.create(   store=self.store1, 
+    #                                         name=self.count_name, 
+    #                                         start_date=start_date, 
+    #                                         end_date=end_date )
 
-        expected_string = "{} Count - starts: {}, ends: {}".format(self.count_name, start_date, end_date)
-        self.assertEqual(expected_string, count.__str__())
+        # expected_string = "{} Count - starts: {}, ends: {}".format(self.count_name, start_date, end_date)
+        # self.assertEqual(expected_string, count.__str__())
 
-    def test_count_string_no_end_date(self):
-        count = Count.objects.create(   store=self.store1, 
-                                            name=self.count_name)
+    # def test_count_string_no_end_date(self):
+    #     count = Count.objects.create(   store=self.store1, 
+    #                                         name=self.count_name)
         
-        expected_string = "{} Count: {}".format(self.count_name, date.today())
-        self.assertEqual(expected_string, count.__str__())
+    #     expected_string = "{} Count: {}".format(self.count_name, date.today())
+    #     self.assertEqual(expected_string, count.__str__())
 
 
     # edit count name, start & end date?
@@ -166,7 +165,6 @@ class CountTestCase(TestCase):
         with self.assertRaises(ValidationError):
             count = Count.objects.create(   store=self.store1, 
                                                 name=long_count_name, 
-                                                start_date=date.today(), 
                                                 end_date=date.today() )
             count.full_clean()
 
@@ -176,11 +174,9 @@ class CountTestCase(TestCase):
         end_date = date(year=2023, month=1, day=15)
         count = Count.objects.create(   store=self.store1, 
                                             name=self.count_name, 
-                                            start_date=date(year=2023, month=1, day=14), 
-                                            end_date=date(year=2023, month=1, day=15))
+                                            end_date=end_date)
         count2 = Count.objects.create(  store=self.store1, 
                                             name=self.count_name, 
-                                            start_date=date(year=2023, month=1, day=15), 
                                             end_date=date(year=2023, month=1, day=16), 
                                             previous_count=count)
         self.assertEqual(count2.previous_count, count)
@@ -203,7 +199,6 @@ class ListTestCase(TestCase):
         end_date = date(year=2023, month=1, day=15)
         cls.count = Count.objects.create(   store=cls.store1, 
                                                 name=cls.count_name, 
-                                                start_date=start_date, 
                                                 end_date=end_date )
         cls.list_name = 'Starting Stock'
 
@@ -349,7 +344,6 @@ class CountItemsManagerTestCase(TestCase):
         cls.count1 = Count.objects.create(  
             store=cls.store, 
             name="Tuesday", 
-            start_date=date(year=2023, month=1, day=13), 
             end_date=date(year=2023, month=1, day=14) 
         )
         cls.list1 = List.objects.create(
@@ -372,8 +366,7 @@ class CountItemsManagerTestCase(TestCase):
         # 2
         cls.count2 = Count.objects.create(  
             store=cls.store, 
-            name="Wednesday", 
-            start_date=date(year=2023, month=1, day=14), 
+            name="Wednesday",  
             end_date=date(year=2023, month=1, day=15),
             previous_count=cls.count1,
         )
@@ -456,10 +449,11 @@ class ListItemTestCase(TestCase):
         cls.count_name = "Wednesday"
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.count = Count.objects.create(   store=cls.store1, 
-                                                name=cls.count_name, 
-                                                start_date=start_date, 
-                                                end_date=end_date )
+        cls.count = Count.objects.create(   
+            store=cls.store1, 
+            name=cls.count_name, 
+            end_date=end_date 
+        )
         cls.list_name = 'Starting Stock'
         cls.list = List.objects.create(
             store=cls.store1, 

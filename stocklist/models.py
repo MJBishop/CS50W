@@ -54,27 +54,36 @@ class Store(models.Model):
 
 
 class Count(models.Model):
+    MONTHLY = 'MO'
+    WEEKLY = "WE"
+    DAILY = "DA"
+    COUNT_FREQUENCY_CHOICES = [
+        (MONTHLY, "Monthly"),
+        (WEEKLY, "Weekly"),
+        (DAILY, "Daily"),
+    ]
+
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts") #m2m!?
     name = models.CharField(max_length=MAX_COUNT_NAME_LENGTH)
-    start_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
-    end_date = models.DateField(null=True, blank=True)
     previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
+    end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
+    frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
     objects = models.Manager()
 
-    def save(self, *args, **kwargs):
-        '''
-        Overides Save to Validate end_date >= start_date
-        '''
-        if self.end_date and self.end_date < self.start_date:
-            raise ValidationError("End date cannot be before start date!")
-        super(Count, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     '''
+    #     Overides Save to Validate end_date >= start_date
+    #     '''
+    #     if self.end_date and self.end_date < self.start_date:
+    #         raise ValidationError("End date cannot be before start date!")
+    #     super(Count, self).save(*args, **kwargs)
 
-    def __str__(self):
-        if (not self.end_date or self.start_date == self.end_date): 
-            return "{} Count: {}".format(self.name, self.start_date)
-        else:
-            return "{} Count - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
+    # def __str__(self):
+    #     if (not self.end_date or self.start_date == self.end_date): 
+    #         return "{} Count: {}".format(self.name, self.start_date)
+    #     else:
+    #         return "{} Count - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
 
 
 class AdditionListManager(models.Manager):
