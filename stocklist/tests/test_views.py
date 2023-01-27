@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Session, List, ListItem, Item
+from stocklist.models import User, Store, Count, List, ListItem, Item
 
 
 class BaseTestCase(TestCase):
@@ -52,7 +52,7 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/import_items/1") 
 
-    def test_POST_import_items_returns_404_for_invalid_session(self):
+    def test_POST_import_items_returns_404_for_invalid_count(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.post("/import_items/1")
         self.assertEqual(response.status_code, 404)
@@ -60,18 +60,18 @@ class ImportItemsTestCase(ImportTestCase):
     def test_GET_import_items_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
@@ -80,10 +80,10 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         self.json_data['name'] = 'A'*(20 + 1)
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
         lists = List.objects.filter(store=store)
@@ -93,10 +93,10 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         self.json_data['type'] = 'ZZ'
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -106,18 +106,18 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_creates_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        items = Item.objects.filter(store=session.store)
+        items = Item.objects.filter(store=count.store)
         self.assertEqual(items.count(), 3)
 
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         items = list(self.json_data["items"])
         items.append({
@@ -126,21 +126,21 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
-        items = Item.objects.filter(store=session.store)
+        items = Item.objects.filter(store=count.store)
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -152,7 +152,7 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         items = list(self.json_data["items"])
         items.append({
@@ -161,7 +161,7 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -173,7 +173,7 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         items = list(self.json_data["items"])
         items.append({
@@ -182,7 +182,7 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(session.pk)
+        path = "/import_items/{}".format(count.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -206,7 +206,7 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_404_for_invalid_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
 
         path = "/count_item/{}/1".format(list.pk)
@@ -216,7 +216,7 @@ class CountItemTestCase(ImportTestCase):
     def test_GET_count_item_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -227,7 +227,7 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_creates_list_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -241,7 +241,7 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -253,7 +253,7 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -263,43 +263,43 @@ class CountItemTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class SessionTestCase(BaseTestCase):
-    def test_GET_session_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/session/1")
+class CountTestCase(BaseTestCase):
+    def test_GET_count_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/count/1")
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/session/1") 
+        self.assertEqual(response.url, "/login/?next=/count/1") 
     
-    def test_GET_session_returns_404_for_invalid_session(self):
+    def test_GET_count_returns_404_for_invalid_count(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/session/1")
+        response = self.client.get("/count/1")
         self.assertEqual(response.status_code, 404)
 
-    def test_GET_session_returns_200_for_valid_session(self):
+    def test_GET_count_returns_200_for_valid_count(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        path = "/session/{}".format(session.pk)
+        path = "/count/{}".format(count.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
-    def test_POST_session_returns_400(self):
+    def test_POST_count_returns_400(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        path = "/session/{}".format(session.pk)
+        path = "/count/{}".format(count.pk)
         response = self.client.post(path)
         self.assertEqual(response.status_code, 400)
 
-    def test_PUT_session_returns_400(self):
+    def test_PUT_count_returns_400(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        session = Session.objects.create(name='Test Session', store=store)
+        count = Count.objects.create(name='Test Count', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        path = "/session/{}".format(session.pk)
-        new_session_name = "New Session Name"*3
-        response = self.client.generic('PUT', path, json.dumps({"name":new_session_name}))
+        path = "/count/{}".format(count.pk)
+        new_count_name = "New Count Name"*3
+        response = self.client.generic('PUT', path, json.dumps({"name":new_count_name}))
         self.assertEqual(response.status_code, 400)
 
 
@@ -325,17 +325,17 @@ class HomeTestCase(BaseTestCase):
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, 'Stocklist')
 
-    def test_home_path_creates_default_session_if_no_store_sessions_exist(self):
+    def test_home_path_creates_default_count_if_no_store_counts_exist(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        store_sessions = Session.objects.filter(store=store)
-        self.assertEqual(store_sessions.count(), 0)
+        store_counts = Count.objects.filter(store=store)
+        self.assertEqual(store_counts.count(), 0)
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/home")
         
-        store_sessions = Session.objects.filter(store=store)
-        self.assertEqual(store_sessions.count(), 1)
-        self.assertEqual(store_sessions[0].name, 'Session')
+        store_counts = Count.objects.filter(store=store)
+        self.assertEqual(store_counts.count(), 1)
+        self.assertEqual(store_counts[0].name, 'Count')
 
     def test_POST_store_returns_400(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
