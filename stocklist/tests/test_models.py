@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Session, List, SessionList, ListItem, Item
+from stocklist.models import User, Store, Session, List, CountList, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -357,7 +357,7 @@ class SessionItemsManagerTestCase(TestCase):
             name='Closing Stock', 
             type=List.COUNT
         )
-        session_list1 = SessionList.objects.create(  
+        count_list1 = CountList.objects.create(  
             list = cls.list1,
             session = cls.session1,
             user=cls.user1
@@ -382,7 +382,7 @@ class SessionItemsManagerTestCase(TestCase):
             name="Gerry's Delivery", 
             type=List.ADDITION
         )
-        session_list2 = SessionList.objects.create(  
+        count_list2 = CountList.objects.create(  
             list = cls.list2,
             session = cls.session2,
             user=cls.user1
@@ -398,7 +398,7 @@ class SessionItemsManagerTestCase(TestCase):
             name='Amathus Delivery', 
             type=List.ADDITION
         )
-        session_list3 = SessionList.objects.create(  
+        count_list3 = CountList.objects.create(  
             list = cls.list3,
             session = cls.session2,
             user=cls.user1
@@ -415,7 +415,7 @@ class SessionItemsManagerTestCase(TestCase):
             name='Sales', 
             type=List.SUBTRACTION
         )
-        session_list4 = SessionList.objects.create(  
+        count_list4 = CountList.objects.create(  
             list = cls.list4,
             session = cls.session2,
             user=cls.user1

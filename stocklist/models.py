@@ -140,10 +140,10 @@ class List(models.Model):
         return '{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
 
 
-class SessionList(models.Model):
-    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="session_lists")
-    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="session_list")
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="session_lists")
+class CountList(models.Model):
+    session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="count_lists")
+    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="count_list")
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="count_lists")
 
 
 class SessionItemsManager(models.Manager):
@@ -160,8 +160,8 @@ class SessionItemsManager(models.Manager):
         Return: QuerySet
         '''
         storeQ = Q(store=session.store)
-        previous_sessionQ = Q(list_items__list__session_list__session=session.previous_session)
-        sessionQ = Q(list_items__list__session_list__session=session)
+        previous_sessionQ = Q(list_items__list__count_list__session=session.previous_session)
+        sessionQ = Q(list_items__list__count_list__session=session)
         additionQ = Q(list_items__list__type=List.ADDITION)
         subtractionQ = Q(list_items__list__type=List.SUBTRACTION)
         countQ = Q(list_items__list__type=List.COUNT)
