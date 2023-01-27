@@ -146,6 +146,17 @@ class CountTestCase(TestCase):
         expected_string = "Week Ending Sunday 29 Jan 2023"
         self.assertEqual(expected_string, count.__str__())
 
+    def test_monthy_count_string(self):
+        count = Count.objects.create(   
+            store=self.store1, 
+            name=self.count_name,
+            end_date = date(year=2023, month=1, day=31),
+            frequency = Count.MONTHLY,
+        )
+        
+        expected_string = "Jan 2023"
+        self.assertEqual(expected_string, count.__str__())
+
 
     # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
     #     with self.assertRaises(ValidationError):

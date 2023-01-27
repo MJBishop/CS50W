@@ -75,10 +75,12 @@ class Count(models.Model):
     #     check that previous.end_date is before self.end_date
 
     def __str__(self):
-        if self.frequency == self.DAILY:
-            return self.end_date.strftime("%A %d %b %Y")
+        if self.frequency == self.MONTHLY:
+            return self.end_date.strftime("%b %Y")
         elif self.frequency == self.WEEKLY:
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
+        else:
+            return self.end_date.strftime("%A %d %b %Y")
 
 
 class AdditionListManager(models.Manager):
