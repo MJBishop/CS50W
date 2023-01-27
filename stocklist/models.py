@@ -74,11 +74,8 @@ class Count(models.Model):
     # def save(self, *args, **kwargs):
     #     check that previous.end_date is before self.end_date
 
-    # def __str__(self):
-    #     if (not self.end_date or self.start_date == self.end_date): 
-    #         return "{} Count: {}".format(self.name, self.start_date)
-    #     else:
-    #         return "{} Count - starts: {}, ends: {}".format(self.name, self.start_date, self.end_date)
+    def __str__(self):
+        return self.end_date.strftime("%A %d %b %Y")
 
 
 class AdditionListManager(models.Manager):

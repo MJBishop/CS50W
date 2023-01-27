@@ -115,8 +115,7 @@ class CountTestCase(TestCase):
     def test_create_count(self):
         count = Count.objects.create(   
             store=self.store1, 
-            name=self.count_name, 
-            end_date=date.today() 
+            name=self.count_name
         )
         counts = Count.objects.all()
         self.assertEqual(counts.count(), 1)
@@ -126,6 +125,16 @@ class CountTestCase(TestCase):
         self.assertEqual(counts[0].frequency, Count.DAILY)
         self.assertEqual(counts[0].previous_count, None)
 
+    def test_daily_count_string(self):
+        count = Count.objects.create(   
+            store=self.store1, 
+            name=self.count_name,
+            end_date = date(year=2023, month=1, day=27),
+        )
+        
+        expected_string = "Friday 27 Jan 2023"
+        self.assertEqual(expected_string, count.__str__())
+
     # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
     #     with self.assertRaises(ValidationError):
     #         Count.objects.create( store=self.store1,
@@ -133,32 +142,6 @@ class CountTestCase(TestCase):
     #                                 start_date=date(year=2023, month=1, day=14), 
     #                                 end_date=date(year=2023, month=1, day=13) )
 
-    # def test_count_string_start_date_equals_end_date(self):
-    #     count = Count.objects.create(   store=self.store1, 
-    #                                         name=self.count_name, 
-    #                                         start_date=date.today(), 
-    #                                         end_date=date.today() )
-
-        # expected_string = "{} Count: {}".format(self.count_name, date.today())
-        # self.assertEqual(expected_string, count.__str__())
-
-    # def test_count_string_start_date_before_end_date(self):
-    #     start_date = date(year=2023, month=1, day=14)
-    #     end_date = date(year=2023, month=1, day=15)
-    #     count = Count.objects.create(   store=self.store1, 
-    #                                         name=self.count_name, 
-    #                                         start_date=start_date, 
-    #                                         end_date=end_date )
-
-        # expected_string = "{} Count - starts: {}, ends: {}".format(self.count_name, start_date, end_date)
-        # self.assertEqual(expected_string, count.__str__())
-
-    # def test_count_string_no_end_date(self):
-    #     count = Count.objects.create(   store=self.store1, 
-    #                                         name=self.count_name)
-        
-    #     expected_string = "{} Count: {}".format(self.count_name, date.today())
-    #     self.assertEqual(expected_string, count.__str__())
 
 
     # edit count name, start & end date?
