@@ -24,8 +24,8 @@ class UserTestCase(TestCase):
         self.assertEqual(users[0].username, 'Mike')
 
     def test_active_store_returns_users_last_store(self):
-        first_store = Store.objects.create(owner=self.user1, name="Test Store 1")
-        last_store = Store.objects.create(owner=self.user1, name="Test Store 2")
+        first_store = Store.objects.create(user=self.user1, name="Test Store 1")
+        last_store = Store.objects.create(user=self.user1, name="Test Store 2")
         active_store = self.user1.active_store()
         self.assertEqual(last_store, active_store)
     
@@ -44,24 +44,24 @@ class StoreTestCase(TestCase):
 
         # create Store
         cls.store_name = "Test Store"
-        cls.store = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store = Store.objects.create(user=cls.user1, name=cls.store_name)
 
         return super().setUpTestData()
 
     def test_create_store_fails_for_no_store_name(self):
         with self.assertRaises(ValidationError):
-            store = Store.objects.create(owner=self.user1)
+            store = Store.objects.create(user=self.user1)
             store.full_clean()
 
     def test_create_store(self):
         stores = Store.objects.all()
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, self.store_name)
-        self.assertEqual(self.store.owner, self.user1)
+        self.assertEqual(self.store.user, self.user1)
 
     def test_unique_store_name_for_owner(self):
         with self.assertRaises(IntegrityError):
-            store = Store.objects.create(owner=self.user1, name=self.store_name)
+            store = Store.objects.create(user=self.user1, name=self.store_name)
             store.full_clean()
 
     def test_store_string(self):
@@ -72,7 +72,7 @@ class StoreTestCase(TestCase):
     def test_max_store_name_length(self):
         long_store_name = (20 + 1)*'A'
         with self.assertRaises(ValidationError):
-            store = Store.objects.create(owner=self.user1, name=long_store_name)
+            store = Store.objects.create(user=self.user1, name=long_store_name)
             store.full_clean()
 
     def test_active_session_returns_stores_last_session(self):
@@ -90,8 +90,8 @@ class StoreTestCase(TestCase):
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
     #     # create stores
-    #     store1 = Store.objects.create(owner=self.user1, name=self.store_name)
-    #     store2 = Store.objects.create(owner=self.user2, name=self.store_name)
+    #     store1 = Store.objects.create(user=self.user1, name=self.store_name)
+    #     store2 = Store.objects.create(user=self.user2, name=self.store_name)
 
     #     stores = Store.objects.all()
     #     self.assertEqual(stores.count(), 1)
@@ -107,7 +107,7 @@ class SessionTestCase(TestCase):
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
-        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
 
         return super().setUpTestData()
 
@@ -197,7 +197,7 @@ class ListTestCase(TestCase):
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
-        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
 
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
@@ -297,7 +297,7 @@ class ItemTestCase(TestCase):
         # Create User, Store, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
-        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
         cls.item_name = "Bacardi Superior 70CL BTL"
         cls.item = Item.objects.create(store=cls.store1, name=cls.item_name)
 
@@ -314,7 +314,7 @@ class ItemTestCase(TestCase):
 
     def test_duplicate_item_name_for_seperate_stores(self):
         store_name2 = 'Test Store2'
-        store2 = Store.objects.create(owner=self.user1, name=store_name2)
+        store2 = Store.objects.create(user=self.user1, name=store_name2)
         item2 = Item.objects.create(store=store2, name=self.item_name)
         self.assertEqual(item2.name, self.item.name)
 
@@ -341,7 +341,7 @@ class SessionItemsManagerTestCase(TestCase):
         # Create User, Store, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
-        cls.store = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store = Store.objects.create(user=cls.user1, name=cls.store_name)
         cls.item_name = "Bacardi Superior 70CL BTL"
         cls.item = Item.objects.create(store=cls.store, name=cls.item_name)
 
@@ -359,7 +359,8 @@ class SessionItemsManagerTestCase(TestCase):
         )
         session_list1 = SessionList.objects.create(  
             list = cls.list1,
-            session = cls.session1
+            session = cls.session1,
+            user=cls.user1
         )
         list_item1 = ListItem.objects.create(
             list=cls.list1, 
@@ -383,7 +384,8 @@ class SessionItemsManagerTestCase(TestCase):
         )
         session_list2 = SessionList.objects.create(  
             list = cls.list2,
-            session = cls.session2
+            session = cls.session2,
+            user=cls.user1
         )
         list_item2 = ListItem.objects.create(
             list=cls.list2, 
@@ -398,7 +400,8 @@ class SessionItemsManagerTestCase(TestCase):
         )
         session_list3 = SessionList.objects.create(  
             list = cls.list3,
-            session = cls.session2
+            session = cls.session2,
+            user=cls.user1
         )
         list_item3 = ListItem.objects.create(
             list=cls.list3, 
@@ -414,7 +417,8 @@ class SessionItemsManagerTestCase(TestCase):
         )
         session_list4 = SessionList.objects.create(  
             list = cls.list4,
-            session = cls.session2
+            session = cls.session2,
+            user=cls.user1
         )
         list_item4 = ListItem.objects.create(
             list=cls.list4, 
@@ -448,7 +452,7 @@ class ListItemTestCase(TestCase):
         # Create User, Store, Session, List, Item
         cls.user1 = User.objects.create_user('Mike')
         cls.store_name = "Test Store"
-        cls.store1 = Store.objects.create(owner=cls.user1, name=cls.store_name)
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
         cls.session_name = "Wednesday"
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)

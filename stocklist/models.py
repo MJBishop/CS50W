@@ -26,19 +26,19 @@ class User(AbstractUser):
 
         Return: Store
         '''
-        return Store.objects.filter(owner=self).last() or Store.objects.create(owner=self, name=DEFAULT_STORE_NAME)
+        return Store.objects.filter(user=self).last() or Store.objects.create(user=self, name=DEFAULT_STORE_NAME)
 
 
 class Store(models.Model):
-    owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
     name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)
 
     class Meta:
         '''
-        Store name must be unique for owner
+        Store name must be unique for user
         '''
         constraints = [
-            models.UniqueConstraint(fields=['owner', 'name',], name='unique name owner')
+            models.UniqueConstraint(fields=['user', 'name',], name='unique name user')
         ]
 
     def __str__(self):
@@ -143,6 +143,7 @@ class List(models.Model):
 class SessionList(models.Model):
     session = models.ForeignKey(Session, editable=False, on_delete=models.CASCADE, related_name="session_lists")
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="session_list")
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="session_lists")
 
 
 class SessionItemsManager(models.Manager):

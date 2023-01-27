@@ -59,7 +59,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_GET_import_items_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         path = "/import_items/{}".format(session.pk)
@@ -68,7 +68,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_creates_list(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         path = "/import_items/{}".format(session.pk)
@@ -79,7 +79,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         self.json_data['name'] = 'A'*(20 + 1)
@@ -92,7 +92,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         self.json_data['type'] = 'ZZ'
@@ -105,7 +105,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_creates_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         path = "/import_items/{}".format(session.pk)
@@ -116,7 +116,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         items = list(self.json_data["items"])
@@ -137,7 +137,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_creates_list_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         path = "/import_items/{}".format(session.pk)
@@ -151,7 +151,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         items = list(self.json_data["items"])
@@ -172,7 +172,7 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         items = list(self.json_data["items"])
@@ -205,7 +205,7 @@ class CountItemTestCase(ImportTestCase):
 
     def test_POST_count_item_returns_404_for_invalid_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
 
@@ -215,7 +215,7 @@ class CountItemTestCase(ImportTestCase):
 
     def test_GET_count_item_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
@@ -226,7 +226,7 @@ class CountItemTestCase(ImportTestCase):
 
     def test_POST_count_item_creates_list_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
@@ -240,7 +240,7 @@ class CountItemTestCase(ImportTestCase):
 
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
@@ -252,7 +252,7 @@ class CountItemTestCase(ImportTestCase):
 
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
@@ -275,7 +275,7 @@ class SessionTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_GET_session_returns_200_for_valid_session(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -284,7 +284,7 @@ class SessionTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_POST_session_returns_400(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
@@ -293,7 +293,7 @@ class SessionTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_PUT_session_returns_400(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         session = Session.objects.create(name='Test Session', store=store)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
@@ -315,18 +315,18 @@ class HomeTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_home_path_creates_default_store_if_no_stores_exist(self):
-        stores = Store.objects.filter(owner=self.user1)
+        stores = Store.objects.filter(user=self.user1)
         self.assertEqual(stores.count(), 0)
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/home")
 
-        stores = Store.objects.filter(owner=self.user1)
+        stores = Store.objects.filter(user=self.user1)
         self.assertEqual(stores.count(), 1)
         self.assertEqual(stores[0].name, 'Stocklist')
 
     def test_home_path_creates_default_session_if_no_store_sessions_exist(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         store_sessions = Session.objects.filter(store=store)
         self.assertEqual(store_sessions.count(), 0)
 
@@ -338,7 +338,7 @@ class HomeTestCase(BaseTestCase):
         self.assertEqual(store_sessions[0].name, 'Session')
 
     def test_POST_store_returns_400(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.post("/home")
         self.assertEqual(response.status_code, 400)
@@ -357,13 +357,13 @@ class StoreTestCase(BaseTestCase):
 
     def test_store_path_returns_200_for_valid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(store.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
     def test_POST_store_returns_400(self):
-        store = Store.objects.create(name='Test Store', owner=self.user1)
+        store = Store.objects.create(name='Test Store', user=self.user1)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         path = "/store/{}".format(store.pk)
         response = self.client.post(path)

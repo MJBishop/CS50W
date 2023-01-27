@@ -40,7 +40,7 @@ def store(request, store_id):
 
     # check for valid Store
     try:
-        store = Store.objects.get(owner=request.user, pk=store_id)
+        store = Store.objects.get(user=request.user, pk=store_id)
     except Store.DoesNotExist:
         return JsonResponse({"error": "Store not found."}, status=404)
 
@@ -57,7 +57,7 @@ def session(request, session_id):
 
     # check for valid Session
     try:
-        session = Session.objects.get(store__owner=request.user, pk=session_id)
+        session = Session.objects.get(store__user=request.user, pk=session_id)
     except Session.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
 
@@ -73,7 +73,7 @@ def import_items(request, session_id):
 
     # check for valid Session
     try:
-        session = Session.objects.get(store__owner=request.user, pk=session_id)
+        session = Session.objects.get(store__user=request.user, pk=session_id)
     except Session.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
 
