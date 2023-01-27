@@ -77,15 +77,20 @@ class StoreTestCase(TestCase):
 
     def test_active_count_returns_stores_last_count(self):
         active_store = self.user1.active_store()
-        count1 = Count.objects.create( store=active_store, name='Sesion 1')
-        count2 = Count.objects.create( store=active_store, name='Sesion 2', previous_count=count1)
+        count1 = Count.objects.create( 
+            store=active_store,
+        )
+        count2 = Count.objects.create( 
+            store=active_store,
+            previous_count=count1,
+        )
         active_count = active_store.active_count()
         self.assertEqual(count2, active_count)
 
     def test_active_count_created_if_no_store_counts(self):
-        user2 = User.objects.create_user('James')
-        active_count = user2.active_store().active_count()
-        self.assertEqual('Count', active_count.name)
+        active_store = self.user1.active_store()
+        active_count = active_store.active_count()
+        self.assertEqual(active_store, active_count.store)
 
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
@@ -103,7 +108,6 @@ class CountTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
         cls.store_name = "Test Store"
-        cls.count_name = "Wednesday"
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
@@ -115,11 +119,9 @@ class CountTestCase(TestCase):
     def test_create_count(self):
         count = Count.objects.create(   
             store=self.store1, 
-            name=self.count_name
         )
         counts = Count.objects.all()
         self.assertEqual(counts.count(), 1)
-        self.assertEqual(counts[0].name, self.count_name)
         self.assertEqual(counts[0].end_date, date.today())
         self.assertEqual(counts[0].store, self.store1)
         self.assertEqual(counts[0].frequency, Count.DAILY)
@@ -128,7 +130,6 @@ class CountTestCase(TestCase):
     def test_daily_count_string(self):
         count = Count.objects.create(   
             store=self.store1, 
-            name=self.count_name,
             end_date = date(year=2023, month=1, day=27),
         )
         
@@ -138,7 +139,6 @@ class CountTestCase(TestCase):
     def test_weeky_count_string(self):
         count = Count.objects.create(   
             store=self.store1, 
-            name=self.count_name,
             end_date = date(year=2023, month=1, day=29),
             frequency = Count.WEEKLY,
         )
@@ -149,12 +149,11 @@ class CountTestCase(TestCase):
     def test_monthy_count_string(self):
         count = Count.objects.create(   
             store=self.store1, 
-            name=self.count_name,
             end_date = date(year=2023, month=1, day=31),
             frequency = Count.MONTHLY,
         )
         
-        expected_string = "Jan 2023"
+        expected_string = "January 2023"
         self.assertEqual(expected_string, count.__str__())
 
 
@@ -169,23 +168,13 @@ class CountTestCase(TestCase):
 
     # edit count name, start & end date?
 
-    def test_max_count_name_length(self):
-        long_count_name = (10 + 1)*'A'
-        with self.assertRaises(ValidationError):
-            count = Count.objects.create(   store=self.store1, 
-                                                name=long_count_name, 
-                                                end_date=date.today() )
-            count.full_clean()
-
     # test for next count dates!
     def test_create_count_with_previous_count(self):
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        count = Count.objects.create(   store=self.store1, 
-                                            name=self.count_name, 
+        count = Count.objects.create(   store=self.store1,  
                                             end_date=end_date)
         count2 = Count.objects.create(  store=self.store1, 
-                                            name=self.count_name, 
                                             end_date=date(year=2023, month=1, day=16), 
                                             previous_count=count)
         self.assertEqual(count2.previous_count, count)
@@ -198,7 +187,6 @@ class ListTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
         cls.store_name = "Test Store"
-        cls.count_name = "Wednesday"
 
         # Create User, Store
         cls.user1 = User.objects.create_user('Mike')
@@ -206,9 +194,10 @@ class ListTestCase(TestCase):
 
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.count = Count.objects.create(   store=cls.store1, 
-                                                name=cls.count_name, 
-                                                end_date=end_date )
+        cls.count = Count.objects.create(   
+            store=cls.store1, 
+            end_date=end_date 
+        )
         cls.list_name = 'Starting Stock'
 
         return super().setUpTestData()
@@ -352,7 +341,6 @@ class CountItemsManagerTestCase(TestCase):
         # 1
         cls.count1 = Count.objects.create(  
             store=cls.store, 
-            name="Tuesday", 
             end_date=date(year=2023, month=1, day=14) 
         )
         cls.list1 = List.objects.create(
@@ -374,8 +362,7 @@ class CountItemsManagerTestCase(TestCase):
 
         # 2
         cls.count2 = Count.objects.create(  
-            store=cls.store, 
-            name="Wednesday",  
+            store=cls.store,  
             end_date=date(year=2023, month=1, day=15),
             previous_count=cls.count1,
         )
@@ -460,7 +447,6 @@ class ListItemTestCase(TestCase):
         end_date = date(year=2023, month=1, day=15)
         cls.count = Count.objects.create(   
             store=cls.store1, 
-            name=cls.count_name, 
             end_date=end_date 
         )
         cls.list_name = 'Starting Stock'

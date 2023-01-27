@@ -16,7 +16,6 @@ MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
 DEFAULT_STORE_NAME = 'Stocklist'
-DEFAULT_COUNT_NAME = 'Count'
 
 
 class User(AbstractUser):
@@ -50,7 +49,7 @@ class Store(models.Model):
 
         Return: Count
         '''
-        return Count.objects.filter(store=self).last() or Count.objects.create(store=self, name=DEFAULT_COUNT_NAME)
+        return Count.objects.filter(store=self).last() or Count.objects.create(store=self)
 
 
 class Count(models.Model):
@@ -64,19 +63,15 @@ class Count(models.Model):
     ]
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts")
-    name = models.CharField(max_length=MAX_COUNT_NAME_LENGTH)
     previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
     end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
     frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
     objects = models.Manager()
 
-    # def save(self, *args, **kwargs):
-    #     check that previous.end_date is before self.end_date
-
     def __str__(self):
         if self.frequency == self.MONTHLY:
-            return self.end_date.strftime("%b %Y")
+            return self.end_date.strftime("%B %Y")
         elif self.frequency == self.WEEKLY:
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
