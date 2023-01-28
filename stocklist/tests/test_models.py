@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Count, List, StockList, ListItem, Item
+from stocklist.models import User, Store, Count, List, ListItem, Item, StockList, StockPeriod
 
 
 class UserTestCase(TestCase):
@@ -65,8 +65,6 @@ class StoreTestCase(TestCase):
             store = Store.objects.create(user=self.user1, name=long_store_name)
             store.full_clean()
 
-
-
     # def test_store_queryset_only_returns_stores_from_ownwer(self):
     #     # create stores
     #     store1 = Store.objects.create(user=self.user1, name=self.store_name)
@@ -74,6 +72,31 @@ class StoreTestCase(TestCase):
 
     #     stores = Store.objects.all()
     #     self.assertEqual(stores.count(), 1)
+
+
+class StockPeriodTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        cls.store_name = "Test Store"
+
+        # Create User, Store
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
+
+        return super().setUpTestData()
+
+    def test_create_default_stockperiod(self):
+        stockperiod = StockPeriod.objects.create(
+            store=self.store1,
+        )
+        stockperiods = StockPeriod.objects.all()
+        self.assertEqual(stockperiods.count(), 1)
+        self.assertEqual(stockperiods[0].store, self.store1)
+        self.assertEqual(stockperiods[0].frequency, StockPeriod.DAILY)
+
+
 
 
 class CountTestCase(TestCase):
@@ -227,7 +250,7 @@ class ListTestCase(TestCase):
         return super().setUpTestData()
 
     def test_create_list(self):
-        self.lists = List.objects.create(
+        self.list = List.objects.create(
             store=self.store1, 
             name=self.list_name, 
         )
