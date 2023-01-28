@@ -238,6 +238,43 @@ class StocktakeTestCase(TestCase):
     # edit count name, start & end date?
    
 
+class StockListTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        # Create User, Store
+        cls.store_name = "Test Store"
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store1 = Store.objects.create(
+            user=cls.user1, 
+            name=cls.store_name
+        )
+
+        # create StockPeriod, StockTake, List
+        cls.stock_period = StockPeriod.objects.create(
+            store=cls.store1,
+        )
+        cls.stocktake = Stocktake.objects.create(   
+            stock_period=cls.stock_period, 
+            end_date=date(year=2023, month=1, day=15)
+        )
+        cls.list = List.objects.create(
+            store=cls.store1, 
+            name='Starting Stock', 
+        )
+
+        return super().setUpTestData()
+
+    def test_create_stocklist(self):
+        stocklist = StockList.objects.create(
+            stocktake=self.stocktake,
+            list=self.list,
+            user=self.user1
+        )
+        stocklists = StockList.objects.all()
+        self.assertEqual(stocklists.count(), 1)
+
 
 class ListTestCase(TestCase):
 

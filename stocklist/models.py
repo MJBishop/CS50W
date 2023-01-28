@@ -77,7 +77,7 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
-    date_added = models.DateTimeField(default=timezone.localdate, help_text="The date the Items were added to the Store") 
+    date_added = models.DateTimeField(default=timezone.localdate, help_text="The date items were added/removed from the Store") 
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
     objects = models.Manager()
@@ -163,6 +163,6 @@ class Stocktake(models.Model):
 
 
 class StockList(models.Model):
-    stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")   #M21
-    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="stocklists")         #121
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")         #M21
+    stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
+    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) 
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
