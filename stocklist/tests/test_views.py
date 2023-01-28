@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Count, List, ListItem, Item
+from stocklist.models import User, Store, List, ListItem, Item, Stocktake, StockPeriod
 
 
 class BaseTestCase(TestCase):
@@ -60,18 +60,20 @@ class ImportItemsTestCase(ImportTestCase):
     def test_GET_import_items_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
@@ -80,10 +82,11 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         self.json_data['name'] = 'A'*(20 + 1)
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
         lists = List.objects.filter(store=store)
@@ -93,10 +96,11 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         self.json_data['type'] = 'ZZ'
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -106,18 +110,20 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_creates_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        items = Item.objects.filter(store=count.store)
+        items = Item.objects.filter(store=stocktake.stock_period.store)
         self.assertEqual(items.count(), 3)
 
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -126,21 +132,22 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
         self.assertEqual(lists.count(), 1)
-        items = Item.objects.filter(store=count.store)
+        items = Item.objects.filter(store=stocktake.stock_period.store)
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -152,7 +159,8 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -161,7 +169,7 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -173,7 +181,8 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -182,7 +191,7 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(count.pk)
+        path = "/import_items/{}".format(stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
         lists = List.objects.filter(store=store)
@@ -206,7 +215,6 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_404_for_invalid_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
 
         path = "/count_item/{}/1".format(list.pk)
@@ -216,7 +224,6 @@ class CountItemTestCase(ImportTestCase):
     def test_GET_count_item_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -227,7 +234,6 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_creates_list_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -241,7 +247,6 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -253,7 +258,7 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -263,7 +268,7 @@ class CountItemTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class CountTestCase(BaseTestCase):
+class StocktakeTestCase(BaseTestCase):
     def test_GET_count_redirects_to_login_if_not_logged_in(self):
         response = self.client.get("/count/1")
         self.assertEqual(response.status_code, 302)
@@ -276,29 +281,32 @@ class CountTestCase(BaseTestCase):
 
     def test_GET_count_returns_200_for_valid_count(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        path = "/count/{}".format(count.pk)
+        path = "/count/{}".format(stocktake.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
     def test_POST_count_returns_400(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        path = "/count/{}".format(count.pk)
+        path = "/count/{}".format(stocktake.pk)
         response = self.client.post(path)
         self.assertEqual(response.status_code, 400)
 
     def test_PUT_count_returns_400(self):
         store = Store.objects.create(name='Test Store', user=self.user1)
-        count = Count.objects.create(store=store)
+        stock_period = StockPeriod.objects.create(store=store)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        path = "/count/{}".format(count.pk)
-        new_count_name = "New Count Name"*3
+        path = "/count/{}".format(stocktake.pk)
+        new_count_name = "New Stocktake Name"*3
         response = self.client.generic('PUT', path, json.dumps({"name":new_count_name}))
         self.assertEqual(response.status_code, 400)
 

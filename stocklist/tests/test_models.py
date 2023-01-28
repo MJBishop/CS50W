@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, Count, List, ListItem, Item, StockList, StockPeriod
+from stocklist.models import User, Store, List, ListItem, Item, StockPeriod, StockList, Stocktake
 
 
 class UserTestCase(TestCase):
@@ -88,7 +88,7 @@ class StockPeriodTestCase(TestCase):
         return super().setUpTestData()
 
     def test_create_default_stockperiod(self):
-        stockperiod = StockPeriod.objects.create(
+        stock_period = StockPeriod.objects.create(
             store=self.store1,
         )
         stockperiods = StockPeriod.objects.all()
@@ -97,7 +97,7 @@ class StockPeriodTestCase(TestCase):
         self.assertEqual(stockperiods[0].frequency, StockPeriod.DAILY)
 
     def test_stockperiod_default_string(self):
-        stockperiod = StockPeriod.objects.create(
+        stock_period = StockPeriod.objects.create(
             store=self.store1,
         )
         stockperiods = StockPeriod.objects.all()
@@ -105,7 +105,7 @@ class StockPeriodTestCase(TestCase):
         self.assertEqual(stockperiods[0].__str__(), 'Test Store Daily Count')
 
     def test_stockperiod_monthly_string(self):
-        stockperiod = StockPeriod.objects.create(
+        stock_period = StockPeriod.objects.create(
             store=self.store1,
             frequency=StockPeriod.MONTHLY,
         )
@@ -113,9 +113,8 @@ class StockPeriodTestCase(TestCase):
         self.assertEqual(stockperiods.count(), 1)
         self.assertEqual(stockperiods[0].__str__(), 'Test Store Monthly Count')
 
-    
     def test_stockperiod_weekly_string(self):
-        stockperiod = StockPeriod.objects.create(
+        stock_period = StockPeriod.objects.create(
             store=self.store1,
             frequency=StockPeriod.WEEKLY,
         )
@@ -126,7 +125,7 @@ class StockPeriodTestCase(TestCase):
 
 
 
-class CountTestCase(TestCase):
+class StocktakeTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -137,23 +136,34 @@ class CountTestCase(TestCase):
         cls.user1 = User.objects.create_user('Mike')
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
 
+        cls.daily_period = StockPeriod.objects.create(
+            store=cls.store1,
+        )
+        cls.weekly_period = StockPeriod.objects.create(
+            store=cls.store1,
+            frequency=StockPeriod.WEEKLY
+        )
+        cls.monthly_period = StockPeriod.objects.create(
+            store=cls.store1,
+            frequency=StockPeriod.MONTHLY
+        )
+
         return super().setUpTestData()
 
 
     def test_create_count(self):
-        count = Count.objects.create(   
-            store=self.store1, 
+        count = Stocktake.objects.create(   
+            stock_period=self.daily_period
         )
-        counts = Count.objects.all()
+        counts = Stocktake.objects.all()
         self.assertEqual(counts.count(), 1)
         self.assertEqual(counts[0].end_date, date.today())
-        self.assertEqual(counts[0].store, self.store1)
-        self.assertEqual(counts[0].frequency, Count.DAILY)
-        self.assertEqual(counts[0].previous_count, None)
+        self.assertEqual(counts[0].stock_period.store, self.store1)
+        self.assertEqual(counts[0].stock_period.frequency, StockPeriod.DAILY)
 
     def test_daily_count_string(self):
-        count = Count.objects.create(   
-            store=self.store1, 
+        count = Stocktake.objects.create(
+            stock_period=self.daily_period, 
             end_date = date(year=2023, month=1, day=27),
         )
         
@@ -161,20 +171,18 @@ class CountTestCase(TestCase):
         self.assertEqual(expected_string, count.__str__())
 
     def test_weeky_count_string(self):
-        count = Count.objects.create(   
-            store=self.store1, 
+        count = Stocktake.objects.create(
+            stock_period=self.weekly_period, 
             end_date = date(year=2023, month=1, day=29),
-            frequency = Count.WEEKLY,
         )
         
         expected_string = "Week Ending Sunday 29 Jan 2023"
         self.assertEqual(expected_string, count.__str__())
 
     def test_monthy_count_string(self):
-        count = Count.objects.create(   
-            store=self.store1, 
+        count = Stocktake.objects.create(   
+            stock_period=self.monthly_period, 
             end_date = date(year=2023, month=1, day=31),
-            frequency = Count.MONTHLY,
         )
         
         expected_string = "January 2023"
@@ -183,7 +191,7 @@ class CountTestCase(TestCase):
 
     # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
     #     with self.assertRaises(ValidationError):
-    #         Count.objects.create( store=self.store1,
+    #         Stocktake.objects.create( store=self.store1,
     #                                 name=self.count_name, 
     #                                 start_date=date(year=2023, month=1, day=14), 
     #                                 end_date=date(year=2023, month=1, day=13) )
@@ -191,68 +199,19 @@ class CountTestCase(TestCase):
 
 
     # edit count name, start & end date?
-
-    # test for next count dates!
-    def test_create_count_with_previous_count(self):
-        start_date = date(year=2023, month=1, day=14)
-        end_date = date(year=2023, month=1, day=15)
-        count = Count.objects.create(   
-            store=self.store1,  
-            end_date=end_date
-        )
-        count2 = Count.objects.create(  
-            store=self.store1, 
-            end_date=date(year=2023, month=1, day=16), 
-            previous_count=count
-        )
-        self.assertEqual(count2.previous_count, count)
-        # self.assertEqual(count.next_count, count2) ??fails??    
+   
 
     def test_count_next_date_month_end_of_year(self):
         previous_date = date(year=2022, month=12, day=31)
         next_date = date(year=2023, month=1, day=31)
-        
-        count = Count.objects.create(   
-            store=self.store1, 
-            end_date = previous_date,
-            frequency = Count.MONTHLY,
-        )
-        self.assertEqual(next_date, count.next_date())
+
+        self.assertEqual(next_date, self.monthly_period.next_date(previous_date))
 
     def test_count_next_date_month_leap_year(self):
         previous_date = date(year=2023, month=2, day=28)
         next_date = date(year=2023, month=3, day=31)
         
-        count = Count.objects.create(   
-            store=self.store1, 
-            end_date = previous_date,
-            frequency = Count.MONTHLY,
-        )
-        self.assertEqual(next_date, count.next_date())
-
-class CountManagerTestCase(TestCase):
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-
-        # Create User, Store
-        cls.store_name = "Test Store"
-        cls.user1 = User.objects.create_user('Mike')
-        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
-
-        cls.end_date1 = date(year=2023, month=1, day=31)
-        cls.end_date2 = date(year=2023, month=2, day=28)
-        cls.count1 = Count.objects.create(
-            store=cls.store1,  
-            end_date=cls.end_date1,
-            frequency = Count.MONTHLY,
-        )
-
-        return super().setUpTestData()
-
-    def test_monthly_create_next_count(self):
-        next_count = Count.objects.create_next_count(self.count1)
-        self.assertEqual(self.end_date2, next_count.end_date)
+        self.assertEqual(next_date, self.monthly_period.next_date(previous_date))
 
 
 class ListTestCase(TestCase):
@@ -266,10 +225,15 @@ class ListTestCase(TestCase):
         cls.user1 = User.objects.create_user('Mike')
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
 
+
+        cls.stock_period = StockPeriod.objects.create(
+            store=cls.store1,
+        )
+
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.count = Count.objects.create(   
-            store=cls.store1, 
+        cls.stocktake = Stocktake.objects.create(   
+            stock_period=cls.stock_period, 
             end_date=end_date 
         )
         cls.list_name = 'Starting Stock'
@@ -400,111 +364,6 @@ class ItemTestCase(TestCase):
             item = Item.objects.create(store=self.store1, name='test', origin=long_origin_name)
             item.full_clean()
 
-class CountItemsManagerTestCase(TestCase):
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-
-        # Create User, Store, Item
-        cls.user1 = User.objects.create_user('Mike')
-        cls.store_name = "Test Store"
-        cls.store = Store.objects.create(user=cls.user1, name=cls.store_name)
-        cls.item_name = "Bacardi Superior 70CL BTL"
-        cls.item = Item.objects.create(store=cls.store, name=cls.item_name)
-
-        # 1
-        cls.count1 = Count.objects.create(  
-            store=cls.store, 
-            end_date=date(year=2023, month=1, day=14) 
-        )
-        cls.list1 = List.objects.create(
-            store=cls.store, 
-            name='Closing Stock', 
-            type=List.COUNT
-        )
-        count_list1 = StockList.objects.create(  
-            list = cls.list1,
-            count = cls.count1,
-            user=cls.user1
-        )
-        list_item1 = ListItem.objects.create(
-            list=cls.list1, 
-            item=cls.item, 
-            amount='4.5'
-            )
-
-
-        # 2
-        cls.count2 = Count.objects.create(  
-            store=cls.store,  
-            end_date=date(year=2023, month=1, day=15),
-            previous_count=cls.count1,
-        )
-        cls.list2 = List.objects.create(
-            store=cls.store, 
-            name="Gerry's Delivery", 
-            type=List.ADDITION
-        )
-        count_list2 = StockList.objects.create(  
-            list = cls.list2,
-            count = cls.count2,
-            user=cls.user1
-        )
-        list_item2 = ListItem.objects.create(
-            list=cls.list2, 
-            item=cls.item, 
-            amount='12.7')
-
-        # 3
-        cls.list3 = List.objects.create(
-            store=cls.store, 
-            name='Amathus Delivery', 
-            type=List.ADDITION
-        )
-        count_list3 = StockList.objects.create(  
-            list = cls.list3,
-            count = cls.count2,
-            user=cls.user1
-        )
-        list_item3 = ListItem.objects.create(
-            list=cls.list3, 
-            item=cls.item, 
-            amount='10'
-        )
-
-        # 4
-        cls.list4 = List.objects.create(
-            store=cls.store, 
-            name='Sales', 
-            type=List.SUBTRACTION
-        )
-        count_list4 = StockList.objects.create(  
-            list = cls.list4,
-            count = cls.count2,
-            user=cls.user1
-        )
-        list_item4 = ListItem.objects.create(
-            list=cls.list4, 
-            item=cls.item, 
-            amount='3.7'
-        )
-
-        return super().setUpTestData()
-
-    def test_count_items_manager(self):
-        items = Item.objects.count_items(self.count2)
-        self.assertEqual(items[0].total_added, Decimal('22.7'))
-        self.assertEqual(items[0].total_subtracted, Decimal('3.7'))
-        self.assertEqual(items[0].total_counted, Decimal('0'))
-        self.assertEqual(items[0].total_previous, Decimal('4.5'))
-
-    def test_serialize_count_items_manager(self):
-        serialized_items = Item.objects.serialized_count_items(self.count2)
-        dict = serialized_items[0]
-        self.assertEqual(dict['total_previous'], '4.5')
-        self.assertEqual(dict['total_added'], '22.7')
-        self.assertEqual(dict['total_subtracted'], '3.7')
-        self.assertEqual(dict['total_counted'], '0.0')
 
 class ListItemTestCase(TestCase):
 
@@ -519,8 +378,14 @@ class ListItemTestCase(TestCase):
         cls.count_name = "Wednesday"
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        cls.count = Count.objects.create(   
-            store=cls.store1, 
+
+
+        cls.stock_period = StockPeriod.objects.create(
+            store=cls.store1,
+        )
+
+        cls.count = Stocktake.objects.create(   
+            stock_period=cls.stock_period,
             end_date=end_date 
         )
         cls.list_name = 'Starting Stock'
