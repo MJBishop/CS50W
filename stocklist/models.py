@@ -64,7 +64,6 @@ class CountListManager(models.Manager):
         '''
         return super().get_queryset().filter(type='CO')
 
-
 class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
@@ -78,7 +77,7 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
-    timestamp = models.DateTimeField(auto_now_add=True) # should be date added to store
+    date_added = models.DateTimeField(default=timezone.localdate, help_text="The date the Items were added to the Store") 
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
     objects = models.Manager()
