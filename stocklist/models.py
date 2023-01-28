@@ -198,6 +198,9 @@ class StockPeriod(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
     frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
+    def __str__(self):
+        return '{} {} Count'.format(self.store.name, self.get_frequency_display())
+
     
 class CountManager(models.Manager): # move to views
     def create_next_count(self, count):

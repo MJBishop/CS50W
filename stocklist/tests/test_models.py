@@ -96,6 +96,33 @@ class StockPeriodTestCase(TestCase):
         self.assertEqual(stockperiods[0].store, self.store1)
         self.assertEqual(stockperiods[0].frequency, StockPeriod.DAILY)
 
+    def test_stockperiod_default_string(self):
+        stockperiod = StockPeriod.objects.create(
+            store=self.store1,
+        )
+        stockperiods = StockPeriod.objects.all()
+        self.assertEqual(stockperiods.count(), 1)
+        self.assertEqual(stockperiods[0].__str__(), 'Test Store Daily Count')
+
+    def test_stockperiod_monthly_string(self):
+        stockperiod = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.MONTHLY,
+        )
+        stockperiods = StockPeriod.objects.all()
+        self.assertEqual(stockperiods.count(), 1)
+        self.assertEqual(stockperiods[0].__str__(), 'Test Store Monthly Count')
+
+    
+    def test_stockperiod_weekly_string(self):
+        stockperiod = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.WEEKLY,
+        )
+        stockperiods = StockPeriod.objects.all()
+        self.assertEqual(stockperiods.count(), 1)
+        self.assertEqual(stockperiods[0].__str__(), 'Test Store Weekly Count')
+
 
 
 
