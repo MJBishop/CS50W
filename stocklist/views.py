@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
-from .models import User, Store, Item, Count, List, ListItem
+from .models import User, Store, Item, Count, List, ListItem, DEFAULT_STORE_NAME
 
 
 def index(request):
@@ -15,9 +15,15 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
-        # TODO - Add forms to template
+        # Add Stores, StockPeriods, Stocktakes, & Items?
+        stores = Store.objects.filter(user=request.user) or [Store.objects.create(user=request.user, name=DEFAULT_STORE_NAME)]
 
-        return render(request, "stocklist/index.html")
+        # Add forms - Store, StockPeriod, Stocktake
+
+        return render(request, "stocklist/index.html",{
+            'stores':stores
+        })
+
     return HttpResponseRedirect(reverse("login"))
 
 
@@ -27,7 +33,7 @@ def home(request):
     # load active Store and Count (lazy) 
     if request.method == "GET":
         active_count = request.user.active_store().active_count()
-        serialized_items = Item.objects.serialized_count_items(active_count)
+        serialized_items = Item.objects.serialized_count_items(active_count) # serialized_items_for_count()!
         return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
 
     return JsonResponse({"error": "GET request Required."}, status=400)

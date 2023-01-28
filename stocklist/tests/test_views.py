@@ -384,6 +384,16 @@ class IndexTestCase(BaseTestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
+
+    # def test POST PUT
+
+    def test_index_context_stores(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['stores'][0].name, "Stocklist")
+
+
     
 
 class LoginTestCase(BaseTestCase):
