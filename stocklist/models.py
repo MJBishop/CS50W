@@ -9,13 +9,12 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 MAX_STORE_NAME_LENGTH = 20
-MAX_COUNT_NAME_LENGTH = 10
+DEFAULT_STORE_NAME = 'Store'
 MAX_LIST_NAME_LENGTH = 20
 MAX_ITEM_NAME_LENGTH = 80
-MAX_ITEM_ORIGIN_NAME_LENGTH = 30
+# MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
-DEFAULT_STORE_NAME = 'Store'
 
 
 class User(AbstractUser):
@@ -80,6 +79,7 @@ class List(models.Model):
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     timestamp = models.DateTimeField(auto_now_add=True) # should be date added to store
+    # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
     objects = models.Manager()
     additions = AdditionListManager()
@@ -93,7 +93,6 @@ class List(models.Model):
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
     name = models.CharField(max_length=MAX_ITEM_NAME_LENGTH)
-    origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     # spare cols?
 
     class Meta:

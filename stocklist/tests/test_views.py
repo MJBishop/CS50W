@@ -300,10 +300,10 @@ class StocktakeTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_PUT_count_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         stock_period = StockPeriod.objects.create(store=store)
         stocktake = Stocktake.objects.create(stock_period=stock_period)
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         path = "/count/{}".format(stocktake.pk)
         new_count_name = "New Stocktake Name"*3
@@ -359,7 +359,7 @@ class IndexTestCase(BaseTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores'][0].name, "Stocklist")
+        self.assertEqual(response.context['stores'][0].name, "Store")
 
 
     
