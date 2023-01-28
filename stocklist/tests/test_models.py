@@ -172,13 +172,63 @@ class CountTestCase(TestCase):
     def test_create_count_with_previous_count(self):
         start_date = date(year=2023, month=1, day=14)
         end_date = date(year=2023, month=1, day=15)
-        count = Count.objects.create(   store=self.store1,  
-                                            end_date=end_date)
-        count2 = Count.objects.create(  store=self.store1, 
-                                            end_date=date(year=2023, month=1, day=16), 
-                                            previous_count=count)
+        count = Count.objects.create(   
+            store=self.store1,  
+            end_date=end_date
+        )
+        count2 = Count.objects.create(  
+            store=self.store1, 
+            end_date=date(year=2023, month=1, day=16), 
+            previous_count=count
+        )
         self.assertEqual(count2.previous_count, count)
         # self.assertEqual(count.next_count, count2) ??fails??    
+
+    def test_count_next_date_month_end_of_year(self):
+        previous_date = date(year=2022, month=12, day=31)
+        next_date = date(year=2023, month=1, day=31)
+        
+        count = Count.objects.create(   
+            store=self.store1, 
+            end_date = previous_date,
+            frequency = Count.MONTHLY,
+        )
+        self.assertEqual(next_date, count.next_date())
+
+    def test_count_next_date_month_leap_year(self):
+        previous_date = date(year=2023, month=2, day=28)
+        next_date = date(year=2023, month=3, day=31)
+        
+        count = Count.objects.create(   
+            store=self.store1, 
+            end_date = previous_date,
+            frequency = Count.MONTHLY,
+        )
+        self.assertEqual(next_date, count.next_date())
+
+class CountManagerTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+
+        # Create User, Store
+        cls.store_name = "Test Store"
+        cls.user1 = User.objects.create_user('Mike')
+        cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
+
+        cls.end_date1 = date(year=2023, month=1, day=31)
+        cls.end_date2 = date(year=2023, month=2, day=28)
+        cls.count1 = Count.objects.create(
+            store=cls.store1,  
+            end_date=cls.end_date1,
+            frequency = Count.MONTHLY,
+        )
+
+        return super().setUpTestData()
+
+    def test_monthly_create_next_count(self):
+        next_count = Count.objects.create_next_count(self.count1)
+        self.assertEqual(self.end_date2, next_count.end_date)
 
 
 class ListTestCase(TestCase):

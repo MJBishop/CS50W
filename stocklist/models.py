@@ -1,5 +1,5 @@
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -19,7 +19,7 @@ DEFAULT_STORE_NAME = 'Stocklist'
 
 
 class User(AbstractUser):
-    def active_store(self):
+    def active_store(self): #should be UserManager?
         '''
         Lazy load active Store
 
@@ -43,7 +43,7 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-    def active_count(self):
+    def active_count(self): #should be StoreManager?
         '''
         Lazy load active Count
 
@@ -51,6 +51,17 @@ class Store(models.Model):
         '''
         return Count.objects.filter(store=self).last() or Count.objects.create(store=self)
 
+
+class CountManager(models.Manager):
+    def create_next_count(self, count):
+        next_count = Count(
+            store=count.store,
+            previous_count=count,
+            end_date=count.next_date(),
+            frequency=count.frequency,
+        )
+        next_count.full_clean()
+        next_count.save()
 
 class Count(models.Model):
     MONTHLY = 'MO'
@@ -67,7 +78,7 @@ class Count(models.Model):
     end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
     frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
-    objects = models.Manager()
+    objects = CountManager()
 
     def __str__(self):
         if self.frequency == self.MONTHLY:
@@ -76,6 +87,13 @@ class Count(models.Model):
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
             return self.end_date.strftime("%A %d %b %Y")
+
+    def next_date(self):
+        if self.frequency == self.MONTHLY:
+            temp1 = self.end_date + timedelta(days=32)
+            temp2 = date(year=temp1.year, month=temp1.month, day=1)
+            next_date = temp2 - timedelta(days=1)
+            return next_date
 
 
 class AdditionListManager(models.Manager):
