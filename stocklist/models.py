@@ -21,6 +21,7 @@ DEFAULT_STORE_NAME = 'Stocklist'
 class User(AbstractUser):
     pass
 
+
 class Store(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
     name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)
@@ -35,14 +36,6 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
-
-    def active_count(self): # move to views
-        '''
-        Lazy load active Count
-
-        Return: Count
-        '''
-        return Count.objects.filter(store=self).last() or Count.objects.create(store=self)
 
 
 class CountManager(models.Manager): # move to views

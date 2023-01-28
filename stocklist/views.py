@@ -28,20 +28,6 @@ def index(request):
 
 
 @login_required
-def home(request):
-
-    # load active Store and Count (lazy) 
-    if request.method == "GET":
-        active_count = request.user.active_store().active_count()
-        serialized_items = Item.objects.serialized_count_items(active_count) # serialized_items_for_count()!
-        return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
-
-    return JsonResponse({"error": "GET request Required."}, status=400)
-
-    # !! invited user will only access list!
-
-
-@login_required
 def store(request, store_id):
 
     # check for valid Store
@@ -51,7 +37,7 @@ def store(request, store_id):
         return JsonResponse({"error": "Store not found."}, status=404)
 
     if request.method == "GET":
-        count = store.active_count()
+        count = Count.objects.filter(store=store).last() or Count.objects.create(store=store)
         serialized_items = Item.objects.serialized_count_items(count)
         return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
     
