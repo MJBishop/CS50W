@@ -122,7 +122,44 @@ class StockPeriodTestCase(TestCase):
         self.assertEqual(stockperiods.count(), 1)
         self.assertEqual(stockperiods[0].__str__(), 'Test Store Weekly Count')
 
+    def test_monthly_stock_period_next_date_end_of_year(self):
+        stock_period = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.MONTHLY,
+        )
+        previous_date = date(year=2022, month=12, day=31)
+        next_date = date(year=2023, month=1, day=31)
 
+        self.assertEqual(next_date, stock_period.next_date(previous_date))
+
+    def test_monthly_stock_period_next_date_leap_year(self):
+        stock_period = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.MONTHLY,
+        )
+        previous_date = date(year=2023, month=2, day=28)
+        next_date = date(year=2023, month=3, day=31)
+        
+        self.assertEqual(next_date, stock_period.next_date(previous_date))
+
+    def test_weekly_stock_period_next_date(self):
+        stock_period = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.WEEKLY,
+        )
+        previous_date = date(year=2022, month=12, day=26)
+        next_date = date(year=2023, month=1, day=2)
+        
+        self.assertEqual(next_date, stock_period.next_date(previous_date))
+
+    def test_daily_stock_period_next_date(self):
+        stock_period = StockPeriod.objects.create(
+            store=self.store1,
+        )
+        previous_date = date(year=2022, month=12, day=31)
+        next_date = date(year=2023, month=1, day=1)
+        
+        self.assertEqual(next_date, stock_period.next_date(previous_date))
 
 
 class StocktakeTestCase(TestCase):
@@ -200,18 +237,6 @@ class StocktakeTestCase(TestCase):
 
     # edit count name, start & end date?
    
-
-    def test_count_next_date_month_end_of_year(self):
-        previous_date = date(year=2022, month=12, day=31)
-        next_date = date(year=2023, month=1, day=31)
-
-        self.assertEqual(next_date, self.monthly_period.next_date(previous_date))
-
-    def test_count_next_date_month_leap_year(self):
-        previous_date = date(year=2023, month=2, day=28)
-        next_date = date(year=2023, month=3, day=31)
-        
-        self.assertEqual(next_date, self.monthly_period.next_date(previous_date))
 
 
 class ListTestCase(TestCase):

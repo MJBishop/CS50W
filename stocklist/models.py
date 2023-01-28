@@ -77,7 +77,7 @@ class List(models.Model):
     ]
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
-    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
+    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) # needed?
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     timestamp = models.DateTimeField(auto_now_add=True) # should be date added to store
 
@@ -141,6 +141,10 @@ class StockPeriod(models.Model):
             temp2 = date(year=temp1.year, month=temp1.month, day=1)
             next_date = temp2 - timedelta(days=1)
             return next_date
+        elif self.frequency == self.WEEKLY:
+            return previous_date + timedelta(days=7)
+        else:
+            return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
 
 
 class Stocktake(models.Model):
