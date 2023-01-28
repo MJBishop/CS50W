@@ -15,7 +15,7 @@ MAX_ITEM_NAME_LENGTH = 80
 MAX_ITEM_ORIGIN_NAME_LENGTH = 30
 MIN_LIST_ITEM_AMOUNT = Decimal('0')
 MAX_LIST_ITEM_AMOUNT = Decimal('100000')
-DEFAULT_STORE_NAME = 'Stocklist'
+DEFAULT_STORE_NAME = 'Store'
 
 
 class User(AbstractUser):
@@ -24,7 +24,7 @@ class User(AbstractUser):
 
 class Store(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
-    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)
+    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME)
 
     class Meta:
         '''
@@ -77,7 +77,7 @@ class List(models.Model):
     ]
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
-    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH) # needed?
+    name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     timestamp = models.DateTimeField(auto_now_add=True) # should be date added to store
 
@@ -142,8 +142,10 @@ class StockPeriod(models.Model):
             next_date = temp2 - timedelta(days=1)
             return next_date
         elif self.frequency == self.WEEKLY:
+            # next week
             return previous_date + timedelta(days=7)
         else:
+            # next day
             return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
 
 
@@ -158,6 +160,8 @@ class Stocktake(models.Model):
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
             return self.end_date.strftime("%A %d %b %Y")
+
+    # set_end_date() ???
 
 
 class StockList(models.Model):

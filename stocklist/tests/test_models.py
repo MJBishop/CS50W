@@ -38,10 +38,10 @@ class StoreTestCase(TestCase):
 
         return super().setUpTestData()
 
-    def test_create_store_fails_for_no_store_name(self):
-        with self.assertRaises(ValidationError):
-            store = Store.objects.create(user=self.user1)
-            store.full_clean()
+    def test_create_store_default_store_name(self):
+        store = Store.objects.create(user=self.user1)
+        store.full_clean()
+        self.assertEqual(store.name, 'Store')
 
     def test_create_store(self):
         stores = Store.objects.all()
