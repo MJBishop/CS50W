@@ -38,52 +38,6 @@ class Store(models.Model):
         return self.name
 
 
-class CountManager(models.Manager): # move to views
-    def create_next_count(self, count):
-        next_count = Count(
-            store=count.store,
-            previous_count=count,
-            end_date=count.next_date(),
-            frequency=count.frequency,
-        )
-        next_count.full_clean()
-        next_count.save()
-        return next_count
-
-class Count(models.Model):
-    MONTHLY = 'MO'
-    WEEKLY = "WE"
-    DAILY = "DA"
-    COUNT_FREQUENCY_CHOICES = [
-        (MONTHLY, "Monthly"),
-        (WEEKLY, "Weekly"),
-        (DAILY, "Daily"),
-    ]
-
-    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts")
-    previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
-    end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
-    frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
-
-    objects = CountManager()
-
-    def __str__(self):
-        if self.frequency == self.MONTHLY:
-            return self.end_date.strftime("%B %Y")
-        elif self.frequency == self.WEEKLY:
-            return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
-        else:
-            return self.end_date.strftime("%A %d %b %Y")
-
-    def next_date(self): # move out CountFrequency.py
-        if self.frequency == self.MONTHLY:
-            # end of each month
-            temp1 = self.end_date + timedelta(days=32)
-            temp2 = date(year=temp1.year, month=temp1.month, day=1)
-            next_date = temp2 - timedelta(days=1)
-            return next_date
-
-
 class AdditionListManager(models.Manager):
     def get_queryset(self):
         '''
@@ -145,12 +99,6 @@ class List(models.Model):
 
     def __str__(self):
         return '{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
-
-
-class CountList(models.Model):
-    count = models.ForeignKey(Count, editable=False, on_delete=models.CASCADE, related_name="count_lists")
-    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="count_list")
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="count_lists")
 
 
 class CountItemsManager(models.Manager):
@@ -235,3 +183,55 @@ class ListItem(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)
+
+    
+class CountManager(models.Manager): # move to views
+    def create_next_count(self, count):
+        next_count = Count(
+            store=count.store,
+            previous_count=count,
+            end_date=count.next_date(),
+            frequency=count.frequency,
+        )
+        next_count.full_clean()
+        next_count.save()
+        return next_count
+
+class Count(models.Model):
+    MONTHLY = 'MO'
+    WEEKLY = "WE"
+    DAILY = "DA"
+    COUNT_FREQUENCY_CHOICES = [
+        (MONTHLY, "Monthly"),
+        (WEEKLY, "Weekly"),
+        (DAILY, "Daily"),
+    ]
+
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="counts")
+    previous_count = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='next_count') #checks!?, editable?
+    end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
+    frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
+
+    objects = CountManager()
+
+    def __str__(self):
+        if self.frequency == self.MONTHLY:
+            return self.end_date.strftime("%B %Y")
+        elif self.frequency == self.WEEKLY:
+            return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
+        else:
+            return self.end_date.strftime("%A %d %b %Y")
+
+    def next_date(self): # move out CountFrequency.py
+        if self.frequency == self.MONTHLY:
+            # end of each month
+            temp1 = self.end_date + timedelta(days=32)
+            temp2 = date(year=temp1.year, month=temp1.month, day=1)
+            next_date = temp2 - timedelta(days=1)
+            return next_date
+
+
+class StockList(models.Model):
+    count = models.ForeignKey(Count, editable=False, on_delete=models.CASCADE, related_name="count_lists")
+    list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="count_list")
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="count_lists")
