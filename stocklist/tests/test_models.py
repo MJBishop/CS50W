@@ -244,7 +244,7 @@ class StockListTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
         # Create User, Store
-        cls.store_name = "Test Store"
+        cls.store_name = "My Store"
         cls.user1 = User.objects.create_user('Mike')
         cls.store1 = Store.objects.create(
             user=cls.user1, 
@@ -261,7 +261,7 @@ class StockListTestCase(TestCase):
         )
         cls.list = List.objects.create(
             store=cls.store1, 
-            name='Starting Stock', 
+            name='BoH Count', 
         )
 
         return super().setUpTestData()
@@ -274,6 +274,17 @@ class StockListTestCase(TestCase):
         )
         stocklists = StockList.objects.all()
         self.assertEqual(stocklists.count(), 1)
+
+    def test_stocklist__str__(self):
+        stocklist = StockList.objects.create(
+            stocktake=self.stocktake,
+            list=self.list,
+            user=self.user1
+        )
+        stocklists = StockList.objects.all()
+        self.assertEqual(stocklists.count(), 1)
+        self.assertEqual(stocklists[0].__str__(), 'BoH Count on Saturday 28 Jan 2023')
+
 
 
 class ListTestCase(TestCase):

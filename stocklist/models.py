@@ -164,5 +164,9 @@ class Stocktake(models.Model):
 
 class StockList(models.Model):
     stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
-    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) 
+    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) #must be count!
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
+    # name?
+
+    def __str__(self):
+        return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y")) #?
