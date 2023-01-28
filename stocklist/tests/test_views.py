@@ -303,46 +303,6 @@ class CountTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class HomeTestCase(BaseTestCase):
-    def test_home_path_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/home")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/home") 
-
-    def test_home_path_returns_status_200_when_logged_in(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/home")
-        self.assertEqual(response.status_code, 200)
-
-    def test_home_path_creates_default_store_if_no_stores_exist(self):
-        stores = Store.objects.filter(user=self.user1)
-        self.assertEqual(stores.count(), 0)
-
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/home")
-
-        stores = Store.objects.filter(user=self.user1)
-        self.assertEqual(stores.count(), 1)
-        self.assertEqual(stores[0].name, 'Stocklist')
-
-    def test_home_path_creates_default_count_if_no_store_counts_exist(self):
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        store_counts = Count.objects.filter(store=store)
-        self.assertEqual(store_counts.count(), 0)
-
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/home")
-        
-        store_counts = Count.objects.filter(store=store)
-        self.assertEqual(store_counts.count(), 1)
-
-    def test_POST_store_returns_400(self):
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.post("/home")
-        self.assertEqual(response.status_code, 400)
-        
-
 class StoreTestCase(BaseTestCase):
     def test_store_path_redirects_to_login_if_not_logged_in(self):
         response = self.client.get("/store/1")

@@ -23,16 +23,6 @@ class UserTestCase(TestCase):
         self.assertEqual(users.count(), 1)
         self.assertEqual(users[0].username, 'Mike')
 
-    def test_active_store_returns_users_last_store(self):
-        first_store = Store.objects.create(user=self.user1, name="Test Store 1")
-        last_store = Store.objects.create(user=self.user1, name="Test Store 2")
-        active_store = self.user1.active_store()
-        self.assertEqual(last_store, active_store)
-    
-    def test_active_store_created_if_no_user_stores(self):
-        active_store = self.user1.active_store()
-        self.assertEqual(active_store.name, 'Stocklist')
-
 
 class StoreTestCase(TestCase):
 
@@ -75,22 +65,6 @@ class StoreTestCase(TestCase):
             store = Store.objects.create(user=self.user1, name=long_store_name)
             store.full_clean()
 
-    def test_active_count_returns_stores_last_count(self):
-        active_store = self.user1.active_store()
-        count1 = Count.objects.create( 
-            store=active_store,
-        )
-        count2 = Count.objects.create( 
-            store=active_store,
-            previous_count=count1,
-        )
-        active_count = active_store.active_count()
-        self.assertEqual(count2, active_count)
-
-    def test_active_count_created_if_no_store_counts(self):
-        active_store = self.user1.active_store()
-        active_count = active_store.active_count()
-        self.assertEqual(active_store, active_count.store)
 
 
     # def test_store_queryset_only_returns_stores_from_ownwer(self):

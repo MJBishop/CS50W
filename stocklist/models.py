@@ -19,14 +19,7 @@ DEFAULT_STORE_NAME = 'Stocklist'
 
 
 class User(AbstractUser):
-    def active_store(self): #should be UserManager?
-        '''
-        Lazy load active Store
-
-        Return: Store
-        '''
-        return Store.objects.filter(user=self).last() or Store.objects.create(user=self, name=DEFAULT_STORE_NAME)
-
+    pass
 
 class Store(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
@@ -43,7 +36,7 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-    def active_count(self): #should be StoreManager?
+    def active_count(self): # move to views
         '''
         Lazy load active Count
 
@@ -52,7 +45,7 @@ class Store(models.Model):
         return Count.objects.filter(store=self).last() or Count.objects.create(store=self)
 
 
-class CountManager(models.Manager):
+class CountManager(models.Manager): # move to views
     def create_next_count(self, count):
         next_count = Count(
             store=count.store,
@@ -62,6 +55,7 @@ class CountManager(models.Manager):
         )
         next_count.full_clean()
         next_count.save()
+        return next_count
 
 class Count(models.Model):
     MONTHLY = 'MO'
@@ -88,8 +82,9 @@ class Count(models.Model):
         else:
             return self.end_date.strftime("%A %d %b %Y")
 
-    def next_date(self):
+    def next_date(self): # move out CountFrequency.py
         if self.frequency == self.MONTHLY:
+            # end of each month
             temp1 = self.end_date + timedelta(days=32)
             temp2 = date(year=temp1.year, month=temp1.month, day=1)
             next_date = temp2 - timedelta(days=1)
@@ -148,7 +143,7 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True) # should be date added to store
 
     objects = models.Manager()
     additions = AdditionListManager()
@@ -195,7 +190,7 @@ class CountItemsManager(models.Manager):
             total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & countTypeQ)), Decimal('0') ),
         )#order_by (get_queryset?)
 
-    def serialized_count_items(self, count):
+    def serialized_count_items(self, count): #move out serialize.py
         '''
         Calls count_items(count)
         Serializes the annotated items
