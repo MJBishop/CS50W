@@ -6,20 +6,19 @@ from stocklist.models import Store, StockPeriod, Stocktake, List
 class StoreNameForm(ModelForm):
     class Meta:
         model=Store
-        exclude=['user']
+        fields=['name']
 
 class StockPeriodForm(ModelForm):
     class Meta:
         model=StockPeriod
-        # exclude=['store']
         fields=['frequency']
 
 class StocktakeForm(ModelForm):
     class Meta:
         model=Stocktake
-        exclude=['stock_period']
+        fields=['end_date']
 
 class ListForm(ModelForm):
     class Meta:
         model=List
-        exclude=['store', 'type', 'date_added']
+        fields=['name']
