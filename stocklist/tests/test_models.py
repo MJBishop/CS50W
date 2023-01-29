@@ -193,6 +193,14 @@ class StockPeriodTestCase(TestCase):
         stock_periods = StockPeriod.objects.all()
         self.assertEqual(stock_periods.count(), 2)
 
+    def test_save_only_on_create(self):
+        daily_period = StockPeriod.objects.create(
+            store=self.store1,
+        )
+        daily_period.frequency = StockPeriod.WEEKLY
+        daily_period.save()
+        self.assertEqual(daily_period.frequency, StockPeriod.WEEKLY)
+
 
 class StocktakeTestCase(TestCase):
 

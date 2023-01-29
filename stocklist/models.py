@@ -152,6 +152,13 @@ class StockPeriod(models.Model):
     def __str__(self):
         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
 
+    def save(self, *args, **kwargs):
+        '''
+        Only save when creating a new StockPeriod
+        '''
+        if self.id is None:
+            super(StockPeriod, self).save(*args, **kwargs)
+
     def next_date(self, previous_date): # here or view or other?
         '''
         Calculates the next Stocktake date for a given date:
