@@ -126,7 +126,7 @@ class ListItem(models.Model):
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)
 
-# unique frequency per store (MONTHLY & WEEKLY only!)
+
 class StockPeriod(models.Model):
     MONTHLY = 'MO'
     WEEKLY = "WE"
@@ -142,40 +142,46 @@ class StockPeriod(models.Model):
 
     class Meta:
         '''
-        StockPeriod frequency must be unique for store
+        StockPeriod frequency MONTHLY, WEEKLY must be unique for store
         '''
         constraints = [
-            models.UniqueConstraint(
-                fields=['store', 'frequency',], 
-                condition=Q(frequency='MO'), 
-                name='unique monthly_frequency store'),
-            models.UniqueConstraint(
-                fields=['store', 'frequency',], 
-                condition=Q(frequency='WE'), 
-                name='unique weekly_frequency store')
+            models.UniqueConstraint(fields=['store', 'frequency',], condition=Q(frequency='MO'), name='unique monthly_frequency store'),
+            models.UniqueConstraint(fields=['store', 'frequency',], condition=Q(frequency='WE'), name='unique weekly_frequency store')
         ]
 
     def __str__(self):
         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
 
     def next_date(self, previous_date): # here or view or other?
+        '''
+        Calculates the next Stocktake date for a given date:
+        MONTHLY frequency = last day of next month
+        WEEKLY frequency += 7 days
+        DAILY frequency += 1 day
+
+        previous_date (Date): the previous Stocktake Date
+
+        Return: Date
+        '''
         if self.frequency == self.MONTHLY:
-            # end of each month
+            # add 32 days - definitely 2 months ahead
             temp1 = previous_date + timedelta(days=32)
+            # first day of that month
             temp2 = date(year=temp1.year, month=temp1.month, day=1)
+            # minus 1 day = last day of next month
             next_date = temp2 - timedelta(days=1)
             return next_date
         elif self.frequency == self.WEEKLY:
-            # next week
+            # add 7 days
             return previous_date + timedelta(days=7)
         else:
-            # next day
+            # add 1 day
             return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
 
-# unique end date per period (MONTHLY & WEEKLY only!)?
+
 class Stocktake(models.Model):
     stock_period = models.ForeignKey(StockPeriod, editable=False, on_delete=models.CASCADE, related_name="stocktakes")
-    end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
+    end_date = models.DateField(default=timezone.localdate) 
 
     def __str__(self):
         if self.stock_period.frequency == self.stock_period.MONTHLY:
@@ -186,10 +192,10 @@ class Stocktake(models.Model):
             return self.end_date.strftime("%A %d %b %Y")
 
     # set_end_date() ??? by type
+    # unique end date per period (MONTHLY & WEEKLY only!)?
+    # sequential counts can have same start date??
 
 
-# create - check for list type COUNT, or create the list within
-# unique list per stocktake? same list == no changes? enforce new list? enforeced through 1-2-1?
 class StockList(models.Model):
     stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
     list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) #must be type count!
@@ -197,3 +203,6 @@ class StockList(models.Model):
 
     def __str__(self):
         return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y")) #?
+
+    
+    # create - check for list type COUNT, or create the list within
