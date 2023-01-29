@@ -2,26 +2,27 @@ from datetime import date
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
-from stocklist.models import StockPeriod
-from stocklist.forms import StoreNameModelForm, StockPeriodModelForm, StocktakeModelForm
+from stocklist.models import User, Store, StockPeriod, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH
+from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, ListForm
+
 
 class StoreNameFormTestCase(TestCase):
 
-    def test_empty_model_form(self):
-        form = StoreNameModelForm()
+    def test_empty_form(self):
+        form = StoreNameForm()
         self.assertIn("name", form.fields)
 
-    def test_valid_store_name_model_form_data(self):
+    def test_valid_form_data(self):
         test_store_name = 'Test Store name'
-        form = StoreNameModelForm({
+        form = StoreNameForm({
             'name':test_store_name,
         })
         self.assertTrue(form.is_valid())
         store_name = form.cleaned_data["name"]
         self.assertEqual(store_name, test_store_name)
 
-    def test_blank_store_name_model_form_data(self):
-        form = StoreNameModelForm({
+    def test_blank_form_data(self):
+        form = StoreNameForm({
             'name': "",
         })
         self.assertFalse(form.is_valid())
@@ -29,9 +30,9 @@ class StoreNameFormTestCase(TestCase):
             'name': ['This field is required.'],
         })
 
-    def test_invalid_store_name_length_model_form_data(self):
-        test_store_name = 'A'*(20 + 1)
-        form = StoreNameModelForm({
+    def test_invalid_form_data(self):
+        test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
+        form = StoreNameForm({
             'name':test_store_name,
         })
         self.assertFalse(form.is_valid())
@@ -39,14 +40,15 @@ class StoreNameFormTestCase(TestCase):
             'name': ['Ensure this value has at most 20 characters (it has 21).'],
         })
 
-class StockPeriodModelFormTestCase(TestCase):
+
+class StockPeriodFormTestCase(TestCase):
 
     def test_empty_model_form(self):
-        form = StockPeriodModelForm()
+        form = StockPeriodForm()
         self.assertIn("frequency", form.fields)
 
     def test_valid_stock_period_frequency_model_form_data(self):
-        form = StockPeriodModelForm({
+        form = StockPeriodForm({
             'frequency':StockPeriod.MONTHLY,
         })
         self.assertTrue(form.is_valid())
@@ -54,7 +56,7 @@ class StockPeriodModelFormTestCase(TestCase):
         self.assertEqual(frequency, StockPeriod.MONTHLY)
 
     def test_blank_stock_period_frequency_model_form_data(self):
-        form = StockPeriodModelForm({
+        form = StockPeriodForm({
             'frequency':''
         })
         self.assertFalse(form.is_valid())
@@ -63,7 +65,7 @@ class StockPeriodModelFormTestCase(TestCase):
         })
 
     def test_invalid_stock_period_frequency_model_form_data(self):
-        form = StockPeriodModelForm({
+        form = StockPeriodForm({
             'frequency':'ZZ',
         })
         self.assertFalse(form.is_valid())
@@ -71,24 +73,16 @@ class StockPeriodModelFormTestCase(TestCase):
         #     'name': ['Ensure this value has at most 20 characters (it has 21).'],
         # })
 
-class StocktakeModelFormTestCase(TestCase):
+
+class StocktakeFormTestCase(TestCase):
 
     def test_empty_model_form(self):
-        form = StocktakeModelForm()
+        form = StocktakeForm()
         self.assertIn("end_date", form.fields)
         self.assertFalse(form.is_valid())
 
-    def test_valid_model_form_data(self):
-        test_end_date = date(year=2023, month=1, day=31)
-        form = StocktakeModelForm({
-            'end_date':test_end_date,
-        })
-        self.assertTrue(form.is_valid())
-        cleaned_end_date = form.cleaned_data["end_date"]
-        self.assertEqual(cleaned_end_date, test_end_date)
-
     def test_blank_model_form_data(self):
-        form = StocktakeModelForm({
+        form = StocktakeForm({
             'end_date':''
         })
         self.assertFalse(form.is_valid())
@@ -96,6 +90,47 @@ class StocktakeModelFormTestCase(TestCase):
             'end_date': ['This field is required.'],
         })
 
+    def test_valid_model_form_data(self):
+        test_end_date = date(year=2023, month=1, day=31)
+        form = StocktakeForm({
+            'end_date':test_end_date,
+        })
+        self.assertTrue(form.is_valid())
+        cleaned_end_date = form.cleaned_data["end_date"]
+        self.assertEqual(cleaned_end_date, test_end_date)
+
     def test_invalid_model_form_data(self):
         pass
-    # Dates!! TODO 
+    # Dates!! TODO - model validation or create validation, see model
+
+
+class ListFormTestCase(TestCase):
+
+    def test_empty_form(self):
+        form = ListForm()
+        self.assertIn("name", form.fields)
+
+    def test_blank_form_data(self):
+        form = ListForm({
+            'name':'',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_valid_form_data(self):
+        test_list_name = 'Test List Name'
+        form = ListForm({
+            'name':test_list_name,
+        })
+        self.assertTrue(form.is_valid())
+        cleaned_list_name = form.cleaned_data['name']
+        self.assertEqual(cleaned_list_name, test_list_name)
+
+    def test_invalid_form_data(self):
+        test_list_name = 'A'*(MAX_LIST_NAME_LENGTH + 1)
+        form = ListForm({
+            'name':test_list_name,
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            'name': ['Ensure this value has at most 20 characters (it has 21).'],
+        })
