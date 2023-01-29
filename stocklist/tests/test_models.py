@@ -161,6 +161,37 @@ class StockPeriodTestCase(TestCase):
         
         self.assertEqual(next_date, stock_period.next_date(previous_date))
 
+    def test_monthly_frequency_unique_for_store(self):
+        monthly_period = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.MONTHLY,
+        )
+        with self.assertRaises(IntegrityError):
+            StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.MONTHLY,
+        )
+
+    def test_weeky_frequency_unique_for_store(self):
+        weeky_period = StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.WEEKLY,
+        )
+        with self.assertRaises(IntegrityError):
+            StockPeriod.objects.create(
+            store=self.store1,
+            frequency=StockPeriod.WEEKLY,
+        )
+
+    def test_daily_frequency_not_unique_for_store(self):
+        daily_period = StockPeriod.objects.create(
+            store=self.store1,
+        )
+        StockPeriod.objects.create(
+            store=self.store1,
+        )
+        stock_periods = StockPeriod.objects.all()
+        self.assertEqual(stock_periods.count(), 2)
 
 class StocktakeTestCase(TestCase):
 

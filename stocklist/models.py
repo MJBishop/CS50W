@@ -105,13 +105,13 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
-# unique list item per list
+
 class ListItem(models.Model):
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="list_items")
     item = models.ForeignKey(Item, editable=False, on_delete=models.CASCADE, related_name="list_items")
     amount = models.DecimalField(
-        max_digits=7, 
-        decimal_places=1, 
+        max_digits=7,
+        decimal_places=1,
         validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)]
     )
 
@@ -140,16 +140,20 @@ class StockPeriod(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
     frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
-    # class Meta:
-    #     '''
-    #     StockPeriod frequency name must be unique for store
-    #     '''
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['store', 'frequency',], 
-    #             condition=Q(frequency='MONTHLY', frequency='WEEKLY'), 
-    #             name='unique frequency store')
-    #     ]
+    class Meta:
+        '''
+        StockPeriod frequency must be unique for store
+        '''
+        constraints = [
+            models.UniqueConstraint(
+                fields=['store', 'frequency',], 
+                condition=Q(frequency='MO'), 
+                name='unique monthly_frequency store'),
+            models.UniqueConstraint(
+                fields=['store', 'frequency',], 
+                condition=Q(frequency='WE'), 
+                name='unique weekly_frequency store')
+        ]
 
     def __str__(self):
         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
