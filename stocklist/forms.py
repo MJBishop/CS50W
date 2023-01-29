@@ -6,8 +6,14 @@ from stocklist.models import Store, StockPeriod, Stocktake, MAX_STORE_NAME_LENGT
 class StoreNameModelForm(ModelForm):
     class Meta:
         model=Store
-        exclude= ['user']
+        exclude=['user']
 
+class StockPeriodModelForm(ModelForm):
+    class Meta:
+        model=StockPeriod
+        exclude=['store']
 
-class StoreNameForm(forms.Form):
-    pass
+class StocktakeModelForm(ModelForm):
+    class Meta:
+        model=Stocktake
+        exclude=['stock_period']
