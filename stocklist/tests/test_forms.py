@@ -2,7 +2,7 @@ from datetime import date
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
-from stocklist.models import User, Store, StockPeriod, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH
+from stocklist.models import StockPeriod, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH
 from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, ListForm
 
 
@@ -12,15 +12,6 @@ class StoreNameFormTestCase(TestCase):
         form = StoreNameForm()
         self.assertIn("name", form.fields)
 
-    def test_valid_form_data(self):
-        test_store_name = 'Test Store name'
-        form = StoreNameForm({
-            'name':test_store_name,
-        })
-        self.assertTrue(form.is_valid())
-        store_name = form.cleaned_data["name"]
-        self.assertEqual(store_name, test_store_name)
-
     def test_blank_form_data(self):
         form = StoreNameForm({
             'name': "",
@@ -29,6 +20,15 @@ class StoreNameFormTestCase(TestCase):
         self.assertEqual(form.errors, {
             'name': ['This field is required.'],
         })
+
+    def test_valid_form_data(self):
+        test_store_name = 'Test Store name'
+        form = StoreNameForm({
+            'name':test_store_name,
+        })
+        self.assertTrue(form.is_valid())
+        store_name = form.cleaned_data["name"]
+        self.assertEqual(store_name, test_store_name)
 
     def test_invalid_form_data(self):
         test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
@@ -43,19 +43,11 @@ class StoreNameFormTestCase(TestCase):
 
 class StockPeriodFormTestCase(TestCase):
 
-    def test_empty_model_form(self):
+    def test_empty_form(self):
         form = StockPeriodForm()
         self.assertIn("frequency", form.fields)
 
-    def test_valid_stock_period_frequency_model_form_data(self):
-        form = StockPeriodForm({
-            'frequency':StockPeriod.MONTHLY,
-        })
-        self.assertTrue(form.is_valid())
-        frequency = form.cleaned_data["frequency"]
-        self.assertEqual(frequency, StockPeriod.MONTHLY)
-
-    def test_blank_stock_period_frequency_model_form_data(self):
+    def test_blank_form_data(self):
         form = StockPeriodForm({
             'frequency':''
         })
@@ -64,14 +56,22 @@ class StockPeriodFormTestCase(TestCase):
             'frequency': ['This field is required.'],
         })
 
+    def test_valid_form_data(self):
+        form = StockPeriodForm({
+            'frequency':StockPeriod.MONTHLY,
+        })
+        self.assertTrue(form.is_valid())
+        frequency = form.cleaned_data["frequency"]
+        self.assertEqual(frequency, StockPeriod.MONTHLY)
+
     def test_invalid_stock_period_frequency_model_form_data(self):
         form = StockPeriodForm({
             'frequency':'ZZ',
         })
         self.assertFalse(form.is_valid())
-        # self.assertEqual(form.errors, {
-        #     'name': ['Ensure this value has at most 20 characters (it has 21).'],
-        # })
+        self.assertEqual(form.errors, {
+            'frequency': ['Select a valid choice. ZZ is not one of the available choices.'],
+        })
 
 
 class StocktakeFormTestCase(TestCase):

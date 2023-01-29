@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from stocklist.models import Store, StockPeriod, Stocktake, List, MAX_STORE_NAME_LENGTH
+from stocklist.models import Store, StockPeriod, Stocktake, List
 
 class StoreNameForm(ModelForm):
     class Meta:
@@ -11,7 +11,8 @@ class StoreNameForm(ModelForm):
 class StockPeriodForm(ModelForm):
     class Meta:
         model=StockPeriod
-        exclude=['store']
+        # exclude=['store']
+        fields=['frequency']
 
 class StocktakeForm(ModelForm):
     class Meta:
