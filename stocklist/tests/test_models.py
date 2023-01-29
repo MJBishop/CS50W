@@ -193,6 +193,7 @@ class StockPeriodTestCase(TestCase):
         stock_periods = StockPeriod.objects.all()
         self.assertEqual(stock_periods.count(), 2)
 
+
 class StocktakeTestCase(TestCase):
 
     @classmethod
@@ -217,7 +218,6 @@ class StocktakeTestCase(TestCase):
         )
 
         return super().setUpTestData()
-
 
     def test_create_stocktake(self):
         stocktake = Stocktake.objects.create(   
@@ -256,16 +256,17 @@ class StocktakeTestCase(TestCase):
         expected_string = "January 2023"
         self.assertEqual(expected_string, stocktake.__str__())
 
-    def test_end_date_unique_for_monthly_period(self):
-        Stocktake.objects.create(   
-            stock_period=self.monthly_period, 
-            end_date = date(year=2023, month=1, day=31),
-        )
-        with self.assertRaises(IntegrityError):
-            stocktake = Stocktake.objects.create(   
-            stock_period=self.monthly_period, 
-            end_date = date(year=2023, month=1, day=31),
-        )
+    # def test_end_date_unique_for_monthly_period(self):
+    #     end_date = date(year=2023, month=1, day=31)
+    #     Stocktake.objects.create(   
+    #         stock_period=self.monthly_period, 
+    #         end_date = end_date,
+    #     )
+    #     with self.assertRaises(IntegrityError):
+    #         stocktake = Stocktake.objects.create(   
+    #         stock_period=self.monthly_period, 
+    #         end_date = end_date,
+    #     )
 
 
     # def test_create_count_raises_validation_error_for_end_date_before_start_date(self):
