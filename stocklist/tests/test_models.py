@@ -198,8 +198,11 @@ class StockPeriodTestCase(TestCase):
             store=self.store1,
         )
         daily_period.frequency = StockPeriod.WEEKLY
-        daily_period.save()
+        daily_period.full_clean()
+        daily_period.save() # feed back unsuccessful? try block?
+        updated_period = StockPeriod.objects.first()
         self.assertEqual(daily_period.frequency, StockPeriod.WEEKLY)
+        self.assertEqual(updated_period.frequency, StockPeriod.DAILY)
 
 
 class StocktakeTestCase(TestCase):
