@@ -27,7 +27,7 @@ class Store(models.Model):
 
     class Meta:
         '''
-        Store name must be unique for user
+        Store name must be unique for User
         '''
         constraints = [
             models.UniqueConstraint(fields=['user', 'name',], name='unique name user')
@@ -95,6 +95,9 @@ class Item(models.Model):
     # spare cols?
 
     class Meta:
+        '''
+        Item name must be unique for Store
+        '''
         constraints = [
             models.UniqueConstraint(fields=['store', 'name',], name='unique name store')
         ]
@@ -102,7 +105,7 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
-
+# unique list item per list
 class ListItem(models.Model):
     list = models.ForeignKey(List, editable=False, on_delete=models.CASCADE, related_name="list_items")
     item = models.ForeignKey(Item, editable=False, on_delete=models.CASCADE, related_name="list_items")
@@ -112,10 +115,18 @@ class ListItem(models.Model):
         validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)]
     )
 
+    class Meta:
+        '''
+        Item must be unique for List
+        '''
+        constraints = [
+            models.UniqueConstraint(fields=['list', 'item',], name='unique item list')
+        ]
+
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)
 
-
+# unique frequency per store (MONTHLY & WEEKLY only!)
 class StockPeriod(models.Model):
     MONTHLY = 'MO'
     WEEKLY = "WE"
@@ -129,10 +140,21 @@ class StockPeriod(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
     frequency = models.CharField(editable=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
+    # class Meta:
+    #     '''
+    #     StockPeriod frequency name must be unique for store
+    #     '''
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['store', 'frequency',], 
+    #             condition=Q(frequency='MONTHLY', frequency='WEEKLY'), 
+    #             name='unique frequency store')
+    #     ]
+
     def __str__(self):
         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
 
-    def next_date(self, previous_date):
+    def next_date(self, previous_date): # here or view or other?
         if self.frequency == self.MONTHLY:
             # end of each month
             temp1 = previous_date + timedelta(days=32)
@@ -146,7 +168,7 @@ class StockPeriod(models.Model):
             # next day
             return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
 
-
+# unique end date per period (MONTHLY & WEEKLY only!)?
 class Stocktake(models.Model):
     stock_period = models.ForeignKey(StockPeriod, editable=False, on_delete=models.CASCADE, related_name="stocktakes")
     end_date = models.DateField(default=timezone.localdate) #sequential counts can have same start date??
@@ -159,14 +181,15 @@ class Stocktake(models.Model):
         else:
             return self.end_date.strftime("%A %d %b %Y")
 
-    # set_end_date() ???
+    # set_end_date() ??? by type
 
 
+# create - check for list type COUNT, or create the list within
+# unique list per stocktake? same list == no changes? enforce new list? enforeced through 1-2-1?
 class StockList(models.Model):
     stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
-    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) #must be count!
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
-    # name?
+    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) #must be type count!
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists") # editable?
 
     def __str__(self):
         return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y")) #?

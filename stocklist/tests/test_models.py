@@ -262,6 +262,7 @@ class StockListTestCase(TestCase):
         cls.list = List.objects.create(
             store=cls.store1, 
             name='BoH Count', 
+            type=List.COUNT,
         )
 
         return super().setUpTestData()
@@ -284,6 +285,19 @@ class StockListTestCase(TestCase):
         stocklists = StockList.objects.all()
         self.assertEqual(stocklists.count(), 1)
         self.assertEqual(stocklists[0].__str__(), 'BoH Count on Saturday 28 Jan 2023')
+
+    # def test_list_type_must_be_count_constraint(self):
+    #     list2 = List.objects.create(
+    #         store=self.store1, 
+    #         name='BoH Count', 
+    #         type=List.ADDITION,
+    #     )
+    #     with self.assertRaises(ValidationError):
+    #         stocklist = StockList.objects.create(
+    #         stocktake=self.stocktake,
+    #         list=list2,
+    #         user=self.user1,
+    #     )
 
 
 
@@ -480,13 +494,20 @@ class ListItemTestCase(TestCase):
         self.assertEqual(self.list_item.__str__(), '{} {}'.format(self.list_item_amount, self.item_name))
 
     def test_min_list_item_amount(self):
+        item = Item.objects.create(store=self.store1, name='Another Item')
         negative_amount = '-1'
         with self.assertRaises(ValidationError):
-            list_item = ListItem.objects.create(list=self.list, item=self.item, amount=negative_amount)
+            list_item = ListItem.objects.create(list=self.list, item=item, amount=negative_amount)
             list_item.full_clean()
 
     def test_max_list_item_amount(self):
+        item = Item.objects.create(store=self.store1, name='And Another Item')
         v_large_amount = '100001'
         with self.assertRaises(ValidationError):
-            list_item = ListItem.objects.create(list=self.list, item=self.item, amount=v_large_amount)
+            list_item = ListItem.objects.create(list=self.list, item=item, amount=v_large_amount)
             list_item.full_clean()
+
+    def test_item_unique_for_list(self):
+        with self.assertRaises(IntegrityError):
+            list_item2 = ListItem.objects.create(list=self.list, item=self.item, amount=self.list_item_amount)
+            list_item2.full_clean()
