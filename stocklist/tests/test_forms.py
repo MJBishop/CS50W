@@ -1,4 +1,5 @@
 from datetime import date
+from django.utils import timezone
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
@@ -64,7 +65,7 @@ class StockPeriodFormTestCase(TestCase):
         frequency = form.cleaned_data["frequency"]
         self.assertEqual(frequency, StockPeriod.MONTHLY)
 
-    def test_invalid_stock_period_frequency_model_form_data(self):
+    def test_invalid_form_data(self):
         form = StockPeriodForm({
             'frequency':'ZZ',
         })
@@ -76,12 +77,12 @@ class StockPeriodFormTestCase(TestCase):
 
 class StocktakeFormTestCase(TestCase):
 
-    def test_empty_model_form(self):
+    def test_empty_form(self):
         form = StocktakeForm()
         self.assertIn("end_date", form.fields)
         self.assertFalse(form.is_valid())
 
-    def test_blank_model_form_data(self):
+    def test_blank_form_data(self):
         form = StocktakeForm({
             'end_date':''
         })
@@ -90,8 +91,8 @@ class StocktakeFormTestCase(TestCase):
             'end_date': ['This field is required.'],
         })
 
-    def test_valid_model_form_data(self):
-        test_end_date = date(year=2023, month=1, day=31)
+    def test_valid_form_data(self):
+        test_end_date = date.today()
         form = StocktakeForm({
             'end_date':test_end_date,
         })
@@ -99,9 +100,15 @@ class StocktakeFormTestCase(TestCase):
         cleaned_end_date = form.cleaned_data["end_date"]
         self.assertEqual(cleaned_end_date, test_end_date)
 
-    def test_invalid_model_form_data(self):
-        pass
-    # Dates!! TODO - model validation or create validation, see model
+    def test_invalid_form_data(self):
+        test_end_date = date(year=2022, month=1, day=29)
+        form = StocktakeForm({
+            'end_date':test_end_date,
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            'end_date': ['End date cannot be in the past!'],
+        })
 
 
 class ListFormTestCase(TestCase):

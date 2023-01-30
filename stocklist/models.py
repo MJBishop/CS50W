@@ -77,7 +77,7 @@ class List(models.Model):
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     date_added = models.DateTimeField(
         default=timezone.localdate, 
-        help_text="The date items were added/removed from the Store."
+        help_text="The date these items were added/removed from the Store."
     ) 
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
@@ -194,11 +194,6 @@ class Stocktake(models.Model):
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
             return self.end_date.strftime("%A %d %b %Y")
-    
-    # @property
-    # def frequency(self):
-    #     '''Get the stocktake frequency.'''
-    #     return self.stock_period.frequency
 
     # set_end_date() ??? by type
     # unique end date per period (MONTHLY & WEEKLY only!)?
