@@ -29,7 +29,14 @@ class StocktakeForm(ModelForm):
                 {'end_date':'End date cannot be in the past!'}
             )
 
-class ListForm(ModelForm):
+class StockListForm(ModelForm):
     class Meta:
         model=List
         fields=['name']
+        # TODO Add email field for invites
+
+# class ListForm(ModelForm):
+#     class Meta:
+#         model=List
+#         fields=['name', 'type', 'date_added']
+

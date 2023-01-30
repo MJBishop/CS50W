@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 
 from stocklist.models import StockPeriod, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH
-from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, ListForm
+from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, StockListForm
 
 
 class StoreNameFormTestCase(TestCase):
@@ -111,21 +111,21 @@ class StocktakeFormTestCase(TestCase):
         })
 
 
-class ListFormTestCase(TestCase):
+class StockListFormTestCase(TestCase):
 
     def test_empty_form(self):
-        form = ListForm()
+        form = StockListForm()
         self.assertIn("name", form.fields)
 
     def test_blank_form_data(self):
-        form = ListForm({
+        form = StockListForm({
             'name':'',
         })
         self.assertFalse(form.is_valid())
 
     def test_valid_form_data(self):
         test_list_name = 'Test List Name'
-        form = ListForm({
+        form = StockListForm({
             'name':test_list_name,
         })
         self.assertTrue(form.is_valid())
@@ -134,7 +134,7 @@ class ListFormTestCase(TestCase):
 
     def test_invalid_form_data(self):
         test_list_name = 'A'*(MAX_LIST_NAME_LENGTH + 1)
-        form = ListForm({
+        form = StockListForm({
             'name':test_list_name,
         })
         self.assertFalse(form.is_valid())
