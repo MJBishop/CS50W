@@ -77,7 +77,7 @@ class List(models.Model):
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     date_added = models.DateTimeField(
         default=timezone.localdate, 
-        help_text="The date items were added/removed from the Store"
+        help_text="The date items were added/removed from the Store."
     ) 
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
@@ -147,13 +147,8 @@ class StockPeriod(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['store', 'frequency',],
-                condition=Q(frequency='MO'), #Q(MTH) | Q(WK)
-                name='unique monthly_frequency store'
-            ),
-            models.UniqueConstraint(
-                fields=['store', 'frequency',],
-                condition=Q(frequency='WE'),
-                name='unique weekly_frequency store'
+                condition=Q(frequency='MO') | Q(frequency='WE'),
+                name='unique monthly_weekly_frequency store',
             )
         ]
 
