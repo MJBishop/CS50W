@@ -541,9 +541,11 @@ class ListItemTestCase(TestCase):
     def test_create_list_item(self):
 
         list_items = ListItem.objects.all()
-        self.assertEqual(list_items[0].list, self.list)
-        self.assertEqual(list_items[0].item, self.item)
-        self.assertEqual(list_items[0].amount, Decimal(self.list_item_amount))
+        list_item = list_items[0]
+        self.assertEqual(list_item.list, self.list)
+        self.assertEqual(list_item.item, self.item)
+        self.assertEqual(list_item.amount, Decimal(self.list_item_amount))
+        self.assertEqual(list_item.name, self.item_name)
 
     def test_list_item_string(self):
         self.assertEqual(self.list_item.__str__(), '{} {}'.format(self.list_item_amount, self.item_name))

@@ -26,9 +26,7 @@ class Store(models.Model):
     name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME)
 
     class Meta:
-        '''
-        Store name must be unique for User
-        '''
+        '''Store name must be unique for User.'''
         constraints = [
             models.UniqueConstraint(fields=['user', 'name',], name='unique name user')
         ]
@@ -77,7 +75,10 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
-    date_added = models.DateTimeField(default=timezone.localdate, help_text="The date items were added/removed from the Store") 
+    date_added = models.DateTimeField(
+        default=timezone.localdate, 
+        help_text="The date items were added/removed from the Store"
+    ) 
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
 
     objects = models.Manager()
@@ -95,9 +96,7 @@ class Item(models.Model):
     # spare cols?
 
     class Meta:
-        '''
-        Item name must be unique for Store
-        '''
+        '''Item name must be unique for Store.'''
         constraints = [
             models.UniqueConstraint(fields=['store', 'name',], name='unique name store')
         ]
@@ -116,15 +115,18 @@ class ListItem(models.Model):
     )
 
     class Meta:
-        '''
-        Item must be unique for List
-        '''
+        '''Item must be unique for List.'''
         constraints = [
             models.UniqueConstraint(fields=['list', 'item',], name='unique item list')
         ]
 
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)
+
+    @property
+    def name(self):
+        '''Get the item name.'''
+        return self.item.name
 
 
 class StockPeriod(models.Model):
@@ -141,48 +143,48 @@ class StockPeriod(models.Model):
     frequency = models.CharField(blank=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
 
     class Meta:
-        '''
-        StockPeriod frequency MONTHLY, WEEKLY must be unique for store
-        '''
+        '''MONTHLY and WEEKLY frequency must be unique for store.'''
         constraints = [
-            models.UniqueConstraint(fields=['store', 'frequency',], condition=Q(frequency='MO'), name='unique monthly_frequency store'),
-            models.UniqueConstraint(fields=['store', 'frequency',], condition=Q(frequency='WE'), name='unique weekly_frequency store')
+            models.UniqueConstraint(
+                fields=['store', 'frequency',],
+                condition=Q(frequency='MO'), #Q(MTH) | Q(WK)
+                name='unique monthly_frequency store'
+            ),
+            models.UniqueConstraint(
+                fields=['store', 'frequency',],
+                condition=Q(frequency='WE'),
+                name='unique weekly_frequency store'
+            )
         ]
 
     def __str__(self):
         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
 
     def save(self, *args, **kwargs):
-        '''
-        Only save when creating a new StockPeriod
-        '''
+        '''Save only when creating.'''
         if self.id is None:
             super(StockPeriod, self).save(*args, **kwargs)
 
-    def next_date(self, previous_date): # here or view or other?
+            # Should we be throwing an exception? Maybe editable=False, then re-add to from when needed?
+
+    def next_date(self, previous_date): # here? # Feels like this should go somewhere else... date_helpers.py
         '''
         Calculates the next Stocktake date for a given date:
-        MONTHLY frequency = last day of next month
-        WEEKLY frequency += 7 days
-        DAILY frequency += 1 day
 
         previous_date (Date): the previous Stocktake Date
 
         Return: Date
         '''
         if self.frequency == self.MONTHLY:
-            # add 32 days - definitely 2 months ahead
-            temp1 = previous_date + timedelta(days=32)
-            # first day of that month
-            temp2 = date(year=temp1.year, month=temp1.month, day=1)
-            # minus 1 day = last day of next month
-            next_date = temp2 - timedelta(days=1)
+            '''Last day of next month.'''
+            temp1 = previous_date + timedelta(days=32)  # 32 days: definitely 2 months ahead
+            next_date = date(year=temp1.year, month=temp1.month, day=1) - timedelta(days=1)   
             return next_date
         elif self.frequency == self.WEEKLY:
-            # add 7 days
+            '''Plus 7 days.'''
             return previous_date + timedelta(days=7)
         else:
-            # add 1 day
+            '''Plus 1 day.'''
             return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
 
 
@@ -197,6 +199,11 @@ class Stocktake(models.Model):
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
             return self.end_date.strftime("%A %d %b %Y")
+    
+    # @property
+    # def frequency(self):
+    #     '''Get the stocktake frequency.'''
+    #     return self.stock_period.frequency
 
     # set_end_date() ??? by type
     # unique end date per period (MONTHLY & WEEKLY only!)?
@@ -205,11 +212,8 @@ class Stocktake(models.Model):
 
 class StockList(models.Model):
     stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
-    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE) #must be type count!
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists") # editable?
+    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
 
     def __str__(self):
-        return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y")) #?
-
-    
-    # create - check for list type COUNT, or create the list within
+        return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y"))
