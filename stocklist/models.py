@@ -3,9 +3,7 @@ from datetime import date, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Sum, Q
-from django.db.models.functions import Coalesce
-from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 MAX_STORE_NAME_LENGTH = 20
@@ -74,13 +72,12 @@ class List(models.Model):
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
+    # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION)
     date_added = models.DateTimeField(
         default=timezone.localdate, 
         help_text="The date these items were added/removed from the Store."
-    ) 
-    # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
-
+    )
     objects = models.Manager()
     additions = AdditionListManager()
     subtractions = SubtractionListManager()
@@ -138,9 +135,8 @@ class StockPeriod(models.Model):
         (WEEKLY, "Weekly"),
         (DAILY, "Daily"),
     ]
-
-    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
     frequency = models.CharField(blank=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
+    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
 
     class Meta:
         '''MONTHLY and WEEKLY frequency must be unique for store.'''
@@ -162,7 +158,7 @@ class StockPeriod(models.Model):
 
             # Should we be throwing an exception? Maybe editable=False, then re-add to from when needed?
 
-    def next_date(self, previous_date): # here? # Feels like this should go somewhere else... date_helpers.py
+    def next_date(self, previous_date):
         '''
         Calculates the next Stocktake date for a given date:
 
@@ -171,21 +167,24 @@ class StockPeriod(models.Model):
         Return: Date
         '''
         if self.frequency == self.MONTHLY:
-            '''Last day of next month.'''
-            temp1 = previous_date + timedelta(days=32)  # 32 days: definitely 2 months ahead
+            # Last day of next month - 32 days: definitely 2 months ahead
+            temp1 = previous_date + timedelta(days=32)
             next_date = date(year=temp1.year, month=temp1.month, day=1) - timedelta(days=1)   
             return next_date
         elif self.frequency == self.WEEKLY:
-            '''Plus 7 days.'''
+            # Plus 7 days
             return previous_date + timedelta(days=7)
         else:
-            '''Plus 1 day.'''
-            return previous_date + timedelta(days=1) #is this what we want? or just set the next date!!!
+            #Plus 1 day
+            return previous_date + timedelta(days=1)
 
 
 class Stocktake(models.Model):
     stock_period = models.ForeignKey(StockPeriod, editable=False, on_delete=models.CASCADE, related_name="stocktakes")
     end_date = models.DateField(default=timezone.localdate) 
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         if self.stock_period.frequency == self.stock_period.MONTHLY:
@@ -196,8 +195,6 @@ class Stocktake(models.Model):
             return self.end_date.strftime("%A %d %b %Y")
 
     # set_end_date() ??? by type
-    # unique end date per period (MONTHLY & WEEKLY only!)?
-    # sequential counts can have same start date??
 
 
 class StockList(models.Model):

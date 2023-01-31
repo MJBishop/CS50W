@@ -342,7 +342,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores'], None)
+        self.assertEqual(response.context['stores_or_None'], None)
 
     def test_GET_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -351,7 +351,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        store = response.context['stores'][0]
+        store = response.context['stores_or_None'][0]
         self.assertEqual(store.name, test_store_name)
 
     def test_GET_oldest_store_first(self):
@@ -361,18 +361,32 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores'][0].name, "Test Store 1")
+        self.assertEqual(response.context['stores_or_None'][0].name, "Test Store 1")
 
+    def test_GET_stock_takes(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        stock_period = StockPeriod.objects.create(store=store)
+        Stocktake.objects.create(stock_period=stock_period)
 
-    # def test_GET_context_stock_periods(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     store = Store.objects.create(name='Test Store', user=self.user1)
-    #     stock_period = StockPeriod.objects.create(store=store)
-    #     stocktake = Stocktake.objects.create(stock_period=stock_period)
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        stocktakes = response.context['stock_takes_or_None']
+        self.assertEqual(stocktakes.count(), 1)
+        self.assertEqual(stocktakes[0].frequency, StockPeriod.DAILY)
 
-    #     response = self.client.get("/")
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context['stock_periods'].count(), 1)
+    def test_GET_newest_stock_takes_first(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        stock_period = StockPeriod.objects.create(store=store)
+        Stocktake.objects.create(stock_period=stock_period)
+        newest_stocktake = Stocktake.objects.create(stock_period=stock_period)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        stocktakes = response.context['stock_takes_or_None']
+        self.assertEqual(stocktakes.count(), 2)
+        self.assertEqual(stocktakes[0], newest_stocktake)
 
     def test_GET_num_queries_existing_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)

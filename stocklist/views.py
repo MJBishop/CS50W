@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.db.models import F
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
@@ -16,20 +17,21 @@ def index(request):
     if request.user.is_authenticated:
 
         # Get Stores
-        stores = Store.objects.filter(user=request.user) or None
-        # stock_periods = None
-        # if stores:
-        #     stock_periods = StockPeriod.objects.filter(store=stores[-1]).prefetch_related('stocktakes__stocklists')
+        stores_or_None = Store.objects.filter(user=request.user) or None
+        stock_takes_or_None = None
+        if stores_or_None:
+            # Get Stocktakes & StockLists
+            oldest_store = stores_or_None[0]
+            stock_takes_or_None = Stocktake.objects.filter(stock_period__store=oldest_store).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
 
 
-
-        # StockPeriods, Stocktakes, & Items?
+        # Items?
 
         # Add forms - Store, StockPeriod, Stocktake
 
         return render(request, "stocklist/index.html",{
-            'stores':stores,
-            # 'stock_periods':stock_periods,
+            'stores_or_None':stores_or_None,
+            'stock_takes_or_None':stock_takes_or_None,
         })
 
     return HttpResponseRedirect(reverse("login"))
