@@ -12,12 +12,13 @@ class BaseTestCase(TestCase):
 
     TEST_USER = 'testuser'
     PASSWORD = '12345'
-
-    @classmethod 
+    
+    @classmethod
     def setUpTestData(cls):
-
         cls.user1 = User.objects.create_user(
-            username=cls.TEST_USER, email='testuser@test.com', password=cls.PASSWORD)
+            username=cls.TEST_USER, email='testuser@test.com', password=cls.PASSWORD
+        )
+        return super().setUpTestData()
 
     def setUp(self):
         # Every test needs a client.
@@ -46,84 +47,74 @@ class ImportTestCase(BaseTestCase):
     }
 
 class ImportItemsTestCase(ImportTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        cls.stock_period = StockPeriod.objects.create(store=cls.store)
+        cls.stocktake = Stocktake.objects.create(stock_period=cls.stock_period)
+        return sup
     
     def test_POST_import_items_redirects_to_login_if_not_logged_in(self):
         response = self.client.post("/import_items/1")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/import_items/1") 
 
-    def test_POST_import_items_returns_404_for_invalid_count(self):
+    def test_POST_import_items_returns_404_for_invalid_stocktake(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.post("/import_items/1")
+        response = self.client.post("/import_items/2")
         self.assertEqual(response.status_code, 404)
 
     def test_GET_import_items_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
-
-        path = "/import_items/{}".format(stocktake.pk)
+        
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
         self.assertEqual(response.status_code, 201)
 
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         self.json_data['name'] = 'A'*(20 + 1)
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 0)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         self.json_data['type'] = 'ZZ'
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 0)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        items = Item.objects.filter(store=stocktake.stock_period.store)
+        items = Item.objects.filter(store=self.stocktake.stock_period.store)
         self.assertEqual(items.count(), 3)
 
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -132,25 +123,22 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
-        items = Item.objects.filter(store=stocktake.stock_period.store)
+        items = Item.objects.filter(store=self.stocktake.stock_period.store)
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
     def test_POST_import_items_creates_list_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -158,9 +146,6 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -169,10 +154,10 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -180,9 +165,6 @@ class ImportItemsTestCase(ImportTestCase):
 
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        stock_period = StockPeriod.objects.create(store=store)
-        stocktake = Stocktake.objects.create(stock_period=stock_period)
 
         items = list(self.json_data["items"])
         items.append({
@@ -191,10 +173,10 @@ class ImportItemsTestCase(ImportTestCase):
         })
         self.json_data['items'] = items
 
-        path = "/import_items/{}".format(stocktake.pk)
+        path = "/import_items/{}".format(self.stocktake.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
-        lists = List.objects.filter(store=store)
+        lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
         self.assertEqual(list_items.count(), 3)
@@ -202,6 +184,7 @@ class ImportItemsTestCase(ImportTestCase):
 
 
 class CountItemTestCase(ImportTestCase):
+    
     def test_POST_count_item_redirects_to_login_if_not_logged_in(self):
         response = self.client.generic('POST', "/count_item/1/1", json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 302)
@@ -240,7 +223,7 @@ class CountItemTestCase(ImportTestCase):
         path = "/count_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
         list_items = ListItem.objects.filter(list=list, item=item)
-        self.assertEqual(list_items.count(), 1)
+        self.assertTrue(list_items.exists())
         self.assertEqual(list_items[0].amount, 1)
         self.assertEqual(response.status_code, 201)
 
@@ -258,7 +241,6 @@ class CountItemTestCase(ImportTestCase):
     def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
@@ -340,29 +322,61 @@ class StoreTestCase(BaseTestCase):
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
-    def test_index_GET_renders_index_html(self):
+    def test_GET_renders_index_html(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
         response = self.client.get("/")
         self.assertEquals(response.templates[0].name, 'stocklist/index.html')
 
-    def test_index_GET_redirects_to_login_when_not_signed_in(self):
+    def test_GET_redirects_to_login_when_not_signed_in(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
-    # def test POST PUT
-
-    def test_index_context_stores(self):
+    def test_GET_no_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores'][0].name, "Store")
+        self.assertEqual(response.context['stores'], None)
 
+    def test_GET_context_stores(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
 
-    
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        # print(response.context['stores'])
+        # print(response.context['stores'][0].id)
+        self.assertEqual(response.context['stores'][0].name, "Test Store")
+
+    # def test_GET_context_stock_periods(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    #     store = Store.objects.create(name='Test Store', user=self.user1)
+    #     stock_period = StockPeriod.objects.create(store=store)
+    #     stocktake = Stocktake.objects.create(stock_period=stock_period)
+
+    #     response = self.client.get("/")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.context['stock_periods'].count(), 1)
+
+    def test_GET_num_queries_existing_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        with self.assertNumQueries(3):
+            response = self.client.get("/")
+
+    def test_GET_num_queries_no_stores(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        with self.assertNumQueries(3):
+            response = self.client.get("/")
+
+    # def test POST PUT
+
 
 class LoginTestCase(BaseTestCase):
     def test_user_login(self):

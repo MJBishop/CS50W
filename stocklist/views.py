@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
-from .models import User, Store, Item, List, ListItem, DEFAULT_STORE_NAME, Stocktake
+from .models import User, Store, Item, List, ListItem, StockPeriod, Stocktake, StockList
 
 
 def index(request):
@@ -15,26 +15,31 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
-        # Add Stores, StockPeriods, Stocktakes, & Items?
-        stores = Store.objects.filter(user=request.user) or [Store.objects.create(user=request.user, name=DEFAULT_STORE_NAME)]
+        # Get Stores
+        stores = Store.objects.filter(user=request.user) or None
+        # stock_periods = None
+        # if stores:
+        #     stock_periods = StockPeriod.objects.filter(store=stores[-1]).prefetch_related('stocktakes__stocklists')
+
+
+
+        # StockPeriods, Stocktakes, & Items?
 
         # Add forms - Store, StockPeriod, Stocktake
 
         return render(request, "stocklist/index.html",{
-            'stores':stores
+            'stores':stores,
+            # 'stock_periods':stock_periods,
         })
 
     return HttpResponseRedirect(reverse("login"))
 
 
 @login_required
-def store(request, store_id):
+def store(request, store_id): #items() / lists()!
 
     # check for valid Store
-    try:
-        store = Store.objects.get(user=request.user, pk=store_id)
-    except Store.DoesNotExist:
-        return JsonResponse({"error": "Store not found."}, status=404)
+    store = get_object_or_404(Store, user=request.user, pk=store_id)
 
     if request.method == "GET":
         # stocktake = Stocktake.objects.filter(store=store).last() or Stocktake.objects.create(store=store)
@@ -49,10 +54,7 @@ def store(request, store_id):
 def count(request, count_id):
 
     # check for valid count
-    try:
-        stocktake = Stocktake.objects.get(stock_period__store__user=request.user, pk=count_id)
-    except Stocktake.DoesNotExist:
-        return JsonResponse({"error": "Stocktake not found."}, status=404)
+    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
 
     if request.method == "GET":
         # serialized_items = Item.objects.serialized_count_items(stocktake)
@@ -66,10 +68,7 @@ def count(request, count_id):
 def import_items(request, count_id):
 
     # check for valid count
-    try:
-        stocktake = Stocktake.objects.get(stock_period__store__user=request.user, pk=count_id)
-    except Stocktake.DoesNotExist:
-        return JsonResponse({"error": "Stocktake not found."}, status=404)
+    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
 
     if request.method == "POST":
         
@@ -116,7 +115,30 @@ def import_items(request, count_id):
 
 
 
+# def create_stocktake(self, previous_stocktake, new_date):
+#         '''
+#         Creates a new Stocktake object
 
+#         previous_stocktake (Stocktake): Calculate the next end_date for MONTHLY, WEEKLY stock_period
+#         new_date (Date): The next end_date for DAILY stock_period
+
+#         Return: Stocktake 
+#         '''
+#         stock_period = previous_stocktake.stock_period
+#         # next_date = date()
+#         if stock_period.frequency == StockPeriod.DAILY:
+#             next_date = new_date
+#         else:
+#             next_date = stock_period.next_date(previous_stocktake.end_date)
+        
+#         stocktake = Stocktake(stock_period=stock_period, end_date=next_date)
+#         try:
+#             stocktake.full_clean()
+#             stocktake.save()
+#         except ValidationError as e:
+#             raise e
+#         else:
+#             return stocktake
 
 
 
@@ -197,16 +219,10 @@ def import_items(request, count_id):
 def count_item(request, list_id, item_id):
 
     # check for valid List
-    try:
-        list = List.objects.get(pk=list_id)
-    except List.DoesNotExist:
-        return JsonResponse({"error": "List not found."}, status=404)
+    list = get_object_or_404(List, pk=list_id)
 
     # check for valid Item
-    try:
-        item = Item.objects.get(pk=item_id)
-    except Item.DoesNotExist:
-        return JsonResponse({"error": "Item not found."}, status=404)
+    item = get_object_or_404(Item, pk=item_id)
 
     # save Item amount: create ListItem
     if request.method == 'POST':
