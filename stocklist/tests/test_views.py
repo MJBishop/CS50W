@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, List, ListItem, Item, Stocktake, StockPeriod
+from stocklist.models import User, Store, List, ListItem, Item, Stocktake, StockPeriod, StockList
 
 
 class BaseTestCase(TestCase):
@@ -367,13 +367,20 @@ class IndexTestCase(BaseTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         stock_period = StockPeriod.objects.create(store=store)
-        Stocktake.objects.create(stock_period=stock_period)
+        stocktake = Stocktake.objects.create(stock_period=stock_period)
+        list = List.objects.create(store=store, type=List.COUNT)
+        StockList.objects.create(stocktake=stocktake, list=list, user=self.user1)
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         stocktakes = response.context['stock_takes_or_None']
         self.assertEqual(stocktakes.count(), 1)
-        self.assertEqual(stocktakes[0].frequency, StockPeriod.DAILY)
+
+        test_stocktake = stocktakes[0]
+        self.assertEqual(test_stocktake.frequency, StockPeriod.DAILY)
+
+        test_stocklist = test_stocktake.stocklists.first()
+        self.assertEqual(test_stocklist.list_id, list.pk)
 
     def test_GET_newest_stock_takes_first(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
