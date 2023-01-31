@@ -406,6 +406,17 @@ class IndexTestCase(BaseTestCase):
         with self.assertNumQueries(3):
             response = self.client.get("/")
 
+    def test_GET_forms(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['store_name_form'])
+        self.assertTrue(response.context['stock_period_form'])
+        self.assertTrue(response.context['stocktake_form'])
+        self.assertTrue(response.context['stock_list_form'])
+
+
     # def test POST PUT
 
 

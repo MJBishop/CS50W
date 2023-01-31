@@ -33,10 +33,13 @@ class StockListForm(ModelForm):
     class Meta:
         model=List
         fields=['name']
-        # TODO Add email field for invites
+
+# class StockListInviteForm(StockListForm):
+#     # TODO Add email field for invites
+#     pass
 
 # class ListForm(ModelForm):
 #     class Meta:
 #         model=List
 #         fields=['name', 'type', 'date_added']
-
+# inheritance for forms!

@@ -8,6 +8,7 @@ from django.db.models import F
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
+from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, StockListForm
 from .models import User, Store, Item, List, ListItem, StockPeriod, Stocktake, StockList
 
 
@@ -16,14 +17,13 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
-        # Get Stores
+        # Stores
         stores_or_None = Store.objects.filter(user=request.user) or None
         stock_takes_or_None = None
         if stores_or_None:
-            # Get Stocktakes & StockLists
+            # Stocktakes & StockLists
             oldest_store = stores_or_None[0]
             stock_takes_or_None = Stocktake.objects.filter(stock_period__store=oldest_store).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
-
 
         # Items?
 
@@ -32,6 +32,10 @@ def index(request):
         return render(request, "stocklist/index.html",{
             'stores_or_None':stores_or_None,
             'stock_takes_or_None':stock_takes_or_None,
+            'store_name_form':StoreNameForm(),
+            'stock_period_form':StockPeriodForm(),
+            'stocktake_form':StocktakeForm(),
+            'stock_list_form':StockListForm(),
         })
 
     return HttpResponseRedirect(reverse("login"))
