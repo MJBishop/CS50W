@@ -344,15 +344,25 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['stores'], None)
 
-    def test_GET_context_stores(self):
+    def test_GET_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'Test Store'
+        Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        # print(response.context['stores'])
-        # print(response.context['stores'][0].id)
-        self.assertEqual(response.context['stores'][0].name, "Test Store")
+        store = response.context['stores'][0]
+        self.assertEqual(store.name, test_store_name)
+
+    def test_GET_oldest_store_first(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        Store.objects.create(name='Test Store 1', user=self.user1)
+        Store.objects.create(name='Test Store 2', user=self.user1)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['stores'][0].name, "Test Store 1")
+
 
     # def test_GET_context_stock_periods(self):
     #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
