@@ -36,8 +36,12 @@ def index(request):
             })
             # Items?
         
-        return HttpResponseRedirect(reverse("index"))
+        elif request.method == 'POST':
+            return HttpResponseRedirect(reverse("index"))
 
+        elif request.method == 'PUT':
+            return HttpResponseRedirect(reverse("index"))
+            
     return HttpResponseRedirect(reverse("login"))
 
 

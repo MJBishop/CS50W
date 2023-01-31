@@ -421,6 +421,12 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.post("/")
         self.assertEqual(response.url, "/") 
+
+    def test_PUT_reverse_to_index(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.put("/")
+        self.assertEqual(response.url, "/") 
         
 
     # def test POST PUT
