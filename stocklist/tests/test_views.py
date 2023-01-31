@@ -416,6 +416,12 @@ class IndexTestCase(BaseTestCase):
         self.assertTrue(response.context['stocktake_form'])
         self.assertTrue(response.context['stock_list_form'])
 
+    def test_POST_reverse_to_index(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.post("/")
+        self.assertEqual(response.url, "/") 
+        
 
     # def test POST PUT
 

@@ -17,26 +17,26 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
-        # Stores
-        stores_or_None = Store.objects.filter(user=request.user) or None
-        stock_takes_or_None = None
-        if stores_or_None:
-            # Stocktakes & StockLists
-            oldest_store = stores_or_None[0]
-            stock_takes_or_None = Stocktake.objects.filter(stock_period__store=oldest_store).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
+        if request.method == 'GET':
+            # Stores
+            stores_or_None = Store.objects.filter(user=request.user) or None
+            stock_takes_or_None = None
+            if stores_or_None:
+                # Stocktakes & StockLists
+                oldest_store = stores_or_None[0] # Default is oldest Store
+                stock_takes_or_None = Stocktake.objects.filter(stock_period__store=oldest_store).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
 
-        # Items?
-
-        # Add forms - Store, StockPeriod, Stocktake
-
-        return render(request, "stocklist/index.html",{
-            'stores_or_None':stores_or_None,
-            'stock_takes_or_None':stock_takes_or_None,
-            'store_name_form':StoreNameForm(),
-            'stock_period_form':StockPeriodForm(),
-            'stocktake_form':StocktakeForm(),
-            'stock_list_form':StockListForm(),
-        })
+            return render(request, "stocklist/index.html",{
+                'stores_or_None':stores_or_None,
+                'stock_takes_or_None':stock_takes_or_None,
+                'store_name_form':StoreNameForm(prefix='store_name_form'),
+                'stock_period_form':StockPeriodForm(prefix='stock_period_form'),
+                'stocktake_form':StocktakeForm(prefix='stocktake_form'),
+                'stock_list_form':StockListForm(prefix='stock_list_form'),
+            })
+            # Items?
+        
+        return HttpResponseRedirect(reverse("index"))
 
     return HttpResponseRedirect(reverse("login"))
 
