@@ -20,7 +20,7 @@ class User(AbstractUser):
 
 
 class Store(models.Model):
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stores")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stores")
     name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME)
 
     class Meta:

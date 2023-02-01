@@ -8,12 +8,15 @@ from stocklist.models import Store, StockPeriod, Stocktake, List
 class StoreNameForm(ModelForm):
     class Meta:
         model=Store
-        fields=['name']
+        fields=['name', 'user'] #user hidden
+        widgets = {
+            'user': forms.HiddenInput,
+        }
 
 class StockPeriodForm(ModelForm):
     class Meta:
         model=StockPeriod
-        fields=['frequency']
+        fields=['frequency']  #store hidden
 
 class StocktakeForm(ModelForm):
     class Meta:
