@@ -5,11 +5,51 @@
     <head>
         <title>{% block title %}Stocklist{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <link href="{% static 'stocklist/styles.css' %}" rel="stylesheet">
     </head>
     <body>
+
         <!-- Navigation -->
-        <!-- todo -->
+        <nav id="main-nav" class="navbar navbar-expand-md fixed-top navbar-light" role="navigation">
+            <div class="container-fluid">
+                <a class="navbar-brand">Stocklist</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <!-- site navigation -->
+                    <ul class="navbar-nav mr-auto">
+
+                        {% if user.is_authenticated %}
+                        {% endif %}
+
+                    </ul>
+                    <!-- user actions -->
+                    <ul class="navbar-nav my-2 my-lg-0">
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="navbar-text text-muted pr-3">{{user.username}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="navbar-text text-muted pr-3">Not signed in.</a>
+                            </li>
+                            <li class="nav-item {{ login_page }}">
+                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                            </li>
+                            <li class="nav-item {{ register_page }}">
+                                <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
         <!-- Main -->
         <main role="main" class="container">
@@ -22,6 +62,13 @@
         </main>
 
         <!-- Footer -->
-        <!-- todo -->
+        <footer class="footer">
+            <div class="container">
+                <span class="text-muted">MBishop, Harvard CS50 Web Programming, Capstone Project </span>
+            </div>
+        </footer>
+        
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     </body>
 </html>

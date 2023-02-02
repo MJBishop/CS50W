@@ -2,6 +2,14 @@
 
 {% block body %}
 
-    <h2>Index</h2>
+    <h2>{{page_title}}</h2>
+
+    {% for store in stores %}
+        <h3>{{store.name}}</h3>
+    {% endfor %}
+
+    {% for stocktake in stocktakes %}
+        <h4>{{stocktake.end_date}}</h4>
+    {% endfor %}
 
 {% endblock %}
