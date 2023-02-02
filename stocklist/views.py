@@ -41,22 +41,21 @@ def index(request):
     
 
 @login_required
-def store(request, store_id): #items() / lists()!
+def store(request):
 
     if request.method == "GET":
         return render(request, "stocklist/index.html",{
                 'page_title':'New Store',
                 'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
-                # 'stock_period_form':StockPeriodForm(prefix='stock_period_form'),
                 'stocktake_form':StocktakeForm(prefix='stocktake_form'),
             })
 
     if request.method == 'POST':
             store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
-            stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
+            # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
             stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
 
-            if store_name_form.is_valid() and stocktake_form.is_valid(): #nd stock_period_form.is_valid()
+            if store_name_form.is_valid() and stocktake_form.is_valid():
 
                 # save new Store
                 new_store = store_name_form.save()
@@ -64,7 +63,7 @@ def store(request, store_id): #items() / lists()!
                 # save new StockPeriod
                 new_stock_period = StockPeriod.objects.create(
                     store=new_store,
-                    frequency=StockPeriod.DAILY,#stock_period_form.cleaned_data["frequency"],
+                    frequency=StockPeriod.DAILY,
                 )# Integrity not checked - freq & store!!!
 
                 # save new Stocktake
@@ -72,28 +71,29 @@ def store(request, store_id): #items() / lists()!
                     stock_period=new_stock_period,
                     end_date=stocktake_form.cleaned_data["end_date"],
                 )
-
                 return HttpResponseRedirect(reverse("index"))
 
             else:
                 return render(request, "stocklist/index.html",{
                     'page_title':'New Store',
                     'store_name_form':store_name_form,
-                    # 'stock_period_form':stock_period_form,
                     'stocktake_form':stocktake_form,
                 })
 
+def update_store(request, store_id):
+
+    # check for valid Store
+    store = get_object_or_404(Store, user=request.user, pk=store_id)
+
     if request.method == 'PUT':
 
-        # check for valid Store
-        store = get_object_or_404(Store, user=request.user, pk=store_id)
 
         data = json.loads(request.body)
         new_store_name = data.get("store_name", "")
 
+        # done in form now
         if new_store_name == '':
             return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
-
         if Store.objects.filter(user=request.user, name=new_store_name).exists():
             return JsonResponse({"integrity_error": f"Store name must be unique for user"}, status=400)
 

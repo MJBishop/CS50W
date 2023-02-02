@@ -295,60 +295,11 @@ class StocktakeTestCase(BaseTestCase):
 
 class StoreTestCase(BaseTestCase):
     def test_store_path_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/store/1")
+        response = self.client.get("/store")
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/store/1") 
+        self.assertEqual(response.url, "/login/?next=/store") 
 
-    def test_store_path_returns_404_for_invalid_store(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.put("/store/1")
-        self.assertEqual(response.status_code, 404)
-
-    def test_store_path_returns_200_for_valid_store(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-
-        path = "/store/{}".format(store.pk)
-        response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
-
-    def test_PUT_valid_data_returns_201(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        test_store_name = 'New Store Name'
-
-        path = "/store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
-        self.assertEqual(response.status_code, 201)
-
-    def test_PUT_empty_data_returns_400(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        test_store_name = ''
-
-        path = "/store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
-        self.assertEqual(response.status_code, 400)
-
-    def test_store_name_max_length_returns_400(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
-
-        path = "/store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
-        self.assertEqual(response.status_code, 400)
-
-    def test_store_name_not_unique_returns_400(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store1 = Store.objects.create(name='Test Store 1', user=self.user1)
-        test_store_name = 'Test Store 2'
-        store2 = Store.objects.create(name=test_store_name, user=self.user1)
-
-        path = "/store/{}".format(store1.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
-        self.assertEqual(response.status_code, 400)
-        # print(response)
+   
 
     
     # def test_POST_store_returns_400(self):
@@ -382,6 +333,59 @@ class StoreTestCase(BaseTestCase):
 #         response = self.client.put("/")
 #         self.assertEqual(response.url, "/") 
         
+
+class UpdateStoreTestCase(BaseTestCase):
+    def test_PUT_returns_404_for_invalid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.put("/update_store/1")
+        self.assertEqual(response.status_code, 404)
+
+    def test_PUT_returns_201_for_valid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'New Store Name'
+
+        path = "/update_store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 201)
+
+    def test_PUT_valid_data_returns_201(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'New Store Name'
+
+        path = "/update_store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 201)
+
+    def test_PUT_empty_data_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = ''
+
+        path = "/update_store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 400)
+
+    def test_store_name_max_length_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
+
+        path = "/update_store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 400)
+
+    def test_store_name_not_unique_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store1 = Store.objects.create(name='Test Store 1', user=self.user1)
+        test_store_name = 'Test Store 2'
+        store2 = Store.objects.create(name=test_store_name, user=self.user1)
+
+        path = "/update_store/{}".format(store1.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 400)
+        # print(response)
 
 
 class IndexTestCase(BaseTestCase):
