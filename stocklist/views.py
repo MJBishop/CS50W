@@ -19,21 +19,20 @@ def index(request):
 
         if request.method == 'GET':
             # Stores
-            stores_or_None = Store.objects.filter(user=request.user) or None
-            if not stores_or_None:
+            stores = Store.objects.filter(user=request.user) or None
+            if not stores:
                 return HttpResponseRedirect(reverse("store"))
 
-            stock_takes_or_None = None
             # Stocktakes & StockLists
-            oldest_store = stores_or_None[0] # Default is oldest Store
-            stock_takes_or_None = Stocktake.objects.filter(
+            oldest_store = stores[0] # Default is oldest Store
+            stock_takes = Stocktake.objects.filter(
                 stock_period__store=oldest_store
             ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
 
             return render(request, "stocklist/index.html",{
                 'page_title':'Stores',
-                'stores_or_None':stores_or_None,
-                'stock_takes_or_None':stock_takes_or_None,
+                'stores':stores,
+                'stock_takes':stock_takes,
             })
             # Items?
             
@@ -44,49 +43,52 @@ def index(request):
 def store(request):
 
     if request.method == "GET":
-        return render(request, "stocklist/index.html",{
+        return render(request, "stocklist/store.html",{
                 'page_title':'New Store',
                 'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
                 'stocktake_form':StocktakeForm(prefix='stocktake_form'),
             })
 
     if request.method == 'POST':
-            store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
-            # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
-            stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
+        store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
+        # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
+        stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
 
-            if store_name_form.is_valid() and stocktake_form.is_valid():
+        if store_name_form.is_valid() and stocktake_form.is_valid():
 
-                # save new Store
-                new_store = store_name_form.save()
+            # save new Store
+            new_store = store_name_form.save()
 
-                # save new StockPeriod
-                new_stock_period = StockPeriod.objects.create(
-                    store=new_store,
-                    frequency=StockPeriod.DAILY,
-                )# Integrity not checked - freq & store!!!
+            # save new StockPeriod
+            new_stock_period = StockPeriod.objects.create(
+                store=new_store,
+                frequency=StockPeriod.DAILY,
+            )# Integrity not checked - freq & store!!!
 
-                # save new Stocktake
-                new_stocktake = Stocktake.objects.create(
-                    stock_period=new_stock_period,
-                    end_date=stocktake_form.cleaned_data["end_date"],
-                )
-                return HttpResponseRedirect(reverse("index"))
+            # save new Stocktake
+            new_stocktake = Stocktake.objects.create(
+                stock_period=new_stock_period,
+                end_date=stocktake_form.cleaned_data["end_date"],
+            )
+            return HttpResponseRedirect(reverse("index"))
 
-            else:
-                return render(request, "stocklist/index.html",{
-                    'page_title':'New Store',
-                    'store_name_form':store_name_form,
-                    'stocktake_form':stocktake_form,
-                })
+        else:
+            return render(request, "stocklist/index.html",{
+                'page_title':'New Store',
+                'store_name_form':store_name_form,
+                'stocktake_form':stocktake_form,
+            })
 
+    return HttpResponseRedirect(reverse("store"))
+
+
+@login_required
 def update_store(request, store_id):
 
     # check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
 
     if request.method == 'PUT':
-
 
         data = json.loads(request.body)
         new_store_name = data.get("store_name", "")
@@ -109,7 +111,7 @@ def update_store(request, store_id):
         # if not store_name:
         #     return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
     
-    return JsonResponse({"error": "GET request Required."}, status=400)
+    return JsonResponse({"error": "PUT request Required."}, status=400)
 
 
 @login_required

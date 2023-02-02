@@ -293,47 +293,6 @@ class StocktakeTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class StoreTestCase(BaseTestCase):
-    def test_store_path_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/store")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/store") 
-
-   
-
-    
-    # def test_POST_store_returns_400(self):
-    #     store = Store.objects.create(name='Test Store', user=self.user1)
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-    #     path = "/store/{}".format(store.pk)
-    #     response = self.client.post(path)
-    #     self.assertEqual(response.status_code, 400)
-
-# move to stores
-#     def test_GET_forms(self):
-#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-#         response = self.client.get("/")
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTrue(response.context['store_name_form'])
-#         self.assertTrue(response.context['stock_period_form'])
-#         self.assertTrue(response.context['stocktake_form'])
-#         self.assertTrue(response.context['stock_list_form'])
-
-#     def test_POST_reverse_to_index(self):
-#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-#         response = self.client.post("/")
-#         self.assertEqual(response.url, "/") 
-
-#     def test_PUT_reverse_to_index(self):
-#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-#         response = self.client.put("/")
-#         self.assertEqual(response.url, "/") 
-        
-
 class UpdateStoreTestCase(BaseTestCase):
     def test_PUT_returns_404_for_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -388,6 +347,41 @@ class UpdateStoreTestCase(BaseTestCase):
         # print(response)
 
 
+class StoreTestCase(BaseTestCase):
+    def test_store_path_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get("/store")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/store") 
+
+    def test_GET_forms(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.get("/store")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['store_name_form'])
+        self.assertTrue(response.context['stocktake_form'])
+
+    def test_PUT_reverse_to_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.put("/store")
+        self.assertEqual(response.url, "/store") 
+
+    # def test_POST_store_returns_400(self):
+    #     store = Store.objects.create(name='Test Store', user=self.user1)
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+    #     path = "/store/{}".format(store.pk)
+    #     response = self.client.post(path)
+    #     self.assertEqual(response.status_code, 400)
+
+    # def test_POST_reverse_to_index(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+    #     response = self.client.post("/store")
+    #     self.assertEqual(response.url, "/") 
+        
+
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -424,7 +418,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        store = response.context['stores_or_None'][0]
+        store = response.context['stores'][0]
         self.assertEqual(store.name, test_store_name)
 
     def test_GET_oldest_store_first(self):
@@ -434,7 +428,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores_or_None'][0].name, "Test Store 1")
+        self.assertEqual(response.context['stores'][0].name, "Test Store 1")
 
     def test_GET_stock_takes(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -446,7 +440,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        stocktakes = response.context['stock_takes_or_None']
+        stocktakes = response.context['stock_takes']
         self.assertEqual(stocktakes.count(), 1)
 
         test_stocktake = stocktakes[0]
@@ -464,7 +458,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        stocktakes = response.context['stock_takes_or_None']
+        stocktakes = response.context['stock_takes']
         self.assertEqual(stocktakes.count(), 2)
         self.assertEqual(stocktakes[0], newest_stocktake)
 
