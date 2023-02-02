@@ -8,6 +8,7 @@ urlpatterns = [
     path("register", views.register_view, name="register"),
 
     # FREE API
+    path("store", views.store, name="store"),
     path("store/<int:store_id>", views.store, name="store"),
     path("import_items/<int:count_id>", views.import_items, name="import_items"),
     path("count_item/<int:list_id>/<int:item_id>", views.count_item, name="count_item"),

@@ -20,42 +20,94 @@ def index(request):
         if request.method == 'GET':
             # Stores
             stores_or_None = Store.objects.filter(user=request.user) or None
+            if not stores_or_None:
+                return HttpResponseRedirect(reverse("store"))
+
             stock_takes_or_None = None
-            if stores_or_None:
-                # Stocktakes & StockLists
-                oldest_store = stores_or_None[0] # Default is oldest Store
-                stock_takes_or_None = Stocktake.objects.filter(stock_period__store=oldest_store).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
+            # Stocktakes & StockLists
+            oldest_store = stores_or_None[0] # Default is oldest Store
+            stock_takes_or_None = Stocktake.objects.filter(
+                stock_period__store=oldest_store
+            ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
 
             return render(request, "stocklist/index.html",{
+                'page_title':'Stores',
                 'stores_or_None':stores_or_None,
                 'stock_takes_or_None':stock_takes_or_None,
-                'store_name_form':StoreNameForm(prefix='store_name_form'),
-                'stock_period_form':StockPeriodForm(prefix='stock_period_form'),
-                'stocktake_form':StocktakeForm(prefix='stocktake_form'),
-                'stock_list_form':StockListForm(prefix='stock_list_form'),
             })
             # Items?
-        
-        elif request.method == 'POST':
-            return HttpResponseRedirect(reverse("index"))
-
-        elif request.method == 'PUT':
-            return HttpResponseRedirect(reverse("index"))
             
     return HttpResponseRedirect(reverse("login"))
-
+    
 
 @login_required
 def store(request, store_id): #items() / lists()!
 
-    # check for valid Store
-    store = get_object_or_404(Store, user=request.user, pk=store_id)
-
     if request.method == "GET":
-        # stocktake = Stocktake.objects.filter(store=store).last() or Stocktake.objects.create(store=store)
-        # serialized_items = Item.objects.serialized_count_items(stocktake)
-        # return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
-        return JsonResponse({"message":"TODO"}, safe=False, status=200)
+        return render(request, "stocklist/index.html",{
+                'page_title':'New Store',
+                'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
+                # 'stock_period_form':StockPeriodForm(prefix='stock_period_form'),
+                'stocktake_form':StocktakeForm(prefix='stocktake_form'),
+            })
+
+    if request.method == 'POST':
+            store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
+            stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
+            stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
+
+            if store_name_form.is_valid() and stocktake_form.is_valid(): #nd stock_period_form.is_valid()
+
+                # save new Store
+                new_store = store_name_form.save()
+
+                # save new StockPeriod
+                new_stock_period = StockPeriod.objects.create(
+                    store=new_store,
+                    frequency=StockPeriod.DAILY,#stock_period_form.cleaned_data["frequency"],
+                )# Integrity not checked - freq & store!!!
+
+                # save new Stocktake
+                new_stocktake = Stocktake.objects.create(
+                    stock_period=new_stock_period,
+                    end_date=stocktake_form.cleaned_data["end_date"],
+                )
+
+                return HttpResponseRedirect(reverse("index"))
+
+            else:
+                return render(request, "stocklist/index.html",{
+                    'page_title':'New Store',
+                    'store_name_form':store_name_form,
+                    # 'stock_period_form':stock_period_form,
+                    'stocktake_form':stocktake_form,
+                })
+
+    if request.method == 'PUT':
+
+        # check for valid Store
+        store = get_object_or_404(Store, user=request.user, pk=store_id)
+
+        data = json.loads(request.body)
+        new_store_name = data.get("store_name", "")
+
+        if new_store_name == '':
+            return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
+
+        if Store.objects.filter(user=request.user, name=new_store_name).exists():
+            return JsonResponse({"integrity_error": f"Store name must be unique for user"}, status=400)
+
+        try:
+            store.name = new_store_name
+            store.full_clean()
+            store.save()
+        except ValidationError as e:
+            return JsonResponse({"validation_error": e.messages}, status=400)
+        else:
+            return JsonResponse({"message": "Store update successful."}, status=201)
+
+        # if not store_name:
+        #     return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
     
     return JsonResponse({"error": "GET request Required."}, status=400)
 
@@ -298,6 +350,7 @@ def register_view(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        # Redirect to store after User registered
+        return HttpResponseRedirect(reverse("store"))
 
     return render(request, "stocklist/register.html")

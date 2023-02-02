@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, List, ListItem, Item, Stocktake, StockPeriod, StockList
+from stocklist.models import User, Store, List, ListItem, Item, Stocktake, StockPeriod, StockList, MAX_STORE_NAME_LENGTH
 
 
 class BaseTestCase(TestCase):
@@ -301,33 +301,102 @@ class StoreTestCase(BaseTestCase):
 
     def test_store_path_returns_404_for_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/store/1")
+        response = self.client.put("/store/1")
         self.assertEqual(response.status_code, 404)
 
     def test_store_path_returns_200_for_valid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
+
         path = "/store/{}".format(store.pk)
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
-    def test_POST_store_returns_400(self):
-        store = Store.objects.create(name='Test Store', user=self.user1)
+    def test_PUT_valid_data_returns_201(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'New Store Name'
+
         path = "/store/{}".format(store.pk)
-        response = self.client.post(path)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 201)
+
+    def test_PUT_empty_data_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = ''
+
+        path = "/store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
         self.assertEqual(response.status_code, 400)
+
+    def test_store_name_max_length_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
+
+        path = "/store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 400)
+
+    def test_store_name_not_unique_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store1 = Store.objects.create(name='Test Store 1', user=self.user1)
+        test_store_name = 'Test Store 2'
+        store2 = Store.objects.create(name=test_store_name, user=self.user1)
+
+        path = "/store/{}".format(store1.pk)
+        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        self.assertEqual(response.status_code, 400)
+        # print(response)
+
+    
+    # def test_POST_store_returns_400(self):
+    #     store = Store.objects.create(name='Test Store', user=self.user1)
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+    #     path = "/store/{}".format(store.pk)
+    #     response = self.client.post(path)
+    #     self.assertEqual(response.status_code, 400)
+
+# move to stores
+#     def test_GET_forms(self):
+#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+#         response = self.client.get("/")
+#         self.assertEqual(response.status_code, 200)
+#         self.assertTrue(response.context['store_name_form'])
+#         self.assertTrue(response.context['stock_period_form'])
+#         self.assertTrue(response.context['stocktake_form'])
+#         self.assertTrue(response.context['stock_list_form'])
+
+#     def test_POST_reverse_to_index(self):
+#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+#         response = self.client.post("/")
+#         self.assertEqual(response.url, "/") 
+
+#     def test_PUT_reverse_to_index(self):
+#         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+#         response = self.client.put("/")
+#         self.assertEqual(response.url, "/") 
+        
 
 
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        test_store_name = 'Test Store'
+        Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
     def test_GET_renders_index_html(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        test_store_name = 'Test Store'
+        Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
         self.assertEquals(response.templates[0].name, 'stocklist/index.html')
@@ -337,12 +406,12 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
-    def test_GET_no_stores(self):
+    def test_GET_no_stores_redirects_to_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores_or_None'], None)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/store") 
 
     def test_GET_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -406,29 +475,6 @@ class IndexTestCase(BaseTestCase):
         with self.assertNumQueries(3):
             response = self.client.get("/")
 
-    def test_GET_forms(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context['store_name_form'])
-        self.assertTrue(response.context['stock_period_form'])
-        self.assertTrue(response.context['stocktake_form'])
-        self.assertTrue(response.context['stock_list_form'])
-
-    def test_POST_reverse_to_index(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-        response = self.client.post("/")
-        self.assertEqual(response.url, "/") 
-
-    def test_PUT_reverse_to_index(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-        response = self.client.put("/")
-        self.assertEqual(response.url, "/") 
-        
-
     # def test POST PUT
 
 
@@ -479,7 +525,7 @@ class RegisterTestCase(BaseTestCase):
         response = self.client.post("/register", {'username':self.TEST_USER, 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
         self.assertContains(response, "Username already taken.")
 
-    def test_register_view_POST_success_reverse_to_index(self):
+    def test_register_view_POST_success_reverse_to_store(self):
         response = self.client.post("/register", {'username':'someone', 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/") 
+        self.assertEqual(response.url, "/store") 
