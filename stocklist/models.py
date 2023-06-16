@@ -21,7 +21,7 @@ class User(AbstractUser):
 
 class Store(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stores")
-    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME)
+    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME,)
 
     class Meta:
         '''Store name must be unique for User.'''
@@ -192,7 +192,7 @@ class Stocktake(models.Model):
         elif self.stock_period.frequency == self.stock_period.WEEKLY:
             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
         else:
-            return self.end_date.strftime("%A %d %b %Y")
+            return self.end_date.strftime("%a %d %B %Y")
 
     # set_end_date() ??? by type
 

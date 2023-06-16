@@ -19,20 +19,21 @@ def index(request):
 
         if request.method == 'GET':
             # Stores
-            stores = Store.objects.filter(user=request.user) or None
+            stores = Store.objects.filter(user=request.user) or None#get or create!
             if not stores:
                 return HttpResponseRedirect(reverse("store"))
 
             # Stocktakes & StockLists
             oldest_store = stores[0] # Default is oldest Store
-            stock_takes = Stocktake.objects.filter(
+            stocktakes = Stocktake.objects.filter(
                 stock_period__store=oldest_store
             ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
+            # all one query?
 
             return render(request, "stocklist/index.html",{
-                'page_title':'Stores',
+                'page_title':'Store',
                 'stores':stores,
-                'stock_takes':stock_takes,
+                'stocktakes':stocktakes,
             })
             # Items?
             
@@ -50,6 +51,11 @@ def store(request):
             })
 
     if request.method == 'POST':
+
+        # check it's still the first store
+        # better still: create the store and period first!!
+        # just need date!
+
         store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
         # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
         stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
@@ -63,13 +69,16 @@ def store(request):
             new_stock_period = StockPeriod.objects.create(
                 store=new_store,
                 frequency=StockPeriod.DAILY,
-            )# Integrity not checked - freq & store!!!
+            )
 
             # save new Stocktake
             new_stocktake = Stocktake.objects.create(
                 stock_period=new_stock_period,
                 end_date=stocktake_form.cleaned_data["end_date"],
             )
+            # go to url for store id!
+
+            # should got to import csv
             return HttpResponseRedirect(reverse("index"))
 
         else:
@@ -96,6 +105,7 @@ def update_store(request, store_id):
         # done in form now
         if new_store_name == '':
             return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
+        # must be done here
         if Store.objects.filter(user=request.user, name=new_store_name).exists():
             return JsonResponse({"integrity_error": f"Store name must be unique for user"}, status=400)
 
@@ -112,20 +122,6 @@ def update_store(request, store_id):
         #     return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
     
     return JsonResponse({"error": "PUT request Required."}, status=400)
-
-
-@login_required
-def count(request, count_id):
-
-    # check for valid count
-    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
-
-    if request.method == "GET":
-        # serialized_items = Item.objects.serialized_count_items(stocktake)
-        # return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
-        return JsonResponse({"message":"TODO"}, safe=False, status=200)
-
-    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
@@ -277,6 +273,18 @@ def import_items(request, count_id):
 
 
 
+@login_required
+def count(request, count_id):
+
+    # check for valid count
+    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
+
+    if request.method == "GET":
+        # serialized_items = Item.objects.serialized_count_items(stocktake)
+        # return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
+        return JsonResponse({"message":"TODO"}, safe=False, status=200)
+
+    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
@@ -352,6 +360,7 @@ def register_view(request):
                 "message": "Username already taken."
             })
         login(request, user)
+
         # Redirect to store after User registered
         return HttpResponseRedirect(reverse("store"))
 

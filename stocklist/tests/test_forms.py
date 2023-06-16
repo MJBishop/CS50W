@@ -57,7 +57,6 @@ class StoreNameFormTestCase(TestCase):
         })
 
     def test_unique_form_data(self):
-        # logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         test_store_name = 'Test Store name'
         store = Store.objects.create(name=test_store_name, user=self.user)
         form = StoreNameForm({
@@ -167,10 +166,10 @@ class StockListFormTestCase(TestCase):
             'name': ['Ensure this value has at most 20 characters (it has 21).'],
         })
 
-class StockListInviteFormTestCase(TestCase):
+# class StockListInviteFormTestCase(TestCase):
 
-    def test_empty_form(self):
-        form = StockListInviteForm()
+#     def test_empty_form(self):
+#         form = StockListInviteForm()
 
-class ListFormTestCase(TestCase):
-    pass
+# class ListFormTestCase(TestCase):
+#     pass

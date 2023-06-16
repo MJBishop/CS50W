@@ -8,20 +8,36 @@ from stocklist.models import Store, StockPeriod, Stocktake, List
 class StoreNameForm(ModelForm):
     class Meta:
         model=Store
-        fields=['name', 'user'] #user hidden
+        fields=['name', 'user']
         widgets = {
-            'user': forms.HiddenInput,
+            'name':forms.TextInput(attrs={'class':'form-control mx-auto my-1'},),
+            'user':forms.HiddenInput,
+        }
+        labels = {
+            'name':'Store Name'
         }
 
 class StockPeriodForm(ModelForm):
     class Meta:
         model=StockPeriod
-        fields=['frequency']  #store hidden
+        fields=['frequency']
+        widgets = {
+            'frequency':forms.Select(attrs={'class':'form-control mx-auto my-1'},),
+        }
+        labels = {
+            'frequency':'Stocktake Frequency'
+        }
 
 class StocktakeForm(ModelForm):
     class Meta:
         model=Stocktake
         fields=['end_date']
+        widgets = {
+            'end_date': forms.SelectDateWidget(attrs={'class':'form-control mx-auto my-1'},),
+        }
+        labels = {
+            'end_date':'Stocktake Date'
+        }
 
     def clean(self):
         '''End date cannot be in the past.'''
