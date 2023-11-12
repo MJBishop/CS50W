@@ -440,7 +440,7 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        stocktakes = response.context['stock_takes']
+        stocktakes = response.context['stocktakes']
         self.assertEqual(stocktakes.count(), 1)
 
         test_stocktake = stocktakes[0]
@@ -458,14 +458,14 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        stocktakes = response.context['stock_takes']
+        stocktakes = response.context['stocktakes']
         self.assertEqual(stocktakes.count(), 2)
         self.assertEqual(stocktakes[0], newest_stocktake)
 
     def test_GET_num_queries_existing_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(4):
             response = self.client.get("/")
 
     def test_GET_num_queries_no_stores(self):

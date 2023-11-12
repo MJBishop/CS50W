@@ -246,7 +246,7 @@ class StocktakeTestCase(TestCase):
             end_date = date(year=2023, month=1, day=27),
         )
         
-        expected_string = "Friday 27 Jan 2023"
+        expected_string = "Fri 27 January 2023"
         self.assertEqual(expected_string, stocktake.__str__())
 
     def test_weeky_stocktake_string(self):
