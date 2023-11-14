@@ -150,7 +150,7 @@ def import_items(request, store_id):
 
         # create Items & ListItems
         for item_data in items:
-            item_name = item_data.get("name", "")
+            item_name = item_data.get("name", "") # default name? line number?
             # TODO - item = Item.objects.filter(name=item_name, store=stocktake.stock_period.store)
             try:
                 item = Item(name=item_name, store=store)
