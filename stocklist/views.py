@@ -150,26 +150,30 @@ def import_items(request, store_id):
 
         # create Items & ListItems
         for item_data in items:
+
+            # create Item
             item_name = item_data.get("name", "") # default name? line number?
             # TODO - item = Item.objects.filter(name=item_name, store=stocktake.stock_period.store)
-            try:
-                item = Item(name=item_name, store=store)
-                item.full_clean()
-                item.save()
-            except ValidationError as e: 
-                # Collect these all up? currently stops loop after 1st ValidationError!
-                return JsonResponse({"error": e.messages}, status=400)
+            
+            if item_name != '':
+                try:
+                    item = Item(name=item_name, store=store)
+                    item.full_clean()
+                    item.save()
+                except ValidationError as e: 
+                    # Collect these all up? currently stops loop after 1st ValidationError!
+                    return JsonResponse({"error": e.messages}, status=400)
 
-            # create ListItem
-            item_amount = item_data.get("amount", '')
-            if item_amount == '':
-                item_amount = MIN_LIST_ITEM_AMOUNT
-            try:
-                list_item = ListItem(item=item, list=list, amount=item_amount)
-                list_item.full_clean()
-                list_item.save()
-            except ValidationError as e:
-                return JsonResponse({"error": e.messages}, status=400)
+                # create ListItem
+                item_amount = item_data.get("amount", '')
+                if item_amount == '':
+                    item_amount = MIN_LIST_ITEM_AMOUNT
+                try:
+                    list_item = ListItem(item=item, list=list, amount=item_amount)
+                    list_item.full_clean()
+                    list_item.save()
+                except ValidationError as e:
+                    return JsonResponse({"error": e.messages}, status=400)
 
         return JsonResponse({"message": "Import successful."}, status=201)
     

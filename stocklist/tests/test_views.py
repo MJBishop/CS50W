@@ -133,6 +133,26 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
+    def test_POST_import_items_handles_missing_item_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        items = list(self.json_data["items"])
+        items.append({
+            'name':'',
+            'amount':'6'
+        })
+        json_data = self.json_data.copy()
+        json_data['items'] = items
+
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(json_data))
+        
+        lists = List.objects.filter(store=self.store)
+        self.assertEqual(lists.count(), 1)
+        items = Item.objects.filter(store=self.store)
+        self.assertEqual(items.count(), 3)
+        self.assertEqual(response.status_code, 201)
+
     def test_POST_import_items_creates_list_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
