@@ -121,10 +121,11 @@ class ImportItemsTestCase(ImportTestCase):
             'name':'A'*(80+1),
             'amount':'6'
         })
-        self.json_data['items'] = items
+        json_data = self.json_data.copy()
+        json_data['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -152,10 +153,11 @@ class ImportItemsTestCase(ImportTestCase):
             'name':'Test Fail for negative number',
             'amount':'-1'
         })
-        self.json_data['items'] = items
+        json_data = self.json_data.copy()
+        json_data['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -171,10 +173,11 @@ class ImportItemsTestCase(ImportTestCase):
             'name':'Test Fail for large number',
             'amount':'1000001'
         })
-        self.json_data['items'] = items
+        json_data = self.json_data.copy()
+        json_data['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
