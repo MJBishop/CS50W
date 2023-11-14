@@ -10,7 +10,7 @@ urlpatterns = [
     # FREE API
     path("store", views.store, name="store"),
     path("update_store/<int:store_id>", views.update_store, name="update_store"),
-    path("import_items/<int:count_id>", views.import_items, name="import_items"),
+    path("import_items/<int:store_id>", views.import_items, name="import_items"),
     path("count_item/<int:list_id>/<int:item_id>", views.count_item, name="count_item"),
 
     # PAID API

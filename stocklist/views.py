@@ -8,8 +8,8 @@ from django.db.models import F
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
-from stocklist.forms import StoreNameForm, StockPeriodForm, StocktakeForm, StockListForm
-from .models import User, Store, Item, List, ListItem, StockPeriod, Stocktake, StockList
+from stocklist.forms import StoreNameForm #, StockPeriodForm, StocktakeForm, StockListForm
+from .models import User, Store, Item, List, ListItem, MIN_LIST_ITEM_AMOUNT #, StockPeriod, Stocktake, StockList
 
 
 def index(request):
@@ -19,21 +19,21 @@ def index(request):
 
         if request.method == 'GET':
             # Stores
-            stores = Store.objects.filter(user=request.user) or None#get or create!
+            stores = Store.objects.filter(user=request.user) or None #get or create!
             if not stores:
                 return HttpResponseRedirect(reverse("store"))
 
             # Stocktakes & StockLists
             oldest_store = stores[0] # Default is oldest Store
-            stocktakes = Stocktake.objects.filter(
-                stock_period__store=oldest_store
-            ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
+            # stocktakes = Stocktake.objects.filter(
+            #     stock_period__store=oldest_store
+            # ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
             # all one query?
 
             return render(request, "stocklist/index.html",{
                 'page_title':'Store',
                 'stores':stores,
-                'stocktakes':stocktakes,
+                # 'stocktakes':stocktakes,
             })
             # Items?
             
@@ -47,7 +47,7 @@ def store(request):
         return render(request, "stocklist/store.html",{
                 'page_title':'New Store',
                 'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
-                'stocktake_form':StocktakeForm(prefix='stocktake_form'),
+                # 'stocktake_form':StocktakeForm(prefix='stocktake_form'),
             })
 
     if request.method == 'POST':
@@ -58,24 +58,24 @@ def store(request):
 
         store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
         # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
-        stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
+        # stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
 
-        if store_name_form.is_valid() and stocktake_form.is_valid():
+        if store_name_form.is_valid():# and stocktake_form.is_valid():
 
             # save new Store
             new_store = store_name_form.save()
 
             # save new StockPeriod
-            new_stock_period = StockPeriod.objects.create(
-                store=new_store,
-                frequency=StockPeriod.DAILY,
-            )
+            # new_stock_period = StockPeriod.objects.create(
+            #     store=new_store,
+            #     frequency=StockPeriod.DAILY,
+            # )
 
             # save new Stocktake
-            new_stocktake = Stocktake.objects.create(
-                stock_period=new_stock_period,
-                end_date=stocktake_form.cleaned_data["end_date"],
-            )
+            # new_stocktake = Stocktake.objects.create(
+            #     stock_period=new_stock_period,
+            #     end_date=stocktake_form.cleaned_data["end_date"],
+            # )
             # go to url for store id!
 
             # should got to import csv
@@ -85,7 +85,7 @@ def store(request):
             return render(request, "stocklist/index.html",{
                 'page_title':'New Store',
                 'store_name_form':store_name_form,
-                'stocktake_form':stocktake_form,
+                # 'stocktake_form':stocktake_form,
             })
 
     return HttpResponseRedirect(reverse("store"))
@@ -125,10 +125,12 @@ def update_store(request, store_id):
 
 
 @login_required
-def import_items(request, count_id):
+def import_items(request, store_id):
 
-    # check for valid count
-    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
+    # check for valid store
+    # stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
+    store = get_object_or_404(Store, user=request.user, pk=store_id)
+
 
     if request.method == "POST":
         
@@ -140,7 +142,7 @@ def import_items(request, count_id):
 
         # create List
         try:
-            list = List(name=list_name, type=list_type, store=stocktake.stock_period.store)
+            list = List(name=list_name, type=list_type, store=store)
             list.full_clean()
             list.save()
         except ValidationError as e:
@@ -151,7 +153,7 @@ def import_items(request, count_id):
             item_name = item_data.get("name", "")
             # TODO - item = Item.objects.filter(name=item_name, store=stocktake.stock_period.store)
             try:
-                item = Item(name=item_name, store=stocktake.stock_period.store)
+                item = Item(name=item_name, store=store)
                 item.full_clean()
                 item.save()
             except ValidationError as e: 
@@ -159,7 +161,9 @@ def import_items(request, count_id):
                 return JsonResponse({"error": e.messages}, status=400)
 
             # create ListItem
-            item_amount = item_data.get("amount", "")
+            item_amount = item_data.get("amount", MIN_LIST_ITEM_AMOUNT)
+            if item_amount == '':
+                item_amount = MIN_LIST_ITEM_AMOUNT
             try:
                 list_item = ListItem(item=item, list=list, amount=item_amount)
                 list_item.full_clean()

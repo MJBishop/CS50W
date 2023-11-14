@@ -108,7 +108,8 @@ class ListItem(models.Model):
     amount = models.DecimalField(
         max_digits=7,
         decimal_places=1,
-        validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)]
+        validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)],
+        default=MIN_LIST_ITEM_AMOUNT
     )
 
     class Meta:
@@ -126,81 +127,81 @@ class ListItem(models.Model):
         return self.item.name
 
 
-class StockPeriod(models.Model):
-    MONTHLY = 'MO'
-    WEEKLY = "WE"
-    DAILY = "DA"
-    COUNT_FREQUENCY_CHOICES = [
-        (MONTHLY, "Monthly"),
-        (WEEKLY, "Weekly"),
-        (DAILY, "Daily"),
-    ]
-    frequency = models.CharField(blank=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
-    store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
+# class StockPeriod(models.Model):
+#     MONTHLY = 'MO'
+#     WEEKLY = "WE"
+#     DAILY = "DA"
+#     COUNT_FREQUENCY_CHOICES = [
+#         (MONTHLY, "Monthly"),
+#         (WEEKLY, "Weekly"),
+#         (DAILY, "Daily"),
+#     ]
+#     frequency = models.CharField(blank=False, max_length=2, choices=COUNT_FREQUENCY_CHOICES, default=DAILY)
+#     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="stock_periods")
 
-    class Meta:
-        '''MONTHLY and WEEKLY frequency must be unique for store.'''
-        constraints = [
-            models.UniqueConstraint(
-                fields=['store', 'frequency',],
-                condition=Q(frequency='MO') | Q(frequency='WE'),
-                name='unique monthly_weekly_frequency store',
-            )
-        ]
+#     class Meta:
+#         '''MONTHLY and WEEKLY frequency must be unique for store.'''
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['store', 'frequency',],
+#                 condition=Q(frequency='MO') | Q(frequency='WE'),
+#                 name='unique monthly_weekly_frequency store',
+#             )
+#         ]
 
-    def __str__(self):
-        return '{} {} Count'.format(self.store.name, self.get_frequency_display())
+#     def __str__(self):
+#         return '{} {} Count'.format(self.store.name, self.get_frequency_display())
 
-    def save(self, *args, **kwargs):
-        '''Save only when creating.'''
-        if self.id is None:
-            super(StockPeriod, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         '''Save only when creating.'''
+#         if self.id is None:
+#             super(StockPeriod, self).save(*args, **kwargs)
 
-            # Should we be throwing an exception? Maybe editable=False, then re-add to from when needed?
+#             # Should we be throwing an exception? Maybe editable=False, then re-add to from when needed?
 
-    def next_date(self, previous_date):
-        '''
-        Calculates the next Stocktake date for a given date:
+#     def next_date(self, previous_date):
+#         '''
+#         Calculates the next Stocktake date for a given date:
 
-        previous_date (Date): the previous Stocktake Date
+#         previous_date (Date): the previous Stocktake Date
 
-        Return: Date
-        '''
-        if self.frequency == self.MONTHLY:
-            # Last day of next month - 32 days: definitely 2 months ahead
-            temp1 = previous_date + timedelta(days=32)
-            next_date = date(year=temp1.year, month=temp1.month, day=1) - timedelta(days=1)   
-            return next_date
-        elif self.frequency == self.WEEKLY:
-            # Plus 7 days
-            return previous_date + timedelta(days=7)
-        else:
-            #Plus 1 day
-            return previous_date + timedelta(days=1)
-
-
-class Stocktake(models.Model):
-    stock_period = models.ForeignKey(StockPeriod, editable=False, on_delete=models.CASCADE, related_name="stocktakes")
-    end_date = models.DateField(default=timezone.localdate) 
-
-    class Meta:
-        ordering = ['-id']
-
-    def __str__(self):
-        if self.stock_period.frequency == self.stock_period.MONTHLY:
-            return self.end_date.strftime("%B %Y")
-        elif self.stock_period.frequency == self.stock_period.WEEKLY:
-            return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
-        else:
-            return self.end_date.strftime("%a %d %B %Y")
-
-    # set_end_date() ??? by type
+#         Return: Date
+#         '''
+#         if self.frequency == self.MONTHLY:
+#             # Last day of next month - 32 days: definitely 2 months ahead
+#             temp1 = previous_date + timedelta(days=32)
+#             next_date = date(year=temp1.year, month=temp1.month, day=1) - timedelta(days=1)   
+#             return next_date
+#         elif self.frequency == self.WEEKLY:
+#             # Plus 7 days
+#             return previous_date + timedelta(days=7)
+#         else:
+#             #Plus 1 day
+#             return previous_date + timedelta(days=1)
 
 
-class StockList(models.Model):
-    stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
-    list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
+# class Stocktake(models.Model):
+#     stock_period = models.ForeignKey(StockPeriod, editable=False, on_delete=models.CASCADE, related_name="stocktakes")
+#     end_date = models.DateField(default=timezone.localdate) 
 
-    def __str__(self):
-        return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y"))
+#     class Meta:
+#         ordering = ['-id']
+
+#     def __str__(self):
+#         if self.stock_period.frequency == self.stock_period.MONTHLY:
+#             return self.end_date.strftime("%B %Y")
+#         elif self.stock_period.frequency == self.stock_period.WEEKLY:
+#             return "Week Ending {}".format(self.end_date.strftime("%A %d %b %Y"))
+#         else:
+#             return self.end_date.strftime("%a %d %B %Y")
+
+#     # set_end_date() ??? by type
+
+
+# class StockList(models.Model):
+#     stocktake = models.ForeignKey(Stocktake, editable=False, on_delete=models.CASCADE, related_name="stocklists")
+#     list = models.OneToOneField(List, editable=False, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE, related_name="stocklists")
+
+#     def __str__(self):
+#         return '{} on {}'.format(self.list.name, self.list.date_added.strftime("%A %d %b %Y"))
