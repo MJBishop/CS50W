@@ -182,6 +182,25 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(list_items.count(), 3)
         self.assertEqual(response.status_code, 400)
 
+    def test_POST_import_items_creates_listitem_for_missing_item_amount(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        items = list(self.json_data["items"])
+        items.append({
+            'name':'Test Pass for missing amount'
+        })
+        json_data = self.json_data.copy()
+        json_data['items'] = items
+
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(json_data))
+        
+        lists = List.objects.filter(store=self.store)
+        self.assertEqual(lists.count(), 1)
+        list_items = ListItem.objects.filter(list=lists[0].pk)
+        self.assertEqual(list_items.count(), 4)
+        self.assertEqual(response.status_code, 201)
+
 
 class CountItemTestCase(ImportTestCase):
     

@@ -161,7 +161,7 @@ def import_items(request, store_id):
                 return JsonResponse({"error": e.messages}, status=400)
 
             # create ListItem
-            item_amount = item_data.get("amount", MIN_LIST_ITEM_AMOUNT)
+            item_amount = item_data.get("amount", '')
             if item_amount == '':
                 item_amount = MIN_LIST_ITEM_AMOUNT
             try:
