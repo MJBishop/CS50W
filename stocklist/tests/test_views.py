@@ -244,7 +244,7 @@ class ImportItemsTestCase(ImportTestCase):
         items = Item.objects.filter(store=self.store.pk)
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 201)
-        print(list_items)
+        # print(list_items)
 
 
 class CountItemTestCase(ImportTestCase):

@@ -123,38 +123,42 @@ def import_items(request, store_id): # import_list
         for item_data in items:
 
             item_name = item_data.get("name", "") # default name? line number?
-
-            # check for item in Store
-            item_query = Item.objects.filter(name=item_name, store=store)
-            if not item_query.exists():
-
-                # save item to store
-                try:
-                    item = Item(name=item_name, store=store)
-                    item.full_clean()
-                    item.save()
-                except ValidationError as ve: 
-                    # Collect these all up? currently stops loop after 1st ValidationError!
-                    print('Validation Error')
-                    # IF not unique add item as ref
-                    return JsonResponse({"error": ve.messages}, status=400)
+            if item_name == '':
+                # do something!
+                pass
             else:
-                item = item_query.first()
 
-            # save list_item to list
-            item_amount = item_data.get("amount", '')
-            if item_amount == '':
-                item_amount = MIN_LIST_ITEM_AMOUNT
-            try:
-                list_item = ListItem(item=item, list=list, amount=item_amount)
-                list_item.full_clean()
-                list_item.save()
-            except ValidationError as e:
-                return JsonResponse({"error": e.messages}, status=400)
+                # check for Item in Store
+                item_query = Item.objects.filter(name=item_name, store=store)
+                if item_query.exists():
+                    item = item_query.first()
+                else:
+
+                    # save Item to Store
+                    try:
+                        item = Item(name=item_name, store=store)
+                        item.full_clean()
+                        item.save()
+                    except ValidationError as ve: 
+                        # Collect these all up? currently stops loop after 1st ValidationError!
+                        print('Validation Error')
+                        # IF not unique add item as ref
+                        return JsonResponse({"error": ve.messages}, status=400)
+
+                # save ListItem to List
+                item_amount = item_data.get("amount", '')
+                if item_amount == '':
+                    item_amount = MIN_LIST_ITEM_AMOUNT
+                try:
+                    list_item = ListItem(item=item, list=list, amount=item_amount)
+                    list_item.full_clean()
+                    list_item.save()
+                except ValidationError as e:
+                    return JsonResponse({"error": e.messages}, status=400)
 
 
             # skip rows with empty names - TODO - record total skipped?
-            # if item_name != '':
+            
 
                 # create Item
                 
