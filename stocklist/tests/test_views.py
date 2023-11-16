@@ -224,6 +224,28 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(list_items.count(), 4)
         self.assertEqual(response.status_code, 201)
 
+    def test_POST_import_items_doesnt_create_new_item_if_item_already_in_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        items = list(self.json_data["items"])
+        items.append({
+            'name':'Absolut Vodka 70CL BTL'
+        })
+        json_data = self.json_data.copy()
+        json_data['items'] = items
+
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(json_data))
+        
+        lists = List.objects.filter(store=self.store)
+        self.assertEqual(lists.count(), 1)
+        list_items = ListItem.objects.filter(list=lists[0].pk)
+        self.assertEqual(list_items.count(), 4)
+        items = Item.objects.filter(store=self.store.pk)
+        self.assertEqual(items.count(), 3)
+        self.assertEqual(response.status_code, 201)
+        print(list_items)
+
 
 class CountItemTestCase(ImportTestCase):
     

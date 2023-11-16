@@ -23,17 +23,9 @@ def index(request):
             if not stores:
                 return HttpResponseRedirect(reverse("store"))
 
-            # Stocktakes & StockLists
-            oldest_store = stores[0] # Default is oldest Store
-            # stocktakes = Stocktake.objects.filter(
-            #     stock_period__store=oldest_store
-            # ).annotate(frequency=F('stock_period__frequency')).prefetch_related('stocklists')
-            # all one query?
-
             return render(request, "stocklist/index.html",{
                 'page_title':'Store',
                 'stores':stores,
-                # 'stocktakes':stocktakes,
             })
             # Items?
             
@@ -47,45 +39,26 @@ def store(request):
         return render(request, "stocklist/store.html",{
                 'page_title':'New Store',
                 'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
-                # 'stocktake_form':StocktakeForm(prefix='stocktake_form'),
             })
 
     if request.method == 'POST':
 
         # check it's still the first store
-        # better still: create the store and period first!!
+        # better still: create the store first!!
         # just need date!
 
         store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
-        # stock_period_form = StockPeriodForm(request.POST, prefix='stock_period_form')
-        # stocktake_form = StocktakeForm(request.POST, prefix='stocktake_form')
 
-        if store_name_form.is_valid():# and stocktake_form.is_valid():
+        if store_name_form.is_valid():
 
             # save new Store
             new_store = store_name_form.save()
-
-            # save new StockPeriod
-            # new_stock_period = StockPeriod.objects.create(
-            #     store=new_store,
-            #     frequency=StockPeriod.DAILY,
-            # )
-
-            # save new Stocktake
-            # new_stocktake = Stocktake.objects.create(
-            #     stock_period=new_stock_period,
-            #     end_date=stocktake_form.cleaned_data["end_date"],
-            # )
-            # go to url for store id!
-
-            # should got to import csv
             return HttpResponseRedirect(reverse("index"))
 
         else:
             return render(request, "stocklist/index.html",{
                 'page_title':'New Store',
                 'store_name_form':store_name_form,
-                # 'stocktake_form':stocktake_form,
             })
 
     return HttpResponseRedirect(reverse("store"))
@@ -125,17 +98,15 @@ def update_store(request, store_id):
 
 
 @login_required
-def import_items(request, store_id):
+def import_items(request, store_id): # import_list
 
     # check for valid store
-    # stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
     store = get_object_or_404(Store, user=request.user, pk=store_id)
-
 
     if request.method == "POST":
         
+        # list data
         data = json.loads(request.body)
-        # origin = data.get("origin", "") - not implemented!
         list_name = data.get("name", "")
         list_type = data.get("type", "")
         items = data.get("items", "")
@@ -148,32 +119,48 @@ def import_items(request, store_id):
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-        # create Items & ListItems
+        # create ListItems
         for item_data in items:
 
-            # create Item
             item_name = item_data.get("name", "") # default name? line number?
-            # TODO - item = Item.objects.filter(name=item_name, store=stocktake.stock_period.store)
-            
-            if item_name != '':
+
+            # check for item in Store
+            item_query = Item.objects.filter(name=item_name, store=store)
+            if not item_query.exists():
+
+                # save item to store
                 try:
                     item = Item(name=item_name, store=store)
                     item.full_clean()
                     item.save()
-                except ValidationError as e: 
+                except ValidationError as ve: 
                     # Collect these all up? currently stops loop after 1st ValidationError!
-                    return JsonResponse({"error": e.messages}, status=400)
+                    print('Validation Error')
+                    # IF not unique add item as ref
+                    return JsonResponse({"error": ve.messages}, status=400)
+            else:
+                item = item_query.first()
+
+            # save list_item to list
+            item_amount = item_data.get("amount", '')
+            if item_amount == '':
+                item_amount = MIN_LIST_ITEM_AMOUNT
+            try:
+                list_item = ListItem(item=item, list=list, amount=item_amount)
+                list_item.full_clean()
+                list_item.save()
+            except ValidationError as e:
+                return JsonResponse({"error": e.messages}, status=400)
+
+
+            # skip rows with empty names - TODO - record total skipped?
+            # if item_name != '':
+
+                # create Item
+                
 
                 # create ListItem
-                item_amount = item_data.get("amount", '')
-                if item_amount == '':
-                    item_amount = MIN_LIST_ITEM_AMOUNT
-                try:
-                    list_item = ListItem(item=item, list=list, amount=item_amount)
-                    list_item.full_clean()
-                    list_item.save()
-                except ValidationError as e:
-                    return JsonResponse({"error": e.messages}, status=400)
+                
 
         return JsonResponse({"message": "Import successful."}, status=201)
     
@@ -182,117 +169,6 @@ def import_items(request, store_id):
 
 
 
-
-# def create_stocktake(self, previous_stocktake, new_date):
-#         '''
-#         Creates a new Stocktake object
-
-#         previous_stocktake (Stocktake): Calculate the next end_date for MONTHLY, WEEKLY stock_period
-#         new_date (Date): The next end_date for DAILY stock_period
-
-#         Return: Stocktake 
-#         '''
-#         stock_period = previous_stocktake.stock_period
-#         # next_date = date()
-#         if stock_period.frequency == StockPeriod.DAILY:
-#             next_date = new_date
-#         else:
-#             next_date = stock_period.next_date(previous_stocktake.end_date)
-        
-#         stocktake = Stocktake(stock_period=stock_period, end_date=next_date)
-#         try:
-#             stocktake.full_clean()
-#             stocktake.save()
-#         except ValidationError as e:
-#             raise e
-#         else:
-#             return stocktake
-
-
-
-
-
-
-# class CountItemsManager(models.Manager):
-#     def count_items(self, stocktake):
-#         '''
-#         Annotates total list_item.amount for lists, by type, for the given count:
-#         total_previous:     List.type=count totals for the previous count (opening stock)
-#         total_added:        List.type=addition totals for this count (additions)
-#         total_subtracted:   List.type=subtraction totals for this count (subtractions)
-#         total_counted:      List.type=count totals for this count (closing stock)
-
-#         count (Count): The Count
-
-#         Return: QuerySet
-#         '''
-
-#         # TODO - filter between dates
-
-#         storeQ = Q(store=stocktake.stock_period.store)
-#         previous_countQ = Q(list_items__list__count_list__stocklist__stocktake=stocktake.previous_count)
-#         countQ = Q(list_items__list__count_list__count=stocktake)
-#         additionTypeQ = Q(list_items__list__type=List.ADDITION)
-#         subtractionTypeQ = Q(list_items__list__type=List.SUBTRACTION)
-#         countTypeQ = Q(list_items__list__type=List.COUNT)
-
-#         return self.annotate(
-#             total_previous=Coalesce( Sum('list_items__amount', filter=(storeQ & previous_countQ & countTypeQ)), Decimal('0') ),
-#             total_added=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & additionTypeQ)), Decimal('0') ),
-#             total_subtracted=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & subtractionTypeQ)), Decimal('0') ),
-#             total_counted=Coalesce( Sum('list_items__amount', filter=(storeQ & countQ & countTypeQ)), Decimal('0') ),
-#         )#order_by (get_queryset?)
-
-#     def serialized_count_items(self, count): #move out serialize.py
-#         '''
-#         Calls count_items(count)
-#         Serializes the annotated items
-
-#         count (Count): The count
-
-#         Return: An Array of serialized, annotated items
-#         '''
-#         count_items = self.count_items(count)
-#         serialized_count_items = []
-#         for item in count_items:
-#             serialized_count_items.append({
-#                     'id':item.id,
-#                     'store_id':item.store.id,
-#                     'name':item.name,
-#                     'origin':item.origin,
-#                     'total_added':'{:.1f}'.format(item.total_added),
-#                     'total_previous':'{:.1f}'.format(item.total_previous),
-#                     'total_subtracted':'{:.1f}'.format(item.total_subtracted),
-#                     'total_counted':'{:.1f}'.format(item.total_counted),
-#             })
-#         return serialized_count_items 
-
-# def create_next_count(self, stocktake):
-    #     next_stocktake = Stocktake(
-    #         stock_period=stocktake.stock_period,
-    #         end_date=stocktake.next_date(),
-    #     )
-    #     next_stocktake.full_clean()
-    #     next_stocktake.save()
-    #     return next_stocktake
-
-
-
-
-
-
-@login_required
-def count(request, count_id):
-
-    # check for valid count
-    stocktake = get_object_or_404(Stocktake, stock_period__store__user=request.user, pk=count_id)
-
-    if request.method == "GET":
-        # serialized_items = Item.objects.serialized_count_items(stocktake)
-        # return JsonResponse(serialized_items, safe=False)  # store.name count.date/name?
-        return JsonResponse({"message":"TODO"}, safe=False, status=200)
-
-    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
@@ -319,6 +195,8 @@ def count_item(request, list_id, item_id):
         return JsonResponse({"message": "Import successful."}, status=201)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
+
+
 
 
 def login_view(request):
