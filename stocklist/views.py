@@ -124,7 +124,7 @@ def import_items(request, store_id): # import_list
 
             item_name = item_data.get("name", "") # default name? line number?
             if item_name == '':
-                # do something!
+                # skip rows with empty names - TODO - record total skipped?
                 pass
             else:
 
@@ -141,7 +141,7 @@ def import_items(request, store_id): # import_list
                         item.save()
                     except ValidationError as ve: 
                         # Collect these all up? currently stops loop after 1st ValidationError!
-                        print('Validation Error')
+                        print(ve.messages)
                         # IF not unique add item as ref
                         return JsonResponse({"error": ve.messages}, status=400)
 
@@ -155,15 +155,6 @@ def import_items(request, store_id): # import_list
                     list_item.save()
                 except ValidationError as e:
                     return JsonResponse({"error": e.messages}, status=400)
-
-
-            # skip rows with empty names - TODO - record total skipped?
-            
-
-                # create Item
-                
-
-                # create ListItem
                 
 
         return JsonResponse({"message": "Import successful."}, status=201)
@@ -172,7 +163,9 @@ def import_items(request, store_id): # import_list
 
 
 
-
+@login_required
+def create_list(request, store_id):
+    pass
 
 
 @login_required

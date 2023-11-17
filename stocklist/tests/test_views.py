@@ -52,8 +52,6 @@ class ImportItemsTestCase(ImportTestCase):
     def setUpTestData(cls):
         sup = super().setUpTestData()
         cls.store = Store.objects.create(name='Test Store', user=cls.user1)
-        # cls.stock_period = StockPeriod.objects.create(store=cls.store)
-        # cls.stocktake = Stocktake.objects.create(stock_period=cls.stock_period)
         return sup
     
     def test_POST_import_items_redirects_to_login_if_not_logged_in(self):
@@ -244,7 +242,19 @@ class ImportItemsTestCase(ImportTestCase):
         items = Item.objects.filter(store=self.store.pk)
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 201)
-        # print(list_items)
+
+class CreateListTestCase(ImportTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        return sup
+
+    def test_POST_create_list_redirects_to_login_if_not_logged_in(self):
+        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/create_list/1") 
 
 
 class CountItemTestCase(ImportTestCase):

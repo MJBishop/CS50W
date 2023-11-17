@@ -11,6 +11,9 @@ urlpatterns = [
     path("store", views.store, name="store"),
     path("update_store/<int:store_id>", views.update_store, name="update_store"),
     path("import_items/<int:store_id>", views.import_items, name="import_items"),
+    path("create_list/<int:store_id>", views.create_list, name="create_list"),
+
+
     path("count_item/<int:list_id>/<int:item_id>", views.count_item, name="count_item")
 
 
