@@ -256,6 +256,17 @@ class CreateListTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/create_list/1") 
 
+    def test_GET_count_item_returns_400_for_user_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.generic('GET', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
+        self.assertEqual(response.status_code, 400)
+
+        # invalid name
+        # invalid type
+        # invalid store
+        # invalid date
+
 
 class CountItemTestCase(ImportTestCase):
     

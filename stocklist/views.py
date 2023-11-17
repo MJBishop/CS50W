@@ -165,7 +165,7 @@ def import_items(request, store_id): # import_list
 
 @login_required
 def create_list(request, store_id):
-    pass
+    return JsonResponse({"error": "POST request Required."}, status=400)
 
 
 @login_required
