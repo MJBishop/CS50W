@@ -274,6 +274,18 @@ class CreateListTestCase(ImportTestCase):
         response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
         self.assertEqual(response.status_code, 201)
 
+    def test_POST_create_list_returns_400_for_invalid_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'A'*21, 'type':'AD'}))
+        self.assertEqual(response.status_code, 400)
+
+    def test_POST_create_list_returns_400_for_empty_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'', 'type':'AD'}))
+        self.assertEqual(response.status_code, 400)
+
         # invalid name
         # invalid type
         # invalid date

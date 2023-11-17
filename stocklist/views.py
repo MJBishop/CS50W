@@ -180,6 +180,7 @@ def create_list(request, store_id):
             list.full_clean()
             list.save()
         except ValidationError as e:
+            print(e.messages)
             return JsonResponse({"error": e.messages}, status=400)
         
         return JsonResponse({"message": "Import successful."}, status=201)
