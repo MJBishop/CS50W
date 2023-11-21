@@ -172,10 +172,6 @@ def create_list(request, store_id):
         name = data.get("name", "")
         type = data.get("type", "")
 
-        if not [i for i in List.LIST_TYPE_CHOICES if type in i]:
-            # print(type)
-            return JsonResponse({"error": "List Type not found"}, status=400)
-
         try:
             list = List(name=name, type=type, store=store)
             list.full_clean()

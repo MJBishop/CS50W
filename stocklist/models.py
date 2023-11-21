@@ -6,6 +6,9 @@ from django.db import models
 from django.db.models import Q
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
+from django.core.exceptions import ValidationError
+
 MAX_STORE_NAME_LENGTH = 20
 DEFAULT_STORE_NAME = 'Store'
 MAX_LIST_NAME_LENGTH = 20
@@ -85,7 +88,11 @@ class List(models.Model):
 
     def __str__(self):
         return '{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
-
+    
+    def save(self, *args, **kwargs): # Save or Clean??
+        if not [i for i in List.LIST_TYPE_CHOICES if self.type in i]:
+            raise ValidationError({'type': ["Invalid Type",]})
+        super(List, self).save(*args, **kwargs)
 
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")
