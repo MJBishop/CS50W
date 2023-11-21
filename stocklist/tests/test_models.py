@@ -1,5 +1,5 @@
-from datetime import date
-# from django.utils import timezone
+# from datetime import date
+from django.utils import timezone
 from decimal import Decimal
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -230,8 +230,8 @@ class ListItemTestCase(TestCase):
         cls.store_name = "Test Store"
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
         cls.count_name = "Wednesday"
-        start_date = date(year=2023, month=1, day=14)
-        end_date = date(year=2023, month=1, day=15)
+        # start_date = date(year=2023, month=1, day=14)
+        # end_date = date(year=2023, month=1, day=15)
 
 
         # cls.stock_period = StockPeriod.objects.create(

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from datetime import date, timedelta
+# from datetime import date, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -78,7 +78,7 @@ class List(models.Model):
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
     type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION, blank=False)
     date_added = models.DateTimeField(
-        default=timezone.localdate, 
+        default=timezone.now, 
         help_text="The date these items were added/removed from the Store."
     )
     objects = models.Manager()

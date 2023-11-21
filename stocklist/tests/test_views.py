@@ -1,5 +1,5 @@
 import json
-import datetime
+# import datetime
 from decimal import Decimal
 from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
@@ -307,68 +307,68 @@ class CreateListTestCase(ImportTestCase):
         # invalid date
 
 
-class CountItemTestCase(ImportTestCase):
+class CreateListItemTestCase(ImportTestCase):
     
-    def test_POST_count_item_redirects_to_login_if_not_logged_in(self):
-        response = self.client.generic('POST', "/count_item/1/1", json.dumps({'amount':'1'}))
+    def test_POST_create_list_item_redirects_to_login_if_not_logged_in(self):
+        response = self.client.generic('POST', "/create_list_item/1/1", json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/count_item/1/1") 
+        self.assertEqual(response.url, "/login/?next=/create_list_item/1/1") 
 
-    def test_POST_count_item_returns_404_for_invalid_list(self):
+    def test_POST_create_list_item_returns_404_for_invalid_list(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.generic('POST', "/count_item/1/1", json.dumps({'amount':'1'}))
+        response = self.client.generic('POST', "/create_list_item/1/1", json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 404) 
 
-    def test_POST_count_item_returns_404_for_invalid_item(self):
+    def test_POST_create_list_item_returns_404_for_invalid_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         list = List.objects.create(name='Test List', type='CO', store=store)
 
-        path = "/count_item/{}/1".format(list.pk)
+        path = "/create_list_item/{}/1".format(list.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 404)
 
-    def test_GET_count_item_returns_400_for_user_logged_in(self):
+    def test_GET_create_list_item_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
-        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('GET', path, json.dumps({'amount':'1'}))
         self.assertEqual(response.status_code, 400)
 
-    def test_POST_count_item_creates_list_item(self):
+    def test_POST_create_list_item_creates_list_item(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
-        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1'}))
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertTrue(list_items.exists())
         self.assertEqual(list_items[0].amount, 1)
         self.assertEqual(response.status_code, 201)
 
-    def test_POST_count_item_returns_400_for_invalid_list_items_amount_min(self):
+    def test_POST_create_list_item_returns_400_for_invalid_list_items_amount_min(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
-        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'-1'}))
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(response.status_code, 400)
 
-    def test_POST_count_item_returns_400_for_invalid_list_items_amount_max(self):
+    def test_POST_create_list_item_returns_400_for_invalid_list_items_amount_max(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         list = List.objects.create(name='Test List', type='CO', store=store)
         item = Item.objects.create(store=store, name="TEST ITEM NAME")
 
-        path = "/count_item/{}/{}".format(list.pk, item.pk)
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
         response = self.client.generic('POST', path, json.dumps({'amount':'1000001'}))
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(response.status_code, 400)

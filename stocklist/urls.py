@@ -14,7 +14,7 @@ urlpatterns = [
     path("create_list/<int:store_id>", views.create_list, name="create_list"),
 
 
-    path("count_item/<int:list_id>/<int:item_id>", views.count_item, name="count_item")
+    path("create_list_item/<int:list_id>/<int:item_id>", views.create_list_item, name="create_list_item")
 
 
 ]

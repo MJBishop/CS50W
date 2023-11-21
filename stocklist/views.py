@@ -184,9 +184,11 @@ def create_list(request, store_id):
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 
+# create list_item
+
 
 @login_required
-def count_item(request, list_id, item_id):
+def create_list_item(request, list_id, item_id):
 
     # check for valid List
     list = get_object_or_404(List, pk=list_id)
