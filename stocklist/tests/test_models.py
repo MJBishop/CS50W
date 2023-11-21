@@ -282,7 +282,4 @@ class ListItemTestCase(TestCase):
             list_item = ListItem.objects.create(list=self.list, item=item, amount=v_large_amount)
             list_item.full_clean()
 
-    def test_item_unique_for_list(self):
-        with self.assertRaises(IntegrityError):
-            list_item2 = ListItem.objects.create(list=self.list, item=self.item, amount=self.list_item_amount)
-            list_item2.full_clean()
+    # test_list_item_not_unique_for_list

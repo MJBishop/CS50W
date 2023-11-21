@@ -173,14 +173,14 @@ def create_list(request, store_id):
 
         data = json.loads(request.body)
         name = data.get("name", "")
-        type = data.get("type")
+        type = data.get("type", "")
 
         try:
             list = List(name=name, type=type, store=store)
             list.full_clean()
             list.save()
         except ValidationError as e:
-            print(e.messages)
+            # print(e.messages)
             return JsonResponse({"error": e.messages}, status=400)
         
         return JsonResponse({"message": "Import successful."}, status=201)
