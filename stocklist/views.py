@@ -75,30 +75,11 @@ def update_store(request, store_id):
         data = json.loads(request.body)
         new_store_name = data.get("name", "")
 
-        # validate with a form here!?
-        # form = StoreNameForm(initial={'name': new_store_name, 'user':request.user.pk})
-        # if form.is_valid():
-        #     try:
-        #         store.name = new_store_name
-        #         store.full_clean()
-        #         store.save()
-        #     except ValidationError as e:
-        #         return JsonResponse({"validation_error": e.messages}, status=400)
-        #     else:
-        #         return JsonResponse({"message": "Store update successful."}, status=201)
-        
-        # else:
-        #     print(form.errors)
-        #     print('BREAK')
-        #     return JsonResponse({"validation_error": form.errors}, status=400)
-
-        # done in form now
-        if new_store_name == '':
+        if new_store_name == '':   # done in form now
             return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
         if new_store_name == store.name:
             return JsonResponse({"message": "No update necessary."}, status=201)
-        # must be done here
-        if Store.objects.filter(user=request.user, name=new_store_name).exists():
+        if Store.objects.filter(user=request.user, name=new_store_name).exists():  # must be done here
             return JsonResponse({"integrity_error": f"Store name must be unique for user"}, status=400)
 
         try:
@@ -109,9 +90,6 @@ def update_store(request, store_id):
             return JsonResponse({"validation_error": e.messages}, status=400)
         else:
             return JsonResponse({"message": "Store update successful."}, status=201)
-
-        # if not store_name:
-        #     return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
     
     return JsonResponse({"error": "PUT request Required."}, status=400)
 
@@ -160,7 +138,7 @@ def import_items(request, store_id): # import_list
                         item.save()
                     except ValidationError as ve: 
                         # Collect these all up? currently stops loop after 1st ValidationError!
-                        print(ve.messages)
+                        # print(ve.messages)
                         # IF not unique add item as ref
                         return JsonResponse({"error": ve.messages}, status=400)
 
@@ -193,6 +171,10 @@ def create_list(request, store_id):
         data = json.loads(request.body)
         name = data.get("name", "")
         type = data.get("type", "")
+
+        if not [i for i in List.LIST_TYPE_CHOICES if type in i]:
+            # print(type)
+            return JsonResponse({"error": "List Type not found"}, status=400)
 
         try:
             list = List(name=name, type=type, store=store)
