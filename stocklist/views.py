@@ -73,11 +73,30 @@ def update_store(request, store_id):
     if request.method == 'PUT':
 
         data = json.loads(request.body)
-        new_store_name = data.get("store_name", "")
+        new_store_name = data.get("name", "")
+
+        # validate with a form here!?
+        # form = StoreNameForm(initial={'name': new_store_name, 'user':request.user.pk})
+        # if form.is_valid():
+        #     try:
+        #         store.name = new_store_name
+        #         store.full_clean()
+        #         store.save()
+        #     except ValidationError as e:
+        #         return JsonResponse({"validation_error": e.messages}, status=400)
+        #     else:
+        #         return JsonResponse({"message": "Store update successful."}, status=201)
+        
+        # else:
+        #     print(form.errors)
+        #     print('BREAK')
+        #     return JsonResponse({"validation_error": form.errors}, status=400)
 
         # done in form now
         if new_store_name == '':
             return JsonResponse({"validation_error": f"Store name cannot be empty"}, status=400)
+        if new_store_name == store.name:
+            return JsonResponse({"message": "No update necessary."}, status=201)
         # must be done here
         if Store.objects.filter(user=request.user, name=new_store_name).exists():
             return JsonResponse({"integrity_error": f"Store name must be unique for user"}, status=400)

@@ -281,5 +281,3 @@ class ListItemTestCase(TestCase):
         with self.assertRaises(ValidationError):
             list_item = ListItem.objects.create(list=self.list, item=item, amount=v_large_amount)
             list_item.full_clean()
-
-    # test_list_item_not_unique_for_list

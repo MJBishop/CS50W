@@ -387,7 +387,7 @@ class UpdateStoreTestCase(BaseTestCase):
         test_store_name = 'New Store Name'
 
         path = "/update_store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
         self.assertEqual(response.status_code, 201)
 
     def test_PUT_valid_data_returns_201(self):
@@ -396,7 +396,16 @@ class UpdateStoreTestCase(BaseTestCase):
         test_store_name = 'New Store Name'
 
         path = "/update_store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
+        self.assertEqual(response.status_code, 201)
+
+    def test_PUT_no_name_change_returns_201(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        test_store_name = 'Test Store'
+
+        path = "/update_store/{}".format(store.pk)
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
         self.assertEqual(response.status_code, 201)
 
     def test_PUT_empty_data_returns_400(self):
@@ -405,7 +414,7 @@ class UpdateStoreTestCase(BaseTestCase):
         test_store_name = ''
 
         path = "/update_store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
         self.assertEqual(response.status_code, 400)
 
     def test_store_name_max_length_returns_400(self):
@@ -414,7 +423,7 @@ class UpdateStoreTestCase(BaseTestCase):
         test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
 
         path = "/update_store/{}".format(store.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
         self.assertEqual(response.status_code, 400)
 
     def test_store_name_not_unique_returns_400(self):
@@ -424,7 +433,7 @@ class UpdateStoreTestCase(BaseTestCase):
         store2 = Store.objects.create(name=test_store_name, user=self.user1)
 
         path = "/update_store/{}".format(store1.pk)
-        response = self.client.generic('PUT', path, json.dumps({"store_name":test_store_name}))
+        response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
         self.assertEqual(response.status_code, 400)
         # print(response)
 
