@@ -190,9 +190,9 @@ def create_item(request, store_id):
 
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
-    pass
-    # if request.method == 'POST':
-
+    
+    if request.method == 'POST':
+        pass
     #     data = json.loads(request.body)
     #     name = data.get("name", "")
     #     type = data.get("type", "")
@@ -207,7 +207,7 @@ def create_item(request, store_id):
         
     #     return JsonResponse({"message": "Import successful."}, status=201)
 
-    # return JsonResponse({"error": "POST request Required."}, status=400)
+    return JsonResponse({"error": "POST request Required."}, status=400)
 
 
 @login_required
