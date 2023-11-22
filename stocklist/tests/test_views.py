@@ -402,18 +402,17 @@ class CreateItemTestCase(BaseTestCase):
         response = self.client.generic('GET', path)
         self.assertEqual(response.status_code, 400)
 
-
     def test_POST_create_item_returns_400_for_invalid_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'A'*81}))
         self.assertEqual(response.status_code, 400)
 
-    # def test_POST_create_list_returns_400_for_empty_name(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    def test_POST_create_list_returns_400_for_empty_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-    #     response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'', 'type':'AD'}))
-    #     self.assertEqual(response.status_code, 400)
+        response = self.client.generic('POST', "/create_item/1", json.dumps({'name':''}))
+        self.assertEqual(response.status_code, 400)
 
     # def test_store_name_not_unique_returns_400(self):
     #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
