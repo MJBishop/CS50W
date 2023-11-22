@@ -381,7 +381,6 @@ class CreateItemTestCase(BaseTestCase):
         cls.store = Store.objects.create(name='Test Store', user=cls.user1)
         return sup
     
-    # logged in
     # invalid store
     # valid store
     # invalid name: too long, empty, exists
@@ -391,6 +390,11 @@ class CreateItemTestCase(BaseTestCase):
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'Test Item'}))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/create_item/1") 
+
+    def test_POST_create_item_returns_404_for_invalid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.generic('POST', "/create_item/2", json.dumps({'name':'Test Item'}))
+        self.assertEqual(response.status_code, 404) 
 
 
 class UpdateStoreTestCase(BaseTestCase):
