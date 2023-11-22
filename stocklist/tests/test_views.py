@@ -373,6 +373,24 @@ class CreateListItemTestCase(ImportTestCase):
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(response.status_code, 400)
 
+class CreateItemTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        return sup
+    
+    # logged in
+    # invalid store
+    # valid store
+    # invalid name: too long, empty, exists
+    # valid name
+
+    def test_POST_create_item_redirects_to_login_if_not_logged_in(self):
+        response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'Test Item'}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/create_item/1") 
 
 
 class UpdateStoreTestCase(BaseTestCase):
