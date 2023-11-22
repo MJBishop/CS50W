@@ -192,20 +192,18 @@ def create_item(request, store_id):
     store = get_object_or_404(Store, user=request.user, pk=store_id)
     
     if request.method == 'POST':
-        pass
-    #     data = json.loads(request.body)
-    #     name = data.get("name", "")
-    #     type = data.get("type", "")
+        data = json.loads(request.body)
+        name = data.get("name", "")
 
-    #     try:
-    #         list = List(name=name, type=type, store=store)
-    #         list.full_clean()
-    #         list.save()
-    #     except ValidationError as e:
-    #         # print(e.messages)
-    #         return JsonResponse({"error": e.messages}, status=400)
+        try:
+            item = Item(name=name, store=store)
+            item.full_clean()
+            item.save()
+        except ValidationError as e:
+            # print(e.messages)
+            return JsonResponse({"error": e.messages}, status=400)
         
-    #     return JsonResponse({"message": "Import successful."}, status=201)
+        # return JsonResponse({"message": "Import successful."}, status=201)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 

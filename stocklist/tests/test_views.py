@@ -381,10 +381,8 @@ class CreateItemTestCase(BaseTestCase):
         cls.store = Store.objects.create(name='Test Store', user=cls.user1)
         return sup
     
-    # GET
-    # valid store
     # invalid name: too long, empty, exists
-    # valid name
+    # valid name & store
 
     def test_POST_create_item_redirects_to_login_if_not_logged_in(self):
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'Test Item'}))
@@ -403,6 +401,29 @@ class CreateItemTestCase(BaseTestCase):
         path = "/create_item/{}".format(self.store.pk)
         response = self.client.generic('GET', path)
         self.assertEqual(response.status_code, 400)
+
+
+    def test_POST_create_item_returns_400_for_invalid_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'A'*81}))
+        self.assertEqual(response.status_code, 400)
+
+    # def test_POST_create_list_returns_400_for_empty_name(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+    #     response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'', 'type':'AD'}))
+    #     self.assertEqual(response.status_code, 400)
+
+    # def test_store_name_not_unique_returns_400(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    #     store1 = Store.objects.create(name='Test Store 1', user=self.user1)
+    #     test_store_name = 'Test Store 2'
+    #     store2 = Store.objects.create(name=test_store_name, user=self.user1)
+
+    #     path = "/update_store/{}".format(store1.pk)
+    #     response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
+    #     self.assertEqual(response.status_code, 400)
 
 
 class UpdateStoreTestCase(BaseTestCase):
