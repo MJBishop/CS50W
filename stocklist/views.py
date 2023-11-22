@@ -200,10 +200,10 @@ def create_item(request, store_id):
             item.full_clean()
             item.save()
         except ValidationError as e:
-            print(e.messages)
+            # print(e.messages)
             return JsonResponse({"error": e.messages}, status=400)
         
-        # return JsonResponse({"message": "Import successful."}, status=201)
+        return JsonResponse({"message": "Import successful."}, status=201)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 

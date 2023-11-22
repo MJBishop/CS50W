@@ -381,7 +381,6 @@ class CreateItemTestCase(BaseTestCase):
         cls.store = Store.objects.create(name='Test Store', user=cls.user1)
         return sup
     
-    # invalid name: too long, empty, exists
     # valid name & store
 
     def test_POST_create_item_redirects_to_login_if_not_logged_in(self):
@@ -421,6 +420,12 @@ class CreateItemTestCase(BaseTestCase):
 
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':test_item_name}))
         self.assertEqual(response.status_code, 400)
+
+    def test_POST_create_item_returns_201_for_valid_name_and_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'New Name'}))
+        self.assertEqual(response.status_code, 201)
 
 
 class UpdateStoreTestCase(BaseTestCase):
