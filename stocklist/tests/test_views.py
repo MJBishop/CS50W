@@ -408,21 +408,19 @@ class CreateItemTestCase(BaseTestCase):
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'A'*81}))
         self.assertEqual(response.status_code, 400)
 
-    def test_POST_create_list_returns_400_for_empty_name(self):
+    def test_POST_create_item_returns_400_for_empty_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':''}))
         self.assertEqual(response.status_code, 400)
 
-    # def test_store_name_not_unique_returns_400(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     store1 = Store.objects.create(name='Test Store 1', user=self.user1)
-    #     test_store_name = 'Test Store 2'
-    #     store2 = Store.objects.create(name=test_store_name, user=self.user1)
+    def test_POST_create_item_name_not_unique_returns_400(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        test_item_name = 'Test Item Name'
+        item = Item.objects.create(store=self.store, name=test_item_name)
 
-    #     path = "/update_store/{}".format(store1.pk)
-    #     response = self.client.generic('PUT', path, json.dumps({"name":test_store_name}))
-    #     self.assertEqual(response.status_code, 400)
+        response = self.client.generic('POST', "/create_item/1", json.dumps({'name':test_item_name}))
+        self.assertEqual(response.status_code, 400)
 
 
 class UpdateStoreTestCase(BaseTestCase):
