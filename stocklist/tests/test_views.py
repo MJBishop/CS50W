@@ -587,7 +587,6 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_title'], 'Home')
 
-    # test_get_forms
     def test_GET_forms(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
@@ -595,8 +594,20 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['store_name_form'])
 
-        
-    # test_post_store_name
+    def test_PUT_reverse_to_index(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.put("/")
+        self.assertEqual(response.url, "/") 
+    
+
+    # STORE:
+    # invalid_name
+    # empty_name
+    # unique_for_store
+    # valid_store_name
+    # success_redircts_to_store_url
+
     # test_put_
 
 

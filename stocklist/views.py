@@ -8,8 +8,8 @@ from django.db.models import F
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
-from stocklist.forms import StoreNameForm #, StockPeriodForm, StocktakeForm, StockListForm
-from .models import User, Store, Item, List, ListItem, MIN_LIST_ITEM_AMOUNT #, StockPeriod, Stocktake, StockList
+from stocklist.forms import StoreNameForm
+from .models import User, Store, Item, List, ListItem, MIN_LIST_ITEM_AMOUNT
 
 
 def index(request):
@@ -26,6 +26,9 @@ def index(request):
                 'stores':stores,
                 'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
             })
+        
+
+        return HttpResponseRedirect(reverse("index"))
             
     return HttpResponseRedirect(reverse("login"))
     
@@ -39,10 +42,6 @@ def store(request):
             })
 
     if request.method == 'POST':
-
-        # check it's still the first store
-        # better still: create the store first!!
-        # just need date!
 
         store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
 
