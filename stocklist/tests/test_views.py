@@ -547,8 +547,6 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
-# test_GET_no_stores_redirects_to_store
-
     def test_GET_no_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
@@ -582,6 +580,27 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['stores'][0].name, "Test Store 1")
 
+    def test_get_page_title(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['page_title'], 'Home')
+
+    # test_get_forms
+    # def test_GET_forms(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+    #     response = self.client.get("/")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTrue(response.context['store_name_form'])
+
+        
+    # test_post_store_name
+    # test_put_
+
+
+
     # pick up
     def test_GET_num_queries_existing_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -594,11 +613,7 @@ class IndexTestCase(BaseTestCase):
         with self.assertNumQueries(3):
             response = self.client.get("/")
 
-    # test_get_forms
-    # 
-
-    # def test POST PUT
-
+   
 
 class LoginTestCase(BaseTestCase):
     def test_user_login(self):

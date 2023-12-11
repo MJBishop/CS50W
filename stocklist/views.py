@@ -22,7 +22,7 @@ def index(request):
             stores = Store.objects.filter(user=request.user) or None 
 
             return render(request, "stocklist/index.html",{
-                'page_title':'Store',
+                'page_title':'Home',
                 'stores':stores,
             })
             
