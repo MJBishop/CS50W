@@ -588,12 +588,12 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.context['page_title'], 'Home')
 
     # test_get_forms
-    # def test_GET_forms(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    def test_GET_forms(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-    #     response = self.client.get("/")
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTrue(response.context['store_name_form'])
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['store_name_form'])
 
         
     # test_post_store_name

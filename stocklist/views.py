@@ -24,6 +24,7 @@ def index(request):
             return render(request, "stocklist/index.html",{
                 'page_title':'Home',
                 'stores':stores,
+                'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
             })
             
     return HttpResponseRedirect(reverse("login"))
@@ -35,7 +36,6 @@ def store(request):
     if request.method == "GET":
         return render(request, "stocklist/store.html",{
                 'page_title':'New Store',
-                'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
             })
 
     if request.method == 'POST':
