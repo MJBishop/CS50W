@@ -547,12 +547,16 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
-    def test_GET_no_stores_redirects_to_store(self):
+# test_GET_no_stores_redirects_to_store
+
+    def test_GET_no_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
         response = self.client.get("/")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/store") 
+        self.assertEqual(response.status_code, 200)
+
+        stores = response.context['stores']
+        self.assertIsNone(stores)
 
     def test_GET_stores(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -561,9 +565,14 @@ class IndexTestCase(BaseTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        store = response.context['stores'][0]
+
+        stores = response.context['stores']
+        self.assertEqual(stores.count(), 1)
+
+        store = stores[0]
         self.assertEqual(store.name, test_store_name)
 
+    # newest first?
     def test_GET_oldest_store_first(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         Store.objects.create(name='Test Store 1', user=self.user1)
@@ -573,6 +582,7 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['stores'][0].name, "Test Store 1")
 
+    # pick up
     def test_GET_num_queries_existing_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
@@ -583,6 +593,9 @@ class IndexTestCase(BaseTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         with self.assertNumQueries(3):
             response = self.client.get("/")
+
+    # test_get_forms
+    # 
 
     # def test POST PUT
 

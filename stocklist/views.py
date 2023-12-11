@@ -17,17 +17,14 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
+        # GET Stores
         if request.method == 'GET':
-            # Stores
-            stores = Store.objects.filter(user=request.user) or None #get or create!
-            if not stores:
-                return HttpResponseRedirect(reverse("store"))
+            stores = Store.objects.filter(user=request.user) or None 
 
             return render(request, "stocklist/index.html",{
                 'page_title':'Store',
                 'stores':stores,
             })
-            # Items?
             
     return HttpResponseRedirect(reverse("login"))
     
@@ -65,7 +62,7 @@ def store(request):
 
 
 @login_required
-def update_store(request, store_id):
+def update_store(request, store_id): #PUT!?
 
     # check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
@@ -161,7 +158,7 @@ def import_items(request, store_id): # import_list
 
 
 @login_required
-def create_list(request, store_id):
+def create_list(request, store_id): #list
 
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
@@ -186,7 +183,7 @@ def create_list(request, store_id):
 
 
 @login_required
-def create_item(request, store_id):
+def create_item(request, store_id): #item
 
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
@@ -209,7 +206,7 @@ def create_item(request, store_id):
 
 
 @login_required
-def create_list_item(request, list_id, item_id):
+def create_list_item(request, list_id, item_id): #list_item
 
     # check for valid List
     list = get_object_or_404(List, pk=list_id)
