@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -17,17 +17,22 @@ def index(request):
     # Users must authenticate
     if request.user.is_authenticated:
 
-        # GET Stores
+        # GET Store
         if request.method == 'GET':
-            stores = Store.objects.filter(user=request.user) or None 
+            store = Store.objects.filter(user=request.user).last() or None 
 
-            return render(request, "stocklist/index.html",{
-                'page_title':'Home',
-                'stores':stores,
-                'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
-            })
+            # return StoreNameForm if no store
+            if not store:
+                return render(request, "stocklist/index.html",{
+                    'page_title':'Home',
+                    'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
+                })
         
-
+            else:
+                # redirect to store(id)
+                path = "/store/{}".format(store.pk)
+                return redirect(path)
+        
         return HttpResponseRedirect(reverse("index"))
             
     return HttpResponseRedirect(reverse("login"))

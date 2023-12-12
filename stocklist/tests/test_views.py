@@ -528,16 +528,12 @@ class StoreTestCase(BaseTestCase):
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        test_store_name = 'Test Store'
-        Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
     def test_GET_renders_index_html(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        test_store_name = 'Test Store'
-        Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
         self.assertEquals(response.templates[0].name, 'stocklist/index.html')
@@ -547,38 +543,16 @@ class IndexTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
-    def test_GET_no_stores(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-
-        stores = response.context['stores']
-        self.assertIsNone(stores)
-
-    def test_GET_stores(self):
+    def test_GET_redirects_to_store_when_store_exists(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         test_store_name = 'Test Store'
-        Store.objects.create(name=test_store_name, user=self.user1)
+        store = Store.objects.create(name=test_store_name, user=self.user1)
 
         response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
-        stores = response.context['stores']
-        self.assertEqual(stores.count(), 1)
-
-        store = stores[0]
-        self.assertEqual(store.name, test_store_name)
-
-    # newest first?
-    def test_GET_oldest_store_first(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        Store.objects.create(name='Test Store 1', user=self.user1)
-        Store.objects.create(name='Test Store 2', user=self.user1)
-
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['stores'][0].name, "Test Store 1")
+        path = "/store/{}".format(store.pk)
+        self.assertEqual(response.url, path) 
 
     def test_get_page_title(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -602,13 +576,14 @@ class IndexTestCase(BaseTestCase):
     
 
     # STORE:
-    # invalid_name
+    def tet_POST_invalid_store_name_reloads_index(self):
+        pass
+
+
     # empty_name
     # unique_for_store
     # valid_store_name
     # success_redircts_to_store_url
-
-    # test_put_
 
 
 
