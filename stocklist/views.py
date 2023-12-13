@@ -58,30 +58,18 @@ def index(request):
     
 
 @login_required
-def store(request):
+def store(request, store_id):
+
+    #  check for valid Store
+    store = get_object_or_404(Store, user=request.user, pk=store_id)
 
     if request.method == "GET":
         return render(request, "stocklist/store.html",{
-                'page_title':'New Store',
+                'page_title':store.name,
+                # items, lists etc
             })
 
-    if request.method == 'POST':
-
-        store_name_form = StoreNameForm(request.POST, prefix='store_name_form',)
-
-        if store_name_form.is_valid():
-
-            # save new Store
-            new_store = store_name_form.save()
-            return HttpResponseRedirect(reverse("index"))
-
-        else:
-            return render(request, "stocklist/index.html",{
-                'page_title':'New Store',
-                'store_name_form':store_name_form,
-            })
-
-    return HttpResponseRedirect(reverse("store"))
+    return JsonResponse({"error": "GET request Required."}, status=400)
 
 
 @login_required
