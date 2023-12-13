@@ -62,13 +62,15 @@ def store(request, store_id):
 
     #  check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
-
+    
     if request.method == "GET":
         return render(request, "stocklist/store.html",{
                 'page_title':store.name,
                 # items, lists etc
             })
-
+        
+        
+    # return HttpResponseRedirect(reverse("store", kwargs={'store_id':store_id,}))
     return JsonResponse({"error": "GET request Required."}, status=400)
 
 
@@ -293,6 +295,6 @@ def register_view(request):
         login(request, user)
 
         # Redirect to store after User registered
-        return HttpResponseRedirect(reverse("store"))
+        return HttpResponseRedirect(reverse("index"))
 
     return render(request, "stocklist/register.html")

@@ -516,7 +516,6 @@ class StoreTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
 
-    # test:
     def test_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
@@ -525,9 +524,15 @@ class StoreTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    # valid store
-    # put
-        
+    def test_valid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(store.pk)
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, 200)
+        # print(response.templates[0].name)
+
 
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
@@ -663,7 +668,7 @@ class RegisterTestCase(BaseTestCase):
         response = self.client.post("/register", {'username':self.TEST_USER, 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
         self.assertContains(response, "Username already taken.")
 
-    def test_register_view_POST_success_reverse_to_store(self):
+    def test_register_view_POST_success_reverse_to_index(self):
         response = self.client.post("/register", {'username':'someone', 'confirmation':'something', 'password':'something', 'email':'test@test.com'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/store") 
+        self.assertEqual(response.url, "/") 
