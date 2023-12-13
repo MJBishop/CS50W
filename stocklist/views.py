@@ -29,8 +29,22 @@ def index(request):
                 })
         
             else:
-                # redirect to store(id)
+                # redirect to /store/id
                 path = "/store/{}".format(store.pk)
+                return redirect(path)
+            
+        # POST new Store name
+        if request.method == 'POST':
+            store_name_form = StoreNameForm(request.POST)
+            # store_name_form.instance.user = request.user
+
+            if store_name_form.is_valid():
+
+                # save new Store
+                new_store = store_name_form.save()
+
+                # redirect to /store/id
+                path = "/store/{}".format(new_store.pk)
                 return redirect(path)
         
         return HttpResponseRedirect(reverse("index"))
@@ -66,7 +80,7 @@ def store(request):
 
 
 @login_required
-def update_store(request, store_id): #PUT!?
+def update_store(request, store_id): 
 
     # check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)

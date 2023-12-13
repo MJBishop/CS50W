@@ -528,18 +528,19 @@ class StoreTestCase(BaseTestCase):
 class IndexTestCase(BaseTestCase):
     def test_index_path(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
         response = self.client.get("/")
+
         self.assertEqual(response.status_code, 200)
 
     def test_GET_renders_index_html(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
         response = self.client.get("/")
+
         self.assertEquals(response.templates[0].name, 'stocklist/index.html')
 
     def test_GET_redirects_to_login_when_not_signed_in(self):
         response = self.client.get("/")
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login") 
 
@@ -547,8 +548,8 @@ class IndexTestCase(BaseTestCase):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         test_store_name = 'Test Store'
         store = Store.objects.create(name=test_store_name, user=self.user1)
-
         response = self.client.get("/")
+
         self.assertEqual(response.status_code, 302)
 
         path = "/store/{}".format(store.pk)
@@ -556,34 +557,43 @@ class IndexTestCase(BaseTestCase):
 
     def test_get_page_title(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
         response = self.client.get("/")
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['page_title'], 'Home')
 
     def test_GET_forms(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
         response = self.client.get("/")
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['store_name_form'])
 
     def test_PUT_reverse_to_index(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
         response = self.client.put("/")
+
         self.assertEqual(response.url, "/") 
     
 
     # STORE:
-    def tet_POST_invalid_store_name_reloads_index(self):
-        pass
+    def test_POST_valid_store_name(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.post("/", data={'name':'Test Store', 'user':self.user1.pk})
 
+        self.assertEqual(response.status_code, 302)
+
+        path = "/store/1"
+        self.assertEqual(response.url, path) 
+        self.assertEqual(Store.objects.count(), 1) 
+
+    def test_POST_invalid_store_name(self):
+        pass
 
     # empty_name
     # unique_for_store
-    # valid_store_name
     # success_redircts_to_store_url
+
 
 
 
