@@ -373,6 +373,7 @@ class CreateListItemTestCase(ImportTestCase):
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertEqual(response.status_code, 400)
 
+
 class CreateItemTestCase(BaseTestCase):
 
     @classmethod
@@ -512,11 +513,18 @@ class StoreTestCase(BaseTestCase):
         store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(store.pk)
         response = self.client.put(path)
-        
+
         self.assertEqual(response.status_code, 400)
 
     # test:
-    # invalid store
+    def test_invalid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(store.pk + 1)
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, 404)
+
     # valid store
     # put
         
