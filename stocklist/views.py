@@ -36,7 +36,6 @@ def index(request):
         # POST new Store name
         if request.method == 'POST':
             store_name_form = StoreNameForm(request.POST)
-            # store_name_form.instance.user = request.user
 
             if store_name_form.is_valid():
 
@@ -46,6 +45,12 @@ def index(request):
                 # redirect to /store/id
                 path = "/store/{}".format(new_store.pk)
                 return redirect(path)
+            
+            else:
+                return render(request, "stocklist/index.html",{
+                    'page_title':'Home',
+                    'store_name_form':store_name_form,
+                })
         
         return HttpResponseRedirect(reverse("index"))
             

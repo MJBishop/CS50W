@@ -579,20 +579,26 @@ class IndexTestCase(BaseTestCase):
     # STORE:
     def test_POST_valid_store_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store_count = Store.objects.count()
         response = self.client.post("/", data={'name':'Test Store', 'user':self.user1.pk})
 
         self.assertEqual(response.status_code, 302)
 
         path = "/store/1"
         self.assertEqual(response.url, path) 
-        self.assertEqual(Store.objects.count(), 1) 
+        self.assertEqual(Store.objects.count(), store_count + 1) 
 
     def test_POST_invalid_store_name(self):
-        pass
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        test_store_name = 'Test Store'
+        store = Store.objects.create(name=test_store_name, user=self.user1)
+        store_count = Store.objects.count()
+        response = self.client.post("/", data={'name':test_store_name, 'user':self.user1.pk})
 
-    # empty_name
-    # unique_for_store
-    # success_redircts_to_store_url
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(Store.objects.count(), store_count) 
+        # test for errors?
 
 
 
