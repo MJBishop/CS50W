@@ -85,17 +85,6 @@ class ListTestCase(TestCase):
         cls.user1 = User.objects.create_user('Mike')
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
 
-
-        # cls.stock_period = StockPeriod.objects.create(
-        #     store=cls.store1,
-        # )
-
-        # start_date = date(year=2023, month=1, day=14)
-        # end_date = date(year=2023, month=1, day=15)
-        # cls.stocktake = Stocktake.objects.create(   
-        #     stock_period=cls.stock_period, 
-        #     end_date=end_date 
-        # )
         cls.list_name = 'Starting Stock'
 
         return super().setUpTestData()
@@ -230,18 +219,6 @@ class ListItemTestCase(TestCase):
         cls.store_name = "Test Store"
         cls.store1 = Store.objects.create(user=cls.user1, name=cls.store_name)
         cls.count_name = "Wednesday"
-        # start_date = date(year=2023, month=1, day=14)
-        # end_date = date(year=2023, month=1, day=15)
-
-
-        # cls.stock_period = StockPeriod.objects.create(
-        #     store=cls.store1,
-        # )
-
-        # cls.count = Stocktake.objects.create(   
-        #     stock_period=cls.stock_period,
-        #     end_date=end_date 
-        # )
         cls.list_name = 'Starting Stock'
         cls.list = List.objects.create(
             store=cls.store1, 

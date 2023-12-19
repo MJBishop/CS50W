@@ -587,7 +587,7 @@ class IndexTestCase(BaseTestCase):
     def test_POST_valid_store_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store_count = Store.objects.count()
-        response = self.client.post("/", data={'name':'Test Store', 'user':self.user1.pk})
+        response = self.client.post("/", data={'name':'Test Store'})
 
         self.assertEqual(response.status_code, 302)
 
@@ -600,12 +600,12 @@ class IndexTestCase(BaseTestCase):
         test_store_name = 'Test Store'
         store = Store.objects.create(name=test_store_name, user=self.user1)
         store_count = Store.objects.count()
-        response = self.client.post("/", data={'name':test_store_name, 'user':self.user1.pk})
+        response = self.client.post("/", data={'name':test_store_name})
 
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Store.objects.count(), store_count) 
-        # test for errors?
+        # check messages!!
 
 
     # def test_GET_num_queries_existing_store(self):

@@ -23,12 +23,10 @@ class StoreNameFormTestCase(TestCase):
     def test_empty_form(self):
         form = StoreNameForm()
         self.assertIn("name", form.fields)
-        self.assertIn("user", form.fields)
 
     def test_blank_form_data(self):
         form = StoreNameForm({
             'name': "",
-            'user':self.user,
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors, {
@@ -39,7 +37,6 @@ class StoreNameFormTestCase(TestCase):
         test_store_name = 'Test Store name'
         form = StoreNameForm({
             'name':test_store_name,
-            'user':self.user,
         })
         self.assertTrue(form.is_valid())
         store_name = form.cleaned_data["name"]
@@ -49,19 +46,18 @@ class StoreNameFormTestCase(TestCase):
         test_store_name = 'A'*(MAX_STORE_NAME_LENGTH + 1)
         form = StoreNameForm({
             'name':test_store_name,
-            'user':self.user,
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors, {
             'name': ['Ensure this value has at most 20 characters (it has 21).'],
         })
 
-    def test_unique_form_data(self):
-        test_store_name = 'Test Store name'
-        store = Store.objects.create(name=test_store_name, user=self.user)
-        form = StoreNameForm({
-            'name':test_store_name,
-            'user':self.user,
-        })
-        self.assertFalse(form.is_valid())
+    # do we need this here?
+    # def test_unique_form_data(self):
+    #     test_store_name = 'Test Store name'
+    #     store = Store.objects.create(name=test_store_name, user=self.user)
+    #     form = StoreNameForm({
+    #         'name':test_store_name,
+    #     })
+    #     self.assertFalse(form.is_valid())
 

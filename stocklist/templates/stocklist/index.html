@@ -4,12 +4,16 @@
 
     <h2>{{page_title}}</h2>
 
-    {% for store in stores %}
-        <h3>{{store.name}}</h3>
-    {% endfor %}
-
-    {% for stocktake in stocktakes %}
-        <h4>{{stocktake}}</h4>
-    {% endfor %}
+    <form id="store-form" action="{% url 'index' %}" method="post">
+        <div class="row align-items-center">
+            <div class="col-sm-12 my-1">
+                {% csrf_token %}
+                {{ store_name_form }}
+            </div>
+            <div class="col-sm-12 my-1">
+                <input type="submit" value="Save" class="btn btn-primary form-control mx-auto my-1"></input>
+            </div>
+        </div>
+    </form>
 
 {% endblock %}

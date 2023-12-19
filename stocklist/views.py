@@ -25,7 +25,7 @@ def index(request):
             if not store:
                 return render(request, "stocklist/index.html",{
                     'page_title':'Home',
-                    'store_name_form':StoreNameForm(prefix='store_name_form', initial={'user':request.user}),
+                    'store_name_form':StoreNameForm(),
                 })
         
             else:
@@ -35,12 +35,29 @@ def index(request):
             
         # POST new Store name
         if request.method == 'POST':
-            store_name_form = StoreNameForm(request.POST)
+            store = Store(user=request.user)
+            store_name_form = StoreNameForm(request.POST, instance=store)
+
+            # check for integrity error 
+            store_name = store_name_form['name'].value()
+            if Store.objects.filter(user=request.user, name=store_name).exists():  # must be done here
+                return render(request, "stocklist/index.html",{
+                    'page_title':'Home',
+                    'store_name_form':store_name_form,
+                    'message':"Store name must be unique for user",
+                })
 
             if store_name_form.is_valid():
+                try:
+                    # save new Store
+                    new_store = store_name_form.save()
 
-                # save new Store
-                new_store = store_name_form.save()
+                except ValidationError as e:
+                    return render(request, "stocklist/index.html",{
+                        'page_title':'Home',
+                        'store_name_form':store_name_form,
+                        'message':e.messages,
+                    })
 
                 # redirect to /store/id
                 path = "/store/{}".format(new_store.pk)
@@ -226,6 +243,7 @@ def create_list_item(request, list_id, item_id): #list_item
 
     # check for valid Item
     item = get_object_or_404(Item, pk=item_id)
+    # create item?
 
     # save Item amount: create ListItem
     if request.method == 'POST':
