@@ -532,6 +532,15 @@ class StoreTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         # print(response.templates[0].name)
+    
+    def test_get_item_count_title(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(store.pk)
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['item_count'], 0)
 
 
 class IndexTestCase(BaseTestCase):

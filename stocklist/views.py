@@ -38,9 +38,9 @@ def index(request):
             store = Store(user=request.user)
             store_name_form = StoreNameForm(request.POST, instance=store)
 
-            # check for integrity error 
+            # check for integrity error - must be done here
             store_name = store_name_form['name'].value()
-            if Store.objects.filter(user=request.user, name=store_name).exists():  # must be done here
+            if Store.objects.filter(user=request.user, name=store_name).exists():  
                 return render(request, "stocklist/index.html",{
                     'page_title':'Home',
                     'store_name_form':store_name_form,
@@ -83,11 +83,10 @@ def store(request, store_id):
     if request.method == "GET":
         return render(request, "stocklist/store.html",{
                 'page_title':store.name,
-                # items, lists etc
+                'item_count':store.items.count(),
             })
         
         
-    # return HttpResponseRedirect(reverse("store", kwargs={'store_id':store_id,}))
     return JsonResponse({"error": "GET request Required."}, status=400)
 
 
