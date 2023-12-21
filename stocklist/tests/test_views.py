@@ -533,7 +533,7 @@ class StoreTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         # print(response.templates[0].name)
     
-    def test_get_item_count_title(self):
+    def test_get_item_count(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(store.pk)
@@ -541,6 +541,19 @@ class StoreTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['item_count'], 0)
+
+    def test_delete_store_items(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        item1 = Item.objects.create(name="item 1", store=store)
+        item2 = Item.objects.create(name="item 2", store=store)
+        item3 = Item.objects.create(name="item 3", store=store)
+        path = "/store/{}".format(store.pk)
+        response = self.client.delete(path)
+
+        self.assertEqual(response.status_code, 302)
+        items = Item.objects.filter(store=store)
+        self.assertEqual(items.count(), 0)
 
 
 class IndexTestCase(BaseTestCase):

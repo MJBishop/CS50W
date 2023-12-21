@@ -85,7 +85,12 @@ def store(request, store_id):
                 'page_title':store.name,
                 'item_count':store.items.count(),
             })
-        
+    
+    elif request.method == "DELETE":
+        # delete store
+        Store.objects.filter(user=request.user, id=store_id).delete()
+
+        return HttpResponseRedirect(reverse("index"))
         
     return JsonResponse({"error": "GET request Required."}, status=400)
 
