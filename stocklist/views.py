@@ -196,8 +196,8 @@ def items(request, store_id):
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
 
-    if request.method == 'POST':
-        pass
+    if request.method == 'GET':
+        return JsonResponse({"message": "GET items successful."}, status=200)
 
     return JsonResponse({"error": "GET request Required."}, status=400)
     
