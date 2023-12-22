@@ -197,7 +197,9 @@ def items(request, store_id):
     store = get_object_or_404(Store, user=request.user, pk=store_id)
 
     if request.method == 'GET':
-        return JsonResponse({"message": "GET items successful."}, status=200)
+        items = list(Item.objects.filter(store_id=store_id).values())
+        # need json array!!
+        return JsonResponse(items, safe=False)
 
     return JsonResponse({"error": "GET request Required."}, status=400)
     

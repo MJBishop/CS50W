@@ -72,12 +72,21 @@ class FetchItemsTestCase(ImportTestCase):
 
     def test_GET_items_returns_200_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        path = "/items/{}".format(self.store.pk)
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
+    def test_GET_items_returns_items_for_user_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
         path = "/items/{}".format(self.store.pk)
         response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
+        items = response.json()
+        print(items)
+        self.assertEqual(len(items), 3)
 
         # path = "/import_items/{}".format(self.store.pk)
         # response = self.client.generic('POST', path, json.dumps(self.json_data))
