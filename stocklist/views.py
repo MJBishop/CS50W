@@ -192,7 +192,10 @@ def import_items(request, store_id): # import_list
 
 @login_required
 def items(request, store_id):
-    pass
+    
+    # check for valid store
+    store = get_object_or_404(Store, user=request.user, pk=store_id)
+    
 
 
 @login_required

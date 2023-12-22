@@ -58,6 +58,11 @@ class FetchItemsTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/items/1") 
 
+    def test_GET_items_returns_404_for_invalid_store(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        response = self.client.post("/items/2")
+        self.assertEqual(response.status_code, 404)
+
         # path = "/import_items/{}".format(self.store.pk)
         # response = self.client.generic('POST', path, json.dumps(self.json_data))
         
