@@ -192,9 +192,14 @@ def import_items(request, store_id): # import_list
 
 @login_required
 def items(request, store_id):
-    
+
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
+
+    if request.method == 'POST':
+        pass
+
+    return JsonResponse({"error": "GET request Required."}, status=400)
     
 
 
