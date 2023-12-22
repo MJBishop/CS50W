@@ -87,6 +87,7 @@ def store(request, store_id):
             })
     
     elif request.method == "DELETE":
+
         # delete store
         Store.objects.filter(user=request.user, id=store_id).delete()
 
@@ -189,6 +190,9 @@ def import_items(request, store_id): # import_list
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
+@login_required
+def items(request, store_id):
+    pass
 
 
 @login_required

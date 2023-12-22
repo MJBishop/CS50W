@@ -46,6 +46,25 @@ class ImportTestCase(BaseTestCase):
         ]
     }
 
+class FetchItemsTestCase(ImportTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        return sup
+
+    def test_GET_items_redirects_to_login_if_not_logged_in(self):
+        response = self.client.post("/items/1")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/items/1") 
+
+        # path = "/import_items/{}".format(self.store.pk)
+        # response = self.client.generic('POST', path, json.dumps(self.json_data))
+        
+        # items = Item.objects.filter(store=self.store)
+        # self.assertEqual(items.count(), 3)
+
+
 class ImportItemsTestCase(ImportTestCase):
 
     @classmethod
@@ -243,6 +262,7 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(items.count(), 3)
         self.assertEqual(response.status_code, 201)
 
+
 class CreateListTestCase(ImportTestCase):
 
     @classmethod
@@ -305,7 +325,6 @@ class CreateListTestCase(ImportTestCase):
 
         # invalid type
         # invalid date
-
 
 class CreateListItemTestCase(ImportTestCase):
     
@@ -542,7 +561,7 @@ class StoreTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['item_count'], 0)
 
-    def test_delete_store_items(self):
+    def test_delete_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
         item1 = Item.objects.create(name="item 1", store=store)
