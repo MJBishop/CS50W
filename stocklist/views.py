@@ -82,6 +82,7 @@ def store(request, store_id):
 
     #  check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
+    # need to prefetch lists?
     
     if request.method == "GET":
 
@@ -89,7 +90,7 @@ def store(request, store_id):
         items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
 
         return render(request, "stocklist/store.html",{
-                'page_title':store.name,
+                'store':store,
                 'items':items,
             })
     

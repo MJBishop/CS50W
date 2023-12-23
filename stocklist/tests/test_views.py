@@ -502,7 +502,6 @@ class StoreTestCase(ImportTestCase):
         return sup
     
     def test_store_path_redirects_to_login_if_not_logged_in(self):
-        # store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(self.store.pk)
         response = self.client.get(path)
 
@@ -511,7 +510,6 @@ class StoreTestCase(ImportTestCase):
 
     def test_PUT_returns_400(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        # store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(self.store.pk)
         response = self.client.put(path)
 
@@ -519,7 +517,6 @@ class StoreTestCase(ImportTestCase):
 
     def test_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        # store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(self.store.pk + 1)
         response = self.client.get(path)
 
@@ -527,19 +524,17 @@ class StoreTestCase(ImportTestCase):
 
     def test_valid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        # store = Store.objects.create(name='Test Store', user=self.user1)
         path = "/store/{}".format(self.store.pk)
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 200)
-        # print(response.templates[0].name)
+        self.assertTrue(response.context['store'])
 
     def test_delete_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        # store = Store.objects.create(name='Test Store', user=self.user1)
-        item1 = Item.objects.create(name="item 1", store=self.store)
-        item2 = Item.objects.create(name="item 2", store=self.store)
-        item3 = Item.objects.create(name="item 3", store=self.store)
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
+
         path = "/store/{}".format(self.store.pk)
         response = self.client.delete(path)
 
@@ -559,28 +554,17 @@ class StoreTestCase(ImportTestCase):
         self.assertEqual(response.context['items'].count(), 3)
         self.assertEqual(response.context['items'][0].list_items.count(), 1)
 
-    # def test_GET_items_returns_items_for_user_logged_in(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     path = "/import_items/{}".format(self.store.pk)
-    #     response = self.client.generic('POST', path, json.dumps(self.json_data))
+    def test_get_items_ordering(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
 
-    #     path = "/items/{}".format(self.store.pk)
-    #     response = self.client.get(path)
-    #     items = response.json()
-    #     # print(items)
-    #     self.assertEqual(len(items), 3)
+        path = "/store/{}".format(self.store.pk)
+        response = self.client.get(path)
 
-    # def test_GET_items_returns_items_with_list_items_for_user_logged_in(self):
-    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-    #     path = "/import_items/{}".format(self.store.pk)
-    #     response = self.client.generic('POST', path, json.dumps(self.json_data))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['items'][0].name, 'Absolut Vodka 70CL BTL')
 
-    #     path = "/items/{}".format(self.store.pk)
-    #     response = self.client.get(path)
-    #     items = response.json()
-    #     first_item = items[0]
-    #     print(first_item)
-    #     self.assertEqual(first_item['test'], 0)
 
 
 class IndexTestCase(BaseTestCase):
