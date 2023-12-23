@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, List, ListItem, Item, MAX_STORE_NAME_LENGTH #, Stocktake, StockPeriod, StockList,
+from stocklist.models import User, Store, List, ListItem, Item, MAX_STORE_NAME_LENGTH 
 
 
 class BaseTestCase(TestCase):
@@ -493,71 +493,73 @@ class UpdateStoreTestCase(BaseTestCase):
         # print(response)
 
 
-class StoreTestCase(BaseTestCase):
+class StoreTestCase(ImportTestCase):
 
-    # @classmethod
-    # def setUpTestData(cls):
-    #     sup = super().setUpTestData()
-    #     cls.store = Store.objects.create(name='Test Store', user=cls.user1)
-    #     return sup
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        return sup
     
     def test_store_path_redirects_to_login_if_not_logged_in(self):
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        path = "/store/{}".format(store.pk)
+        # store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(self.store.pk)
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/store/{}".format(store.pk)) 
+        self.assertEqual(response.url, "/login/?next=/store/{}".format(self.store.pk)) 
 
     def test_PUT_returns_400(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        path = "/store/{}".format(store.pk)
+        # store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(self.store.pk)
         response = self.client.put(path)
 
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        path = "/store/{}".format(store.pk + 1)
+        # store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(self.store.pk + 1)
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 404)
 
     def test_valid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        path = "/store/{}".format(store.pk)
+        # store = Store.objects.create(name='Test Store', user=self.user1)
+        path = "/store/{}".format(self.store.pk)
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 200)
         # print(response.templates[0].name)
-    
-    def test_get_item_count(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        path = "/store/{}".format(store.pk)
-        response = self.client.get(path)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['item_count'], 0)
 
     def test_delete_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        store = Store.objects.create(name='Test Store', user=self.user1)
-        item1 = Item.objects.create(name="item 1", store=store)
-        item2 = Item.objects.create(name="item 2", store=store)
-        item3 = Item.objects.create(name="item 3", store=store)
-        path = "/store/{}".format(store.pk)
+        # store = Store.objects.create(name='Test Store', user=self.user1)
+        item1 = Item.objects.create(name="item 1", store=self.store)
+        item2 = Item.objects.create(name="item 2", store=self.store)
+        item3 = Item.objects.create(name="item 3", store=self.store)
+        path = "/store/{}".format(self.store.pk)
         response = self.client.delete(path)
 
         self.assertEqual(response.status_code, 302)
-        items = Item.objects.filter(store=store)
+        items = Item.objects.filter(store=self.store)
         self.assertEqual(items.count(), 0)
 
+    def test_get_items(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(self.json_data))
 
-    #  def test_GET_items_returns_items_for_user_logged_in(self):
+        path = "/store/{}".format(self.store.pk)
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['items'].count(), 3)
+        self.assertEqual(response.context['items'][0].list_items.count(), 1)
+
+    # def test_GET_items_returns_items_for_user_logged_in(self):
     #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
     #     path = "/import_items/{}".format(self.store.pk)
     #     response = self.client.generic('POST', path, json.dumps(self.json_data))

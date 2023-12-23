@@ -86,12 +86,11 @@ def store(request, store_id):
     if request.method == "GET":
 
         # fetch items, prefetch list_items
-        # items_q = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
+        items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
 
         return render(request, "stocklist/store.html",{
                 'page_title':store.name,
-                'item_count':store.items.count(),
-                # return items here
+                'items':items,
             })
     
     elif request.method == "DELETE":
@@ -227,6 +226,8 @@ def create_list(request, store_id): #list
 
 @login_required
 def create_item(request, store_id): #item
+
+    # TODO - need to add it to a list also: pass in list_id!
 
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
