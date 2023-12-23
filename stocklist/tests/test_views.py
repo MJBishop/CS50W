@@ -46,54 +46,6 @@ class ImportTestCase(BaseTestCase):
         ]
     }
 
-class FetchItemsTestCase(ImportTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        sup = super().setUpTestData()
-        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
-        return sup
-
-    def test_GET_items_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get("/items/1")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/items/1") 
-
-    def test_GET_items_returns_404_for_invalid_store(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        response = self.client.get("/items/2")
-        self.assertEqual(response.status_code, 404)
-
-    def test_POST_items_returns_400_for_user_logged_in(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        
-        path = "/items/{}".format(self.store.pk)
-        response = self.client.post(path)
-        self.assertEqual(response.status_code, 400)
-
-    def test_GET_items_returns_200_for_user_logged_in(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-
-        path = "/items/{}".format(self.store.pk)
-        response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
-
-    def test_GET_items_returns_items_for_user_logged_in(self):
-        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
-        path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
-
-        path = "/items/{}".format(self.store.pk)
-        response = self.client.get(path)
-        items = response.json()
-        print(items)
-        self.assertEqual(len(items), 3)
-
-        # path = "/import_items/{}".format(self.store.pk)
-        # response = self.client.generic('POST', path, json.dumps(self.json_data))
-        
-        # items = Item.objects.filter(store=self.store)
-        # self.assertEqual(items.count(), 3)
-
 
 class ImportItemsTestCase(ImportTestCase):
 
@@ -603,6 +555,30 @@ class StoreTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         items = Item.objects.filter(store=store)
         self.assertEqual(items.count(), 0)
+
+
+    #  def test_GET_items_returns_items_for_user_logged_in(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    #     path = "/import_items/{}".format(self.store.pk)
+    #     response = self.client.generic('POST', path, json.dumps(self.json_data))
+
+    #     path = "/items/{}".format(self.store.pk)
+    #     response = self.client.get(path)
+    #     items = response.json()
+    #     # print(items)
+    #     self.assertEqual(len(items), 3)
+
+    # def test_GET_items_returns_items_with_list_items_for_user_logged_in(self):
+    #     logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+    #     path = "/import_items/{}".format(self.store.pk)
+    #     response = self.client.generic('POST', path, json.dumps(self.json_data))
+
+    #     path = "/items/{}".format(self.store.pk)
+    #     response = self.client.get(path)
+    #     items = response.json()
+    #     first_item = items[0]
+    #     print(first_item)
+    #     self.assertEqual(first_item['test'], 0)
 
 
 class IndexTestCase(BaseTestCase):

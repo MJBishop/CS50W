@@ -8,6 +8,9 @@ from django.db.models import F
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 
+from django.db.models import F
+from django.db.models.lookups import Exact
+
 from stocklist.forms import StoreNameForm
 from .models import User, Store, Item, List, ListItem, MIN_LIST_ITEM_AMOUNT
 
@@ -81,9 +84,14 @@ def store(request, store_id):
     store = get_object_or_404(Store, user=request.user, pk=store_id)
     
     if request.method == "GET":
+
+        # fetch items, prefetch list_items
+        # items_q = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
+
         return render(request, "stocklist/store.html",{
                 'page_title':store.name,
                 'item_count':store.items.count(),
+                # return items here
             })
     
     elif request.method == "DELETE":
@@ -190,19 +198,6 @@ def import_items(request, store_id): # import_list
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
-@login_required
-def items(request, store_id):
-
-    # check for valid store
-    store = get_object_or_404(Store, user=request.user, pk=store_id)
-
-    if request.method == 'GET':
-        items = list(Item.objects.filter(store_id=store_id).values())
-        # need json array!!
-        return JsonResponse(items, safe=False)
-
-    return JsonResponse({"error": "GET request Required."}, status=400)
-    
 
 
 @login_required
