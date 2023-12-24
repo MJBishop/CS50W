@@ -26,6 +26,10 @@ class LoginPage(BasePage):
 
     # success:
 
+    def submit(self):
+        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        return IndexPage(self.driver, self.live_server_url)
+
     def login_as(self, username, password):
         self.set_user_data(username, password)
         return self.submit()
@@ -64,10 +68,6 @@ class RegisterPage(LoginPage):
         self.set_confirmation(confirmation)
 
     # success:
-
-    def submit(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
-        return IndexPage(self.driver, self.live_server_url)
 
     def register_as(self, username, email, password, confirmation):
         self.set_user_data(username, email, password, confirmation)
