@@ -155,7 +155,8 @@ class ListTestCase(TestCase):
             name=self.list_name, 
             type=List.ADDITION
         )
-        self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.store1.name, list.get_type_display()))
+        self.assertEqual(list.__str__(), self.list_name)
+        # self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.store1.name, list.get_type_display()))
 
     # edit list name?
 

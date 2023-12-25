@@ -1,5 +1,7 @@
 from stocklist.tests.page_object_model.base_page import BasePage
 from stocklist.tests.page_object_model.pages import IndexPage
+
+from selenium.webdriver.common.by import By
     
 
 class LoginPage(BasePage):
@@ -22,7 +24,7 @@ class LoginPage(BasePage):
         self.set_password(password)
 
     def get_errors(self):
-        return self.driver.find_element_by_id(self.ERROR_ELEM_ID)
+        return self.driver.find_element(By.ID, self.ERROR_ELEM_ID)
 
     # success:
 
@@ -38,7 +40,7 @@ class LoginPage(BasePage):
     # failure:
 
     def submitExpectingFailure(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        self.driver.find_element(By.XPATH, self.INPUT_ELEM_XPATH).click()
         return LoginPage(self.driver, self.live_server_url)
 
     def expect_failure_to_login_as(self, username, password):
@@ -76,7 +78,7 @@ class RegisterPage(LoginPage):
     # failure:
 
     def submitExpectingFailure(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        self.driver.find_element(By.XPATH, self.INPUT_ELEM_XPATH).click()
         return RegisterPage(self.driver, self.live_server_url)
 
     def expect_failure_to_register_as(self, username, email, password, confirmation):

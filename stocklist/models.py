@@ -24,7 +24,7 @@ class User(AbstractUser):
 
 class Store(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stores")
-    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH, default=DEFAULT_STORE_NAME,)
+    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)#, default=DEFAULT_STORE_NAME,)
 
     class Meta:
         '''Store name must be unique for User.'''
@@ -76,7 +76,7 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
-    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION, blank=False)
+    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION, blank=False) #default=COUNT?
     date_added = models.DateTimeField(
         default=timezone.now, 
         help_text="The date these items were added/removed from the Store."
@@ -87,7 +87,7 @@ class List(models.Model):
     counts = CountListManager()
 
     def __str__(self):
-        return '{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
+        return self.name#'{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
     
     def save(self, *args, **kwargs): # Save or Clean??
         if not [i for i in List.LIST_TYPE_CHOICES if self.type in i]:

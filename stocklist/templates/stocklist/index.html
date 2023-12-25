@@ -13,6 +13,10 @@
             <div class="col-sm-12 my-1">
                 <input type="submit" value="Save" class="btn btn-primary form-control mx-auto my-1"></input>
             </div>
+            {% if message %}
+                <!-- error message -->
+                <div id="error-message" class="error mt-2">{{ message }}</div>
+            {% endif %}
         </div>
     </form>
 
