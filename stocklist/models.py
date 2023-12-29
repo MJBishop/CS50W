@@ -24,7 +24,7 @@ class User(AbstractUser):
 
 class Store(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stores")
-    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)#, default=DEFAULT_STORE_NAME,)
+    name = models.CharField(max_length=MAX_STORE_NAME_LENGTH)
 
     class Meta:
         '''Store name must be unique for User.'''
