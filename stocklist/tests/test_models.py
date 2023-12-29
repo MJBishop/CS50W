@@ -209,6 +209,13 @@ class ItemTestCase(TestCase):
             item.full_clean()
 
 
+    # serializer
+    def test_item_serializer_item_id(self):
+        serialized_item = self.item.serialize()
+        self.assertEqual(self.item.id, serialized_item['id'])
+
+
+
 class ListItemTestCase(TestCase):
 
     @classmethod
@@ -259,3 +266,5 @@ class ListItemTestCase(TestCase):
         with self.assertRaises(ValidationError):
             list_item = ListItem.objects.create(list=self.list, item=item, amount=v_large_amount)
             list_item.full_clean()
+
+

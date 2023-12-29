@@ -107,6 +107,18 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            # "sender": self.sender.email,
+            # "recipients": [user.email for user in self.recipients.all()],
+            # "subject": self.subject,
+            # "body": self.body,
+            # "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            # "read": self.read,
+            # "archived": self.archived
+        }
 
 
 class ListItem(models.Model):
@@ -118,6 +130,8 @@ class ListItem(models.Model):
         validators=[MinValueValidator(MIN_LIST_ITEM_AMOUNT), MaxValueValidator(MAX_LIST_ITEM_AMOUNT)],
         default=MIN_LIST_ITEM_AMOUNT
     )
+
+    # TODO - Item must be unique for List
 
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)
