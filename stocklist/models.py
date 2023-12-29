@@ -113,8 +113,7 @@ class Item(models.Model):
             "id": self.id,
             "name": self.name,
             "list_items": 
-                [{ 'list_id':list_item.list.id } for list_item in self.list_items.all()],
-                # , 'amount':list_item.amount
+                [{ 'list_id':list_item.list.id, 'amount':list_item.amount } for list_item in self.list_items.all()],
         }
 
 
