@@ -112,12 +112,9 @@ class Item(models.Model):
         return {
             "id": self.id,
             "name": self.name,
-            # "recipients": [user.email for user in self.recipients.all()],
-            # "subject": self.subject,
-            # "body": self.body,
-            # "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            # "read": self.read,
-            # "archived": self.archived
+            "list_items": 
+                [{ 'list_id':list_item.list.id } for list_item in self.list_items.all()],
+                # , 'amount':list_item.amount
         }
 
 
