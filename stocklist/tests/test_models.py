@@ -213,6 +213,10 @@ class ItemTestCase(TestCase):
     def test_item_serializer_item_id(self):
         serialized_item = self.item.serialize()
         self.assertEqual(self.item.id, serialized_item['id'])
+    
+    def test_item_serializer_item_name(self):
+        serialized_item = self.item.serialize()
+        self.assertEqual(self.item.name, serialized_item['name'])
 
 
 

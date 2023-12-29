@@ -111,7 +111,7 @@ class Item(models.Model):
     def serialize(self):
         return {
             "id": self.id,
-            # "sender": self.sender.email,
+            "name": self.name,
             # "recipients": [user.email for user in self.recipients.all()],
             # "subject": self.subject,
             # "body": self.body,
