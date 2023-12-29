@@ -223,14 +223,24 @@ class ItemTestCase(TestCase):
         list_item = ListItem.objects.create(item=self.item, list=list, amount=11)
 
         serialized_item = self.item.serialize()
-        self.assertEqual(list_item.id, serialized_item['list_items'][0]['list_id'])
+        self.assertIn(list_item.id, serialized_item['list_items'].keys())
 
     def test_item_serializer_item_list_item_amount(self):
         list = List.objects.create(store=self.store1, name="Test List", type=List.COUNT)
         list_item = ListItem.objects.create(item=self.item, list=list, amount=11)
 
         serialized_item = self.item.serialize()
-        self.assertEqual(list_item.amount, serialized_item['list_items'][0]['amount'])
+        self.assertEqual(list_item.amount, serialized_item['list_items'][list_item.id])
+   
+    def test_item_serializer_item_list_items_length(self):
+        list = List.objects.create(store=self.store1, name="Test List", type=List.COUNT)
+        list_item = ListItem.objects.create(item=self.item, list=list, amount=11)
+
+        list2 = List.objects.create(store=self.store1, name="Test List 2", type=List.COUNT)
+        list_item2 = ListItem.objects.create(item=self.item, list=list2, amount=22)
+
+        serialized_item = self.item.serialize()
+        self.assertEqual(2, len(serialized_item['list_items']))
 
 
 
