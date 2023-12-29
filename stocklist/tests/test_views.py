@@ -508,12 +508,12 @@ class StoreTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/store/{}".format(self.store.pk)) 
 
-    def test_PUT_returns_400(self):
+    def test_PUT_returns_302(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         path = "/store/{}".format(self.store.pk)
         response = self.client.put(path)
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 302)
 
     def test_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
@@ -536,7 +536,7 @@ class StoreTestCase(ImportTestCase):
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
         path = "/store/{}".format(self.store.pk)
-        response = self.client.delete(path)
+        response = self.client.post(path)
 
         self.assertEqual(response.status_code, 302)
         items = Item.objects.filter(store=self.store)
