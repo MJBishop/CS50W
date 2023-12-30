@@ -207,11 +207,16 @@ def import_items(request, store_id): # import_list
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
+
 @login_required
 def items(request, store_id):
-    
+
      # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
+
+
+    return JsonResponse({"error": "POST request Required."}, status=400)
+
 
 @login_required
 def create_list(request, store_id): #list

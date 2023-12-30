@@ -66,7 +66,12 @@ class ItemTestCase(ImportTestCase):
         response = self.client.get("/items/2")
         self.assertEqual(response.status_code, 404)
 
-
+    def test_POST_items_returns_400_for_user_logged_in(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        
+        path = "/items/{}".format(self.store.pk)
+        response = self.client.post(path)
+        self.assertEqual(response.status_code, 400)
 
 class ImportItemsTestCase(ImportTestCase):
 
