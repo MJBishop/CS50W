@@ -47,6 +47,22 @@ class ImportTestCase(BaseTestCase):
     }
 
 
+class ItemTestCase(ImportTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        sup = super().setUpTestData()
+        cls.store = Store.objects.create(name='Test Store', user=cls.user1)
+        return sup
+
+    def test_GET_items_redirects_to_login_if_not_logged_in(self):
+        path = "/items/{}".format(self.store.pk)
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/items/1") 
+
+        
+
 class ImportItemsTestCase(ImportTestCase):
 
     @classmethod
@@ -492,7 +508,7 @@ class UpdateStoreTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         # print(response)
 
-
+# TODO - 2 fail when testing whole page
 class StoreTestCase(ImportTestCase):
 
     @classmethod
@@ -542,6 +558,8 @@ class StoreTestCase(ImportTestCase):
         items = Item.objects.filter(store=self.store)
         self.assertEqual(items.count(), 0)
 
+    # failing when testing whole page:
+        
     def test_get_items(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         path = "/import_items/{}".format(self.store.pk)

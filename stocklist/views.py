@@ -82,26 +82,36 @@ def store(request, store_id):
 
     #  check for valid Store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
-    # need to prefetch lists?
     
     if request.method == "GET":
 
         # fetch items, prefetch list_items
         items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
+        # need to prefetch lists?
 
         return render(request, "stocklist/store.html",{
                 'store':store,
                 'items':items,
             })
     
-    elif request.method == "DELETE":
+    if request.method == "POST":
 
         # delete store
-        Store.objects.filter(user=request.user, id=store_id).delete()
+        store.delete()
 
-        return HttpResponseRedirect(reverse("index"))
-        
-    return JsonResponse({"error": "GET request Required."}, status=400)
+    return HttpResponseRedirect(reverse("index"))
+
+
+# @login_required
+# def delete_store(request, store_id):
+
+#     #  check for valid Store
+#     store = get_object_or_404(Store, user=request.user, pk=store_id)
+
+#     store.delete()
+
+#     return HttpResponseRedirect(reverse("index"))
+
 
 
 @login_required
@@ -192,13 +202,14 @@ def import_items(request, store_id): # import_list
                     list_item.save()
                 except ValidationError as e:
                     return JsonResponse({"error": e.messages}, status=400)
-                
-
+              
         return JsonResponse({"message": "Import successful."}, status=201)
     
     return JsonResponse({"error": "POST request Required."}, status=400)
 
-
+@login_required
+def items(request, store_id):
+    pass
 
 @login_required
 def create_list(request, store_id): #list
