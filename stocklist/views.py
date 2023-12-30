@@ -214,6 +214,10 @@ def items(request, store_id):
      # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
 
+    if request.method == 'GET':
+
+        items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
+        return JsonResponse([item.serialize() for item in items], safe=False)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 
