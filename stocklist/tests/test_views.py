@@ -82,9 +82,7 @@ class ItemTestCase(ImportTestCase):
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 200)
-        # response = 
-        items = response.json()
-        # print(items)
+        items = response.json() # print(items)
         self.assertEqual(items[0]['name'], 'Absolut Vodka 70CL BTL')
 
 
