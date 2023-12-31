@@ -34,14 +34,6 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "lists": [{ "id":list.id, "name":list.name , "type":list.get_type_display() } for list in self.lists.all()],
-            # TODO date
-        }
 
 
 class AdditionListManager(models.Manager):
@@ -74,7 +66,7 @@ class CountListManager(models.Manager):
 class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
-    COUNT = 'CO' # ORDER = 'OR', PAR = 'PA', CHECKLIST = 'CH'
+    COUNT = 'CO' # FOR Stocklist: ORDER = 'OR', PAR = 'PA', CHECKLIST = 'CH'...
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
         (SUBTRACTION, "Subtraction"),
@@ -101,6 +93,15 @@ class List(models.Model):
         if not [i for i in List.LIST_TYPE_CHOICES if self.type in i]:
             raise ValidationError({'type': ["Invalid Type",]})
         super(List, self).save(*args, **kwargs)
+
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": self.get_type_display(),
+            # TODO date
+        }
 
 class Item(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="items")

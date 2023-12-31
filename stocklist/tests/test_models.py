@@ -75,29 +75,6 @@ class StoreTestCase(TestCase):
     #     stores = Store.objects.all()
     #     self.assertEqual(stores.count(), 1)
             
-    
-    # serializer
-    def test_store_serializer_store_id(self):
-        serialized_store = self.store.serialize()
-        self.assertEqual(self.store.id, serialized_store["id"])
-    
-    def test_store_serializer_store_name(self):
-        serialized_store = self.store.serialize()
-        self.assertEqual(self.store.name, serialized_store["name"])
-    
-    def test_store_serializer_list_id(self):
-        list_name = 'Test List Name'
-        list = List.objects.create(
-            store=self.store, 
-            name=list_name, 
-            type=List.COUNT,
-        )
-
-        serialized_store = self.store.serialize()
-        list_to_test = serialized_store["lists"][0]
-        self.assertEqual(list.id, list_to_test["id"])
-        self.assertEqual(list.name, list_to_test["name"])
-        self.assertEqual(list.get_type_display(), list_to_test["type"])
 
 
 class ListTestCase(TestCase):
@@ -195,6 +172,50 @@ class ListTestCase(TestCase):
                 type=List.ADDITION
         )
             list.full_clean()
+
+
+    
+    # serializer
+    def test_list_serializer_list_id(self):
+        list_name = 'Start'
+        list = List.objects.create(
+            store=self.store1, 
+            name=list_name, 
+            type=List.COUNT
+        )
+
+        serialized_list = list.serialize()
+        self.assertEqual(list.id, serialized_list["id"])
+    
+    def test_list_serializer_list_name(self):
+        list_name = 'Start'
+        list = List.objects.create(
+            store=self.store1, 
+            name=list_name, 
+            type=List.COUNT
+        )
+
+        serialized_list = list.serialize()
+        self.assertEqual(list.name, serialized_list["name"])
+    
+    # def test_list_serializer_list_properties(self):
+    #     list_name = 'Test List Name'
+    #     list = List.objects.create(
+    #         store=self.store, 
+    #         name=list_name, 
+    #         type=List.COUNT,
+    #     )
+
+    #     serialized_store = self.store.serialize()
+    #     list_to_test = serialized_store["lists"][0]
+    #     self.assertEqual(list.id, list_to_test["id"])
+    #     self.assertEqual(list.name, list_to_test["name"])
+    #     self.assertEqual(list.get_type_display(), list_to_test["type"])
+
+    # TODO
+    # def test_store_serializer_list_date(self):
+
+
 
 class ItemTestCase(TestCase):
 
