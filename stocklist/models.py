@@ -39,11 +39,8 @@ class Store(models.Model):
         return {
             "id": self.id,
             "name": self.name,
-            # "list_items": [{ "list_id":list_item.list.id, "amount":list_item.amount } for list_item in self.list_items.all()],
-            # { list_item.list.id : list_item.amount for list_item in self.list_items.all() },
-            # list_item_amounts
-                # 
-                # [{ list_item.list.id : list_item.amount } for list_item in self.list_items.all()],
+            "lists": [{ "id":list.id, "name":list.name , "type":list.get_type_display() } for list in self.lists.all()],
+            # TODO date
         }
 
 
