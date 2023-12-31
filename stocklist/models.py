@@ -94,7 +94,6 @@ class List(models.Model):
             raise ValidationError({'type': ["Invalid Type",]})
         super(List, self).save(*args, **kwargs)
 
-    
     def serialize(self):
         return {
             "id": self.id,
