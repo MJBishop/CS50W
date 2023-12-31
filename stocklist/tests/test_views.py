@@ -307,44 +307,44 @@ class CreateListTestCase(ImportTestCase):
         return sup
 
     def test_POST_create_list_redirects_to_login_if_not_logged_in(self):
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'Test List', 'type':'AD'}]))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/create_list/1") 
+        self.assertEqual(response.url, "/login/?next=/create_lists/1") 
 
     def test_GET_create_list_returns_400_for_user_logged_in(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('GET', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
+        response = self.client.generic('GET', "/create_lists/1", json.dumps([{'name':'Test List', 'type':'AD'}]))
         self.assertEqual(response.status_code, 400)
 
     def test_POST_create_list_returns_404_for_invalid_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/2", json.dumps({'name':'Test List', 'type':'AD'}))
+        response = self.client.generic('POST', "/create_lists/2", json.dumps([{'name':'Test List', 'type':'AD'}]))
         self.assertEqual(response.status_code, 404)
 
     def test_POST_create_list_returns_201_for_valid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'Test List', 'type':'AD'}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'Test List', 'type':'AD'}]))
         self.assertEqual(response.status_code, 201)
 
     def test_POST_create_list_returns_400_for_invalid_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'A'*21, 'type':'AD'}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'A'*21, 'type':'AD'}]))
         self.assertEqual(response.status_code, 400)
 
     def test_POST_create_list_returns_400_for_empty_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'', 'type':'AD'}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'', 'type':'AD'}]))
         self.assertEqual(response.status_code, 400)
 
     def test_POST_create_list_returns_400_for_invalid_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'test list', 'type':'ZZ'}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'test list', 'type':'ZZ'}]))
         list_query = List.objects.all()
         # self.assertEqual(list_query.first().type, 'ZZZ')
         self.assertEqual(response.status_code, 400)
@@ -352,7 +352,7 @@ class CreateListTestCase(ImportTestCase):
     def test_POST_create_list_returns_400_for_empty_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        response = self.client.generic('POST', "/create_list/1", json.dumps({'name':'test list', 'type':''}))
+        response = self.client.generic('POST', "/create_lists/1", json.dumps([{'name':'test list', 'type':''}]))
         list_query = List.objects.all()
         # self.assertEqual(list_query.first().type, 'ZZ')
         self.assertEqual(response.status_code, 400)

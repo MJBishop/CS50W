@@ -231,18 +231,19 @@ def create_list(request, store_id): #list
     if request.method == 'POST':
 
         data = json.loads(request.body)
-        name = data.get("name", "")
-        type = data.get("type", "")
+        for dict in data:
+            name = dict.get("name", "")
+            type = dict.get("type", "")
 
-        try:
-            list = List(name=name, type=type, store=store)
-            list.full_clean()
-            list.save()
-        except ValidationError as e:
-            # print(e.messages)
-            return JsonResponse({"error": e.messages}, status=400)
+            try:
+                list = List(name=name, type=type, store=store)
+                list.full_clean()
+                list.save()
+            except ValidationError as e:
+                # print(e.messages)
+                return JsonResponse({"error": e.messages}, status=400)
         
-        return JsonResponse({"message": "Import successful."}, status=201)
+        return JsonResponse(data = {"message": "Import successful.", "list":list.serialize()}, status=201, safe=False)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 
