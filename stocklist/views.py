@@ -85,13 +85,8 @@ def store(request, store_id):
     
     if request.method == "GET":
 
-        # fetch items, prefetch list_items
-        items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
-        # need to prefetch lists?
-
         return render(request, "stocklist/store.html",{
                 'store':store,
-                'items':items,
             })
     
     if request.method == "POST":
@@ -217,7 +212,12 @@ def items(request, store_id):
     if request.method == 'GET':
 
         items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
-        return JsonResponse([item.serialize() for item in items], safe=False)
+
+        data = {
+            'items' : [item.serialize() for item in items],
+            # 'lists' : [list.serialize() for list in lists]
+        }
+        return JsonResponse(data, safe=False)
 
     return JsonResponse({"error": "POST request Required."}, status=400)
 

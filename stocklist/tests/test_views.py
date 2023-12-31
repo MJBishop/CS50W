@@ -47,7 +47,7 @@ class ImportTestCase(BaseTestCase):
     }
 
 
-class ItemTestCase(ImportTestCase):
+class ItemsTestCase(ImportTestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -82,7 +82,8 @@ class ItemTestCase(ImportTestCase):
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, 200)
-        items = response.json() # print(items)
+        data = response.json() 
+        items = data['items']
         self.assertEqual(items[0]['name'], 'Absolut Vodka 70CL BTL')
 
 
