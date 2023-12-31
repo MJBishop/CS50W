@@ -79,8 +79,11 @@ class StoreTestCase(TestCase):
     # serializer
     def test_store_serializer_store_id(self):
         serialized_store = self.store.serialize()
-
         self.assertEqual(self.store.id, serialized_store["id"])
+    
+    def test_store_serializer_store_name(self):
+        serialized_store = self.store.serialize()
+        self.assertEqual(self.store.name, serialized_store["name"])
 
 
 class ListTestCase(TestCase):
