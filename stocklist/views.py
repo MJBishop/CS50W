@@ -230,6 +230,7 @@ def create_list(request, store_id): #list
 
     if request.method == 'POST':
 
+        # TODO - bulk save
         data = json.loads(request.body)
         for dict in data:
             name = dict.get("name", "")

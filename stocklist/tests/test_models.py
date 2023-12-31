@@ -100,7 +100,7 @@ class ListTestCase(TestCase):
         lists = List.objects.all()
         self.assertEqual(lists.count(), 1)
         self.assertEqual(lists[0].name, self.list_name)
-        self.assertEqual(lists[0].type, List.ADDITION)
+        self.assertEqual(lists[0].type, List.COUNT)
 
     def test_create_addition_list(self):
         list = List.objects.create(
@@ -186,32 +186,8 @@ class ListTestCase(TestCase):
 
         serialized_list = list.serialize()
         self.assertEqual(list.id, serialized_list["id"])
-    
-    def test_list_serializer_list_name(self):
-        list_name = 'Start'
-        list = List.objects.create(
-            store=self.store1, 
-            name=list_name, 
-            type=List.COUNT
-        )
-
-        serialized_list = list.serialize()
         self.assertEqual(list.name, serialized_list["name"])
-    
-    # def test_list_serializer_list_properties(self):
-    #     list_name = 'Test List Name'
-    #     list = List.objects.create(
-    #         store=self.store, 
-    #         name=list_name, 
-    #         type=List.COUNT,
-    #     )
-
-    #     serialized_store = self.store.serialize()
-    #     list_to_test = serialized_store["lists"][0]
-    #     self.assertEqual(list.id, list_to_test["id"])
-    #     self.assertEqual(list.name, list_to_test["name"])
-    #     self.assertEqual(list.get_type_display(), list_to_test["type"])
-
+        self.assertEqual(list.get_type_display(), serialized_list["type"])
     # TODO
     # def test_store_serializer_list_date(self):
 

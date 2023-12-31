@@ -76,7 +76,7 @@ class List(models.Model):
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
     # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
-    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=ADDITION, blank=False) #default=COUNT?
+    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=COUNT, blank=False) #default=COUNT?
     date_added = models.DateTimeField(
         default=timezone.now, 
         help_text="The date these items were added/removed from the Store."
