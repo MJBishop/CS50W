@@ -215,7 +215,7 @@ def items(request, store_id):
 
         data = {
             'items' : [item.serialize() for item in items],
-            # 'lists' : [list.serialize() for list in lists]
+            'lists' : [list.serialize() for list in store.lists.all()]
         }
         return JsonResponse(data, safe=False)
 

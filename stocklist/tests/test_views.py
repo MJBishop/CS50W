@@ -86,6 +86,19 @@ class ItemsTestCase(ImportTestCase):
         items = data['items']
         self.assertEqual(items[0]['name'], 'Absolut Vodka 70CL BTL')
 
+    def test_GET_items_returns_lists(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        import_path = "/import_items/{}".format(self.store.pk)
+        self.client.generic('POST', import_path, json.dumps(self.json_data))
+
+        path = "/items/{}".format(self.store.pk)
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json() 
+        lists = data['lists']
+        self.assertEqual(lists[0]['name'], 'Stock')
+
 
 class ImportItemsTestCase(ImportTestCase):
 
