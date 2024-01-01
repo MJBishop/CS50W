@@ -188,6 +188,7 @@ class ListTestCase(TestCase):
         self.assertEqual(list.id, serialized_list["id"])
         self.assertEqual(list.name, serialized_list["name"])
         self.assertEqual(list.get_type_display(), serialized_list["type"])
+        self.assertEqual(0,serialized_list["count"])
     # TODO
     # def test_store_serializer_list_date(self):
 

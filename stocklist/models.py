@@ -100,6 +100,7 @@ class List(models.Model):
             "name": self.name,
             "type": self.get_type_display(),
             # TODO date
+            "count":self.list_items.count(),
         }
 
 class Item(models.Model):
@@ -121,10 +122,6 @@ class Item(models.Model):
             "id": self.id,
             "name": self.name,
             "list_items": [{ "list_id":list_item.list.id, "amount":list_item.amount } for list_item in self.list_items.all()],
-            # { list_item.list.id : list_item.amount for list_item in self.list_items.all() },
-            # list_item_amounts
-                # 
-                # [{ list_item.list.id : list_item.amount } for list_item in self.list_items.all()],
         }
 
 
