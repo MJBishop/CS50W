@@ -135,7 +135,11 @@ class ListItem(models.Model):
         default=MIN_LIST_ITEM_AMOUNT
     )
 
-    # TODO - Item must be unique for List
+    class Meta:
+        '''Item must be unique for List.'''
+        constraints = [
+            models.UniqueConstraint(fields=['list', 'item',], name='unique list item')
+        ]
 
     def __str__(self):
         return '{} {}'.format(self.amount, self.item.name)

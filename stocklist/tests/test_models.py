@@ -321,4 +321,10 @@ class ListItemTestCase(TestCase):
             list_item = ListItem.objects.create(list=self.list, item=item, amount=v_large_amount)
             list_item.full_clean()
 
+    def test_unique_item_for_list(self):
+        with self.assertRaises(IntegrityError):
+            list_item = ListItem.objects.create(list=self.list, item=self.item, amount='3')
+            list_item.full_clean()
+            
+
 
