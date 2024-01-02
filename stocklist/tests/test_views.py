@@ -26,25 +26,28 @@ class BaseTestCase(TestCase):
 
 
 class ImportTestCase(BaseTestCase):
-    json_data = {
-        'origin':'test_data.csv',
-        'name':'Stock',
-        'type':'AD',
-        'items':[
-            {
-                'name':'Absolut Vodka 70CL BTL',
-                'amount':'12'
-            },
-            {
-                'name':'Bacardi Superior Rum 70CL BTL',
-                'amount':'9'
-            },
-            {
-                'name':'Cazadores Reposado Tequila Vodka 70CL BTL',
-                'amount':''
-            },
-        ]
-    }
+    
+    json_data = [ 
+        {
+            'origin':'test_data.csv',
+            'name':'Stock',
+            'type':'AD',
+            'items':[
+                {
+                    'name':'Absolut Vodka 70CL BTL',
+                    'amount':'12'
+                },
+                {
+                    'name':'Bacardi Superior Rum 70CL BTL',
+                    'amount':'9'
+                },
+                {
+                    'name':'Cazadores Reposado Tequila Vodka 70CL BTL',
+                    'amount':''
+                },
+            ]
+        }
+    ]
 
 
 class ItemsTestCase(ImportTestCase):
@@ -140,7 +143,7 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        self.json_data['name'] = 'A'*(20 + 1)
+        self.json_data[0]['name'] = 'A'*(20 + 1)
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
 
@@ -151,7 +154,7 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        self.json_data['type'] = 'ZZ'
+        self.json_data[0]['type'] = 'ZZ'
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(self.json_data))
         
@@ -171,13 +174,13 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'A'*(80+1),
             'amount':'6'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -191,13 +194,13 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_handles_missing_item_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'',
             'amount':'6'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -223,13 +226,13 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'Test Fail for negative number',
             'amount':'-1'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -243,13 +246,14 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'Test Fail for large number',
             'amount':'1000001'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
+        print(json_data)
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -263,12 +267,12 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_creates_listitem_for_missing_item_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'Test Pass for missing amount'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -282,12 +286,12 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_doesnt_create_new_item_if_item_already_in_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data["items"])
+        items = list(self.json_data[0]["items"])
         items.append({
             'name':'Absolut Vodka 70CL BTL'
         })
         json_data = self.json_data.copy()
-        json_data['items'] = items
+        json_data[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))
@@ -418,6 +422,21 @@ class CreateListItemTestCase(ImportTestCase):
         list_items = ListItem.objects.filter(list=list, item=item)
         self.assertTrue(list_items.exists())
         self.assertEqual(list_items[0].amount, 1)
+        self.assertEqual(response.status_code, 201)
+
+    def test_POST_create_list_item_updates_list_item_if_exists(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+        list_item = ListItem.objects.create(list=list, item=item, amount='1')
+
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'11'}))
+        list_items = ListItem.objects.filter(list=list, item=item)
+        self.assertTrue(list_items.exists())
+        self.assertEqual(list_items.count(), 1)
+        self.assertEqual(list_items[0].amount, 11)
         self.assertEqual(response.status_code, 201)
 
     def test_POST_create_list_item_returns_400_for_invalid_list_items_amount_min(self):

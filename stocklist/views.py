@@ -149,54 +149,59 @@ def import_items(request, store_id): # import_list
         
         # list data
         data = json.loads(request.body)
-        list_name = data.get("name", "")
-        list_type = data.get("type", "")
-        items = data.get("items", "")
 
-        # create List
-        try:
-            list = List(name=list_name, type=list_type, store=store)
-            list.full_clean()
-            list.save()
-        except ValidationError as e:
-            return JsonResponse({"error": e.messages}, status=400)
+        for dict in data:
+            list_name = dict.get("name", "")
+            list_type = dict.get("type", "")
+            items = dict.get("items", [])
 
-        # create ListItems
-        for item_data in items:
+            # create List
+            try:
+                if list_type == '':
+                    list = List(name=list_name, store=store)
+                else:
+                    list = List(name=list_name, type=list_type, store=store)
+                list.full_clean()
+                list.save()
+            except ValidationError as e:
+                return JsonResponse({"error": e.messages}, status=400)
 
-            item_name = item_data.get("name", "") # default name? line number?
-            if item_name == '':
-                # skip rows with empty names - TODO - record total skipped?
-                pass
-            else:
+            # create ListItems
+            for item_data in items:
 
-                # check for Item in Store
-                item_query = Item.objects.filter(name=item_name, store=store)
-                if item_query.exists():
-                    item = item_query.first()
+                item_name = item_data.get("name", "") # default name? line number?
+                if item_name == '':
+                    # skip rows with empty names - TODO - record total skipped?
+                    pass
                 else:
 
-                    # save Item to Store
-                    try:
-                        item = Item(name=item_name, store=store)
-                        item.full_clean()
-                        item.save()
-                    except ValidationError as ve: 
-                        # Collect these all up? currently stops loop after 1st ValidationError!
-                        # print(ve.messages)
-                        # IF not unique add item as ref
-                        return JsonResponse({"error": ve.messages}, status=400)
+                    # check for Item in Store
+                    item_query = Item.objects.filter(name=item_name, store=store)
+                    if item_query.exists():
+                        item = item_query.first()
+                    else:
 
-                # save ListItem to List
-                item_amount = item_data.get("amount", '')
-                if item_amount == '':
-                    item_amount = MIN_LIST_ITEM_AMOUNT
-                try:
-                    list_item = ListItem(item=item, list=list, amount=item_amount)
-                    list_item.full_clean()
-                    list_item.save()
-                except ValidationError as e:
-                    return JsonResponse({"error": e.messages}, status=400)
+                        # save Item to Store
+                        try:
+                            item = Item(name=item_name, store=store)
+                            item.full_clean()
+                            item.save()
+                        except ValidationError as ve: 
+                            # Collect these all up? currently stops loop after 1st ValidationError!
+                            # print(ve.messages)
+                            # IF not unique add item as ref
+                            return JsonResponse({"error": ve.messages}, status=400)
+
+                    # save ListItem to List
+                    item_amount = item_data.get("amount", '')
+                    if item_amount == '':
+                        item_amount = MIN_LIST_ITEM_AMOUNT
+                    try:
+                        list_item = ListItem(item=item, list=list, amount=item_amount)
+                        list_item.full_clean()
+                        list_item.save()
+                    except ValidationError as e:
+                        return JsonResponse({"error": e.messages}, status=400)
               
         return JsonResponse({"message": "Import successful."}, status=201)
     
@@ -292,14 +297,20 @@ def create_list_item(request, list_id, item_id): #list_item
         data = json.loads(request.body)
         item_amount = data.get("amount", "")
 
+        created = False
         try:
+            list_item = ListItem.objects.get(item=item, list=list)
+            list_item.amount = item_amount
+        except ListItem.DoesNotExist:
             list_item = ListItem(item=item, list=list, amount=item_amount)
+            created = True
+        try:
             list_item.full_clean()
             list_item.save()
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-        return JsonResponse({"message": "Import successful."}, status=201)
+        return JsonResponse({"message": "Import successful.", "Created":created}, status=201)
         # return list_item..
 
     return JsonResponse({"error": "POST request Required."}, status=400)

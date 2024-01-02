@@ -23,3 +23,61 @@ body > .container {
     background-color: white;
     border-bottom:1px solid rgba(34, 28, 36, 0.74);
 }
+
+
+/*  
+********************************/
+#items-table .items-table-header {
+    text-align: center;
+    min-width: 70px;
+}
+#items-table .selectable-enabled {
+    background-color: white;
+    color: var(--primary);
+}
+#items-table .selectable-enabled:hover {
+    cursor: pointer;
+    background-color: var(--primary);
+    color: white; 
+}
+#items-table .selected.selectable-enabled {
+    background-color:var(--primary); 
+    color: white;
+}
+#items-table .selected.selectable-enabled:hover {
+    cursor: pointer;
+    background-color: white; 
+    color: var(--primary); 
+}
+
+
+
+
+#items-table .selectable-inprogess {
+    background-color: white;
+    color: var(--warning);
+}
+#items-table .selectable-inprogess:hover {
+    cursor: pointer;
+    background-color: var(--warning);
+    color: white; 
+}
+#items-table .selectable-completed {
+    background-color: white;
+    color: var(--success);
+}
+#items-table .selectable-completed:hover {
+    cursor: pointer;
+    background-color: var(--success);
+    color: white; 
+}
+
+.badge {
+    margin-left: .85em;
+}
+
+
+
+/* #count-items-button {
+    min-width: 150px;
+} */
