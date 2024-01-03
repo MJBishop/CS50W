@@ -14,7 +14,6 @@ class StorePage(BasePage):
     def __init__(self, driver, live_server_url, url="/store/1", navigate=False):
         super().__init__(driver, live_server_url, navigate=False)
         self.url = url
-        print(url)
         if (navigate):
             self.navigate()
 

@@ -1,10 +1,11 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
-from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element, presence_of_element_located, invisibility_of_element
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 # from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 from stocklist.models import User
 from stocklist.tests.page_object_model.user_pages import RegisterPage, LoginPage
@@ -111,15 +112,15 @@ class ImportItemsTests(BaseTests):
         self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
         self.store_page = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
 
-    def test_store_import_store_name(self):
-        # form = self.store_page.get_import_items_form()
+    def test_store_page_store_name(self):
         heading_text = self.store_page.get_store_page_heading_text()
         self.assertTrue(heading_text, self.TEST_STORE_NAME)
 
-
-        # wait = WebDriverWait(self.driver, timeout=2)
-        # wait.until(lambda d : form.is_displayed())
-
+    def test_store_page_file_form(self):
+        WebDriverWait(self.driver, timeout=10).until(
+                EC.text_to_be_present_in_element((By.ID, "form-label"), "Select a CSV File:")
+            )
+        self.assertTrue(self.store_page.get_import_items_form())
 
 class BaseStoreTests(BaseTests):
     fixtures = ['test_data.json']
