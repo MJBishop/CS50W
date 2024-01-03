@@ -2,111 +2,114 @@
 
 {% block body %}
     <div class="row">
-        <h2 id="title" class="col-md-8" data-store_id="{{store.id}}">{{store.name}}</h2>
+        <h2 id="store-name-heading" class="col-md-8" data-store_id="{{store.id}}">{{store.name}}</h2>
         
     </div>  
     
     <div id="items-view">
 
         <!-- Count Items -->
-        <div>
-            <!-- Count Items Button -->
-            <button id="count-items-button" class="btn btn-primary mt-2 col-md-4 offset-md-8" type="button" data-bs-toggle="collapse" data-bs-target="#count-collapse" aria-expanded="false" aria-controls="collapseExample"></button>
-            <!-- Count Items Collapse -->
-            <div class="collapse" id="count-collapse">
-                <div class="card card-body">
-                    <!-- Count Item Label -->
-                    <label id="count-item-name-label" class="text-center fw-bold" for="">Item Name</label>
-                    <!-- Count Item Input -->
-                    <div class="input-group input-group-lg mt-3">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Count</span>
-                        <input id="count-item-amount-input" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
-                    </div>
-                    <div class="btn-group mt-3" role="group" aria-label="">
+        <div class="row">
+
+
+            <div id="count-items-view" class="col-md-5 order-md-7">
+                <!-- Count Button & Collapse -->
+                <button id="count-items-button" class="btn btn-primary mt-2 col-12" type="button" data-bs-toggle="collapse" data-bs-target="#count-collapse" aria-expanded="false" aria-controls="collapseExample"></button>
+                <div class="collapse" id="count-collapse">
+                    <div class="card card-body">
+                        <!-- Count Item Label -->
+                        <label id="count-item-name-label" class="text-center fw-bold" for="">Item Name</label>
+                        <!-- Count Item Input -->
+                        <div class="input-group input-group-lg mt-3">
+                            <span class="input-group-text" id="inputGroup-sizing-lg">Count</span>
+                            <input id="count-item-amount-input" type="number" min="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+                        </div>
                         <!-- Count Next Item Button -->
-                        <button id="count-item-previous-button" type="button" class="btn btn-outline-dark">Previous</button>
-                        <!-- Count Prev Item Button -->
-                        <button id="count-item-next-button" type="button" class="btn btn-outline-dark">Next</button>
+                        <div class="btn-group mt-3" role="group" aria-label="">
+                            <button id="count-item-previous-button" type="button" class="btn btn-outline-dark">Previous</button>
+                            <button id="count-item-next-button" type="button" class="btn btn-outline-dark">Next</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Items Table -->
-        <div id="table-view">
-
-            <div class="table-responsive mt-2">
-                <table class="table table-bordered" id="items-table">
-                    <thead id="items-table-head">
-                        <tr>
-                            <th scope="col" id="items-table-name-header" class="">Items</th>
-                            <th id="items-table-import-header" class="items-table-header" data-list_index=0>Import</th>
-                            <th id="items-table-start-header" class="items-table-header" data-list_index=1>Start</th>
-                            <th id="items-table-end-header" class="items-table-header" data-list_index=2>End</th>
-                        </tr>
-                    </thead>
-                    <tbody id="items-table-body">
-                    </tbody>
-                </table>
+            
+            <!-- Items Table -->
+            <div id="table-view" class="col-md-7 order-md-5 ">
+                <div class="table-responsive mt-2">
+                    <table class="table table-bordered" id="items-table">
+                        <thead id="items-table-head">
+                            <tr>
+                                <th scope="col" id="items-table-name-header" class="">Items</th>
+                                <th id="items-table-import-header" class="items-table-header" data-list_index=0>Import</th>
+                                <th id="items-table-start-header" class="items-table-header" data-list_index=1>Start</th>
+                                <th id="items-table-end-header" class="items-table-header" data-list_index=2>End</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-table-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            
+
         </div>
 
-        <div class="container px-4 text-center">
-            <div class="row gx-5">
+        <!-- Actions -->
+        <div class="container px-4 pt-3 text-center">
+            <div class="row">
 
                 <!-- Export CSV -->
-                <div class="p-3 d-flex justify-content-center">
-                    <button id="export-csv-button" type="button" class="btn btn-outline-primary col-12 col-md-6 col-lg-6 col-xl-6">Export CSV</button>
+                <div class="pull-left">
+                    <button id="export-csv-button" type="button" class="btn btn-outline-primary col-12">Export CSV</button>
                 </div>
-                <div id="export-csv-view" class="p-3 d-flex justify-content-center">
+                <div id="" class="p-3">
+                </div>
+                <div id="export-csv-view" class="">
                 </div>
 
                 <!-- Delete Store -->
-                <div id="delete-store-view" >
-                    <form class="p-3 d-flex justify-content-center" action="{% url 'store' store.id %}" method="post">
+                <div id="delete-store-view">
+                    <form class="" action="{% url 'store' store.id %}" method="post">
                         {% csrf_token %}
-                        <div class="col-md-6 col-lg-6 col-xl-6">
-                            <input type="submit" value="Delete Store" class="btn btn-outline-danger form-control "></input>
+                        <div class="">
+                            <input type="submit" value="Delete Store" class="btn btn-outline-danger form-control col-12"></input>
                         </div>
                     </form>
                 </div>
-                
-
             </div>
         </div>
     </div>   
 
+
+    <!-- Import CSV -->
     <div id="import-csv-view">
 
-        <div id="import-csv-view">
+        <!-- Import CSV Form -->
+        <form id="import-csv-form ">
+            <label for="formFile" class="form-label text-secondary pt-3" style="font-size:21px;">Select a CSV File:</label>
+            <div class="input-group mt-2">
+                <div class="custom-file">
+                    <input id="input-file" type="file" accept=".csv" class="custom-file-input">
+                    <label class="custom-file-label" for="input-file">Choose file</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Load File" id="load-csv-input" class="btn btn-primary form-control mx-auto my-1"></input>
+            </div>
+        </form>
 
-            <!-- Import CSV Form -->
-            <form id="import-csv-form">
-                <label for="formFile" class="form-label text-secondary" style="font-size:21px;">Select a CSV File:</label>
-                <div class="input-group mt-3">
-                    <div class="custom-file">
-                        <input id="input-file" type="file" accept=".csv" class="custom-file-input">
-                        <label class="custom-file-label" for="input-file">Choose file</label>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <input type="submit" value="Load File" id="load-csv-input" class="btn btn-primary form-control mx-auto my-1"></input>
-                </div>
-            </form>
-    
-            <!-- Import CSV Table -->
-            <div id="import-csv-table-div" class="table-responsive" hidden>
-                <table class="table table-bordered" id="import-csv-table">
-                    <label class="text-secondary" style="font-size:21px;">Select Table Columns:</label>
-                    <caption id="import-csv-table-caption"></caption>
-                    <thead id="import-csv-table-head"></thead>
-                    <tbody id="import-csv-table-body"></tbody>
-                </table>
-            </div>
-            <div id="import-items-div" class="justify-content-start align-items-start">
-                <p id="save-items-error-message" class="text-danger col-md-6"></p>
-                <div id="import-items-button-div" class="col-md-3"></div>
-            </div>
+        <!-- Import CSV Table -->
+        <div id="import-csv-table-div" class="table-responsive" hidden>
+            <table class="table table-bordered" id="import-csv-table">
+                <label class="text-secondary" style="font-size:21px;">Select Table Columns:</label>
+                <caption id="import-csv-table-caption"></caption>
+                <thead id="import-csv-table-head"></thead>
+                <tbody id="import-csv-table-body"></tbody>
+            </table>
+        </div>
+        <div id="import-items-div" class="justify-content-start align-items-start">
+            <p id="save-items-error-message" class="text-danger col-md-6"></p>
+            <div id="import-items-button-div" class="col-md-3"></div>
         </div>
 
     </div>

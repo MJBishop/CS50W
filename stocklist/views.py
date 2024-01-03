@@ -310,7 +310,7 @@ def create_list_item(request, list_id, item_id): #list_item
         except ValidationError as e:
             return JsonResponse({"error": e.messages}, status=400)
 
-        return JsonResponse({"message": "Import successful.", "Created":created}, status=201)
+        return JsonResponse({"message": "Update successful.", "created":created}, status=201)
         # return list_item..
 
     return JsonResponse({"error": "POST request Required."}, status=400)

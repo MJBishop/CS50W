@@ -253,7 +253,7 @@ class ImportItemsTestCase(ImportTestCase):
         })
         json_data = self.json_data.copy()
         json_data[0]['items'] = items
-        print(json_data)
+        # print(json_data)
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data))

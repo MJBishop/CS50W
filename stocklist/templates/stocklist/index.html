@@ -5,7 +5,8 @@
     <h2>{{page_title}}</h2>
 
     <form id="store-form" action="{% url 'index' %}" method="post">
-        <div class="row align-items-center">
+        <div id="store-form-view" class="row align-items-center pt-3">
+            <label for="store-form" class="form-label text-secondary px-3" style="font-size:21px;">Store Name:</label>
             <div class="col-sm-12 my-1">
                 {% csrf_token %}
                 {{ store_name_form }}

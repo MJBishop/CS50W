@@ -3,11 +3,13 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.support.expected_conditions import text_to_be_present_in_element, presence_of_element_located, invisibility_of_element
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.webdriver import WebDriver
+# from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium import webdriver
 
 from stocklist.models import User
 from stocklist.tests.page_object_model.user_pages import RegisterPage, LoginPage
 from stocklist.tests.page_object_model.pages import IndexPage
+
 
 
 class SeleniumTests(StaticLiveServerTestCase):
@@ -17,7 +19,7 @@ class SeleniumTests(StaticLiveServerTestCase):
         super().setUpClass()
         
         #  Set Up Driver
-        cls.driver = WebDriver()
+        cls.driver = webdriver.Firefox()
         cls.driver.maximize_window()
 
     @classmethod
@@ -32,12 +34,16 @@ class BaseTests(SeleniumTests):
     USERNAME = 'testuser'
     PASSWORD = '12345'
     EMAIL = 'testuser@test.com'
+    TEST_STORE_NAME = 'Test Store'
 
     def setUp(self):
         super().setUp()
 
         self.user = User.objects.create_user(
             username=self.USERNAME, email=self.EMAIL, password=self.PASSWORD)
+        
+    def tearDown(self):
+        super().tearDown()
 
 
 class RegisterTests(BaseTests):
@@ -88,12 +94,32 @@ class IndexTests(BaseTests):
         self.assertTrue(self.index_page.get_store_name_form())
 
     def test_set_store_name_success(self):
-        store_name_to_test = 'My Store'
-        store_page = self.index_page.create_store_named_as(store_name_to_test)
-        self.assertEqual(store_page.get_store_page_title_text(), store_name_to_test)
+        store_page = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
+        self.assertEqual(store_page.get_store_page_heading_text(), self.TEST_STORE_NAME)
 
-    # submit failure
-        
+    def test_set_store_name_fail_store_name_exists(self):
+        pass
+        # only one store per user
+
+
+class ImportItemsTests(BaseTests):
+
+    def setUp(self):
+        super().setUp()
+
+        self.login_page = LoginPage(self.driver, self.live_server_url, navigate=True)
+        self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
+        self.store_page = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
+
+    def test_store_import_store_name(self):
+        # form = self.store_page.get_import_items_form()
+        heading_text = self.store_page.get_store_page_heading_text()
+        self.assertTrue(heading_text, self.TEST_STORE_NAME)
+
+
+        # wait = WebDriverWait(self.driver, timeout=2)
+        # wait.until(lambda d : form.is_displayed())
+
 
 class BaseStoreTests(BaseTests):
     fixtures = ['test_data.json']

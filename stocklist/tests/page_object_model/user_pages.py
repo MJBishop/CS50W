@@ -29,7 +29,7 @@ class LoginPage(BasePage):
     # success:
 
     def submit(self):
-        self.driver.find_element_by_xpath(self.INPUT_ELEM_XPATH).click()
+        self.driver.find_element(By.XPATH, self.INPUT_ELEM_XPATH).click()
         return IndexPage(self.driver, self.live_server_url)
 
     def login_as(self, username, password):

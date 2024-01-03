@@ -13,5 +13,5 @@ class StoreNameForm(ModelForm):
             'name':forms.TextInput(attrs={'class':'form-control mx-auto my-1'},),
         }
         labels = {
-            'name':'Store Name'
+            'name':''
         }

@@ -109,7 +109,7 @@ function fetch_items() {
     const csrftoken = getCookie('csrftoken');
         
     // Import Items
-    store_id = document.querySelector('#title').dataset.store_id;
+    store_id = document.querySelector('#store-name-heading').dataset.store_id;
     const path = '/items/' + store_id;
     fetch(path, {
         method: 'GET',
@@ -656,7 +656,7 @@ function import_items(items) {
     ]
         
     // Import Lists & Items
-    store_id = document.querySelector('#title').dataset.store_id;
+    store_id = document.querySelector('#store-name-heading').dataset.store_id;
     const path = '/import_items/' + store_id;
     fetch(path, {
         method: 'POST',
@@ -683,14 +683,19 @@ function export_csv(export_csv_button) {
     export_csv_button.disabled = true;
     
     // file_name
-    var title = document.querySelector('#title').innerText;
-    var file_name = title + ".csv";
+    var store_name = document.querySelector('#store-name-heading').innerText;
+    var file_name = store_name + ".csv";
 
     // fields
     let lists = JSON.parse(localStorage.getItem('lists')); 
     let fields = ['Item'];
     lists.forEach(list =>{
-        fields.push(list.name);
+        if (list.type === 'Count') {
+            fields.push(list.name + ' ' + list.type);
+        }
+        else {
+            fields.push(list.name);
+        }
     })
     console.log(fields);
 
@@ -730,7 +735,7 @@ function download_csv_link(file_name, csv) {
     const link = document.createElement('a');
     link.textContent = 'Download';
     link.classList.add('btn', 'btn-primary');
-    link.classList.add('col-md-6', 'col-lg-6', 'col-xl-6');
+    link.classList.add('col-12');
     link.setAttribute('target', "_blank");
     link.setAttribute('download', file_name);
     link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
@@ -747,7 +752,7 @@ function download_csv_link(file_name, csv) {
     });
 
     const reset_buttons = async () => {
-        await delay(1800);
+        await delay(1500);
         document.querySelector('#delete-store-view').style.display = 'block';
         document.querySelector('#export-csv-button').disabled = false;
         link.remove();

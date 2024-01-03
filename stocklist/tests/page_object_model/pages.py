@@ -8,23 +8,22 @@ from selenium.webdriver.support.expected_conditions import text_to_be_present_in
 class StorePage(BasePage):
 
     # Elements
-    STORE_NAME_ELEMENT_ID = 'title'
-    
+    STORE_NAME_ELEMENT_ID = 'store-name-heading'
+    IMPORT_CSV_FORM_ID = 'import-csv-form'
 
     def __init__(self, driver, live_server_url, url="/store/1", navigate=False):
         super().__init__(driver, live_server_url, navigate=False)
         self.url = url
+        print(url)
         if (navigate):
             self.navigate()
 
-    def get_store_page_title_text(self):
+    def get_store_page_heading_text(self):
         return self.driver.find_element(By.ID, self.STORE_NAME_ELEMENT_ID).text
 
-    # def get_store_name_str(self):
-    #     WebDriverWait(self.driver, timeout=10).until(
-    #         text_to_be_present_in_element((By.ID, self.LIKE_POST_BUTTON_ELEM_ID), self.ONE_LIKE_STR)
-    #         )
-    #     return self.ONE_LIKE_STR
+    def get_import_items_form(self):
+        return self.driver.find_element(By.ID, self.IMPORT_CSV_FORM_ID)
+
 
 class IndexPage(BasePage):
     url = "/"
