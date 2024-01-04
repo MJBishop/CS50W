@@ -65,11 +65,15 @@ class LoadFileComponent(StorePage):
     LOAD_FILE_INPUT_ID = 'input-file'
     LOAD_FILE_INPUT_SUBMIT_XPATH = '//input[@value="Load File"]'
     LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID = 'load-csv-error-message'
+    LOAD_FILE_ERROR_MESSAGE = 'CSV File should contain a column of text: Choose another file!'
 
     # load csv:
 
     def get_csv_load_form_locator(self):
         return (By.ID, self.LOAD_FILE_FORM_ID)
+    
+    def get_csv_load_error_message_locator(self):
+        return (By.ID, self.LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID)
     
     def get_csv_load_error_message_text(self):
         return self.driver.find_element(By.ID, self.LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID).text

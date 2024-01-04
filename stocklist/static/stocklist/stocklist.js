@@ -48,20 +48,6 @@ function set_up_export_csv_action() {
         });
     }
 }
-
-// function set_up_cancel_export_csv_action() {
-
-//     // Cancel Delete Store Action
-//     var export_csv_button = document.querySelector('#export-csv-button');
-//     if (export_csv_button) {
-//         export_csv_button.addEventListener('click', function(event) {
-//             console.log('cancel-export-csv-button click') 
-//             event.preventDefault();
-//             cancel_export_csv(export_csv_button);
-//         });
-//     }
-// }
-
 function set_up_count_items_action() {
 
     // Count Items Action
@@ -444,14 +430,45 @@ function parse_csv() {
             console.log("Finished:", results.data);
             // console.log("Meta:", results.meta);
             // console.log("Fields:", results.meta.fields);
+
+            // Check columns of strings
+            if (Object.values(results.data[0]).find((column_type) => typeof column_type === 'string')) {
+                display_parsed_csv_table(results);
+            }
+            else {
+                error_p = document.querySelector('#load-csv-error-message')
+                error_p.innerHTML = 'CSV File should contain a column of text: Choose another file!';
+                set_up_on_change_for_file_input(error_p);
+
+                clear_import_table();
+                document.querySelector('#import-csv-table-div').hidden = true;
+            }
             
-            display_parsed_csv_table(results);
 
             // save data to local storage
             localStorage.setItem('data', JSON.stringify(results.data));
             // localStorage.setItem('fields', JSON.stringify(results.meta.fields));
         }
     });    
+}
+
+function set_up_on_change_for_file_input(error_p) {
+    var input_file = document.querySelector('#input-file');
+    if (input_file) {
+        listener = input_file.addEventListener('input', function(event) {
+            console.log('input_file onchange') 
+            
+            error_p.innerHTML = '';
+            input_file.removeEventListener('input', listener);
+        });
+    }
+}
+
+function clear_import_table() {
+    document.querySelector('#import-csv-table-head').innerHTML = "";
+    document.querySelector('#import-csv-table-body').innerHTML = "";
+    document.querySelector('#import-csv-table-caption').innerHTML = "";
+    document.querySelector('#import-items-button-div').innerHTML = "";
 }
 
 function display_parsed_csv_table(results) {
@@ -461,22 +478,25 @@ function display_parsed_csv_table(results) {
     const data = results.data;
     const fields = results.meta.fields;
 
+
     // Clear table inner HTML
-    document.querySelector('#import-csv-table-head').innerHTML = "";
-    document.querySelector('#import-csv-table-body').innerHTML = "";
-    document.querySelector('#import-csv-table-caption').innerHTML = "";
-    document.querySelector('#import-items-button-div').innerHTML = "";
+    clear_import_table();
 
     // Show table
     document.querySelector('#import-csv-table-div').hidden = false;
     
 
-    // peek at data types
-    let column_types = [];
-    const sample_row_data = data[0]
-    fields.forEach(field => {
-        console.log(sample_row_data[field] + ' ' + (typeof sample_row_data[field]));
-    });
+    const sample_row_data = results.data[0];
+
+    // // check for at least one column of type string
+    // Object.values(sample_row_data).forEach((value) => {
+    //     console.log(typeof value);
+
+    // });
+    
+
+
+
 
 
     //  Display Table Header
