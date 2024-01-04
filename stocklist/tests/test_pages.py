@@ -122,7 +122,7 @@ class LoadCSVFileTests(BaseTests):
         self.assertTrue(heading_text, self.TEST_STORE_NAME)
 
     def test_load_file_success(self):
-        form_locator = self.store_page.get_load_csv_form_locator()
+        form_locator = self.store_page.get_csv_load_form_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(form_locator)
         )
