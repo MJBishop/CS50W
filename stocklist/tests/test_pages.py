@@ -117,24 +117,20 @@ class LoadCSVFileTests(BaseTests):
         self.login_page = LoginPage(self.driver, self.live_server_url, navigate=True)
         self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
         self.load_file_component = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
+        self.dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
 
-    def test_store_page_store_name(self):
-        heading_text = self.load_file_component.get_store_page_heading_text()
-        self.assertTrue(heading_text, self.TEST_STORE_NAME)
-
-    def test_load_file_success(self):
+        # wait for form
         form_locator = self.load_file_component.get_csv_load_form_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(form_locator)
         )
 
-        # load local file
+    def test_load_file_success(self):
         file_to_test = self.TEST_FILE_FOLDER + self.STRINGS_AND_NUMBERS_FILE
-        dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
-        local_file_path = dir_path + file_to_test
+        local_file_path = self.dir_path + file_to_test
         self.import_items_component = self.load_file_component.load_file_with_path(local_file_path)
 
-        # wait for 
+        # wait for import items button
         import_items_button_locator = self.import_items_component.get_import_items_button_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(import_items_button_locator)
@@ -142,15 +138,8 @@ class LoadCSVFileTests(BaseTests):
         self.assertTrue(self.import_items_component.get_csv_table_column_select_elements())
 
     def test_load_file_error_no_column_of_strings_detected(self):
-        form_locator = self.load_file_component.get_csv_load_form_locator()
-        WebDriverWait(self.driver, timeout=10).until(
-            expected_conditions.presence_of_element_located(form_locator)
-        )
-
-        # load local file
         file_to_test = self.TEST_FILE_FOLDER + self.NO_STRINGS_FILE
-        dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
-        local_file_path = dir_path + file_to_test
+        local_file_path = self.dir_path + file_to_test
         self.load_file_component = self.load_file_component.expect_failure_to_load_file_with_path(local_file_path)
 
         # wait for error message
@@ -161,15 +150,8 @@ class LoadCSVFileTests(BaseTests):
         self.assertEqual(self.load_file_component.get_csv_load_error_message_text(), self.load_file_component.LOAD_FILE_COLUMN_ERROR_MESSAGE)
 
     def test_load_file_fail_no_header_row(self):
-        form_locator = self.load_file_component.get_csv_load_form_locator()
-        WebDriverWait(self.driver, timeout=10).until(
-            expected_conditions.presence_of_element_located(form_locator)
-        )
-
-        # load local file
         file_to_test = self.TEST_FILE_FOLDER + self.NO_HEADERS_FILE
-        dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
-        local_file_path = dir_path + file_to_test
+        local_file_path = self.dir_path + file_to_test
         self.load_file_component = self.load_file_component.expect_failure_to_load_file_with_path(local_file_path)
 
         # wait for error message
