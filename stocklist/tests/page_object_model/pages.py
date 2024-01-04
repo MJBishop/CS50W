@@ -9,7 +9,11 @@ class StorePage(BasePage):
 
     # Elements
     STORE_NAME_ELEMENT_ID = 'store-name-heading'
-    IMPORT_CSV_FORM_ID = 'import-csv-form'
+    LOAD_CSV_FORM_ID = 'import-csv-form'
+    LOAD_FILE_INPUT_ID = "input-file"
+    LOAD_FILE_INPUT_SUBMIT_XPATH = '//input[@value="Load File"]'
+    IMPORT_CSV_TABLE_DIV_ID = 'import-csv-table-div'
+    IMPORT_CSV_TABLE_COL_SELECT_ID = 'import-csv-table-column-select'
 
     def __init__(self, driver, live_server_url, url="/store/1", navigate=False):
         super().__init__(driver, live_server_url, navigate=False)
@@ -17,11 +21,40 @@ class StorePage(BasePage):
         if (navigate):
             self.navigate()
 
+    # load csv
     def get_store_page_heading_text(self):
         return self.driver.find_element(By.ID, self.STORE_NAME_ELEMENT_ID).text
 
     def get_import_items_form(self):
-        return self.driver.find_element(By.ID, self.IMPORT_CSV_FORM_ID)
+        return self.driver.find_element(By.ID, self.LOAD_CSV_FORM_ID)
+    
+    def set_file_path(self, path):
+        self.fill_form_by_id(self.LOAD_FILE_INPUT_ID, path)
+
+    # select Table columns
+    def get_csv_table_selects(self):
+        return self.driver.find_element(By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID)
+
+    
+    # success:
+
+    def submit(self):
+        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_SUBMIT_XPATH).click()
+        return StorePage(self.driver, self.live_server_url)
+
+    def load_file_with_path(self, file_local_path):
+        self.set_file_path(file_local_path)
+        return self.submit()
+
+    # failure:
+
+    def submitExpectingFailure(self):
+        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_SUBMIT_XPATH).click()
+        return StorePage(self.driver, self.live_server_url) #self?
+
+    def expect_failure_to_load_file_with_path(self, file_local_path):
+        self.set_file_path(file_local_path)
+        return self.submitExpectingFailure() #submit?
 
 
 class IndexPage(BasePage):
@@ -33,15 +66,15 @@ class IndexPage(BasePage):
     ERROR_ELEMENT_ID = 'error-message'
     INPUT_ELEMENT_XPATH = '//input[@value="Save"]'
 
-    
-    def set_store_name(self, store_name):
-        self.fill_form_by_name(self.STORE_NAME_ELEMENT_NAME, store_name)
-
     def get_errors(self):
         return self.driver.find_element(By.ID, self.ERROR_ELEMENT_ID)
     
     def get_store_name_form(self):
         return self.driver.find_element(By.ID, self.STORE_FORM_ELEMENT_ID)
+
+    def set_store_name(self, store_name):
+        self.fill_form_by_name(self.STORE_NAME_ELEMENT_NAME, store_name)
+
     
     # success:
 

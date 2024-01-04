@@ -6,6 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 # from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import os
 
 from stocklist.models import User
 from stocklist.tests.page_object_model.user_pages import RegisterPage, LoginPage
@@ -118,9 +119,27 @@ class ImportItemsTests(BaseTests):
 
     def test_store_page_file_form(self):
         WebDriverWait(self.driver, timeout=10).until(
-                EC.text_to_be_present_in_element((By.ID, "form-label"), "Select a CSV File:")
-            )
+            EC.text_to_be_present_in_element((By.ID, "form-label"), "Select a CSV File:")
+        )
         self.assertTrue(self.store_page.get_import_items_form())
+
+    def test_load_file_success(self):
+        WebDriverWait(self.driver, timeout=10).until(
+            EC.presence_of_element_located((By.ID, 'import-csv-form'))
+        )
+
+        file_to_test = '/csv_test_files/item_amount.csv'
+        dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
+        local_file_path = dir_path + file_to_test
+        self.store_page = self.store_page.load_file_with_path(local_file_path)
+
+        WebDriverWait(self.driver, timeout=10).until(
+            EC.presence_of_element_located((By.ID, 'import-csv-table-column-select'))
+        )
+        self.assertTrue(self.store_page.get_csv_table_selects())
+
+        
+
 
 class BaseStoreTests(BaseTests):
     fixtures = ['test_data.json']
