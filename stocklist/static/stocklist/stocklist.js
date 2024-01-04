@@ -426,30 +426,45 @@ function parse_csv() {
     Papa.parse(selected_file,  {
         header: true,
         dynamicTyping: true,
+        quoteChar: '',
+        escapeChar: '',
         complete: function(results) {
             console.log("Finished:", results.data);
             // console.log("Meta:", results.meta);
-            // console.log("Fields:", results.meta.fields);
+            console.log("Fields:", results.meta.fields);
 
-            // Check columns of strings
-            if (Object.values(results.data[0]).find((column_type) => typeof column_type === 'string')) {
-                display_parsed_csv_table(results);
+
+            // headers should be strings
+            if (results.meta.fields.find((field) => isNaN(Number(field)) === false)) {
+                file_input_error('CSV File should contain headers with text: Choose another file!')
+            }
+            // 1+ columns should be strings
+            else if (!Object.values(results.data[0]).find((column_sample) => typeof column_sample === 'string')) {
+                file_input_error('CSV File should contain a column of text: Choose another file!');
             }
             else {
-                error_p = document.querySelector('#load-csv-error-message')
-                error_p.innerHTML = 'CSV File should contain a column of text: Choose another file!';
-                set_up_on_change_for_file_input(error_p);
-
-                clear_import_table();
-                document.querySelector('#import-csv-table-div').hidden = true;
+                display_parsed_csv_table(results);
             }
             
 
             // save data to local storage
             localStorage.setItem('data', JSON.stringify(results.data));
             // localStorage.setItem('fields', JSON.stringify(results.meta.fields));
+        },
+        error: function(error, file) {
+            console.log("Erroe:", error);
         }
     });    
+}
+
+
+function file_input_error(message) {
+    error_p = document.querySelector('#load-csv-error-message')
+    error_p.innerHTML = message;
+    set_up_on_change_for_file_input(error_p);
+
+    clear_import_table();
+    document.querySelector('#import-csv-table-div').hidden = true;
 }
 
 function set_up_on_change_for_file_input(error_p) {

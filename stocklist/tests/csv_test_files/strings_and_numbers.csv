@@ -1,22 +1,22 @@
-Amount,CostPerUnit
-10,0.50
-5,0.60
-10,0.40
-12,0.40
-6,0.40
-5,0.40
-10,0.85
-8,0.90
-7,0.80
-5,0.95
-4,1.00
-3,0.80
-10,0.90
-6,0.95
-9,0.80
-6,0.85
-5,0.60
-6,0.75
-12,0.85
-15,0.60
-4,0.50
+Item,Amount,CostPerUnit
+Bar Mat,10,0.50
+Bar Caddy,5,0.60
+Boston Tin,10,0.40
+Boston Glass,12,0.40
+Hawthorne Strainer,6,0.40
+Bar Spoon,5,0.40
+Fine Strainer,10,0.85
+Fruit Knife,8,0.90
+Small Chopping Board,7,0.80
+Hand Juicer,5,0.95
+Muddler,4,1.00
+Ice Scoop,3,0.80
+Speed Pourer,10,0.90
+Store & Pour,6,0.95
+Glass Juice Bottle,9,0.80
+Squeezy Bottle,6,0.85
+Fruit Tray,5,0.60
+Ice Bucket,6,0.75
+Polishing Cloth,12,0.85
+Blue Roll,15,0.60
+Beverage Napkin,4,0.50

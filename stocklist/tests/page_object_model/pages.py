@@ -65,7 +65,8 @@ class LoadFileComponent(StorePage):
     LOAD_FILE_INPUT_ID = 'input-file'
     LOAD_FILE_INPUT_SUBMIT_XPATH = '//input[@value="Load File"]'
     LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID = 'load-csv-error-message'
-    LOAD_FILE_ERROR_MESSAGE = 'CSV File should contain a column of text: Choose another file!'
+    LOAD_FILE_COLUMN_ERROR_MESSAGE = 'CSV File should contain a column of text: Choose another file!'
+    LOAD_FILE_HEADER_ERROR_MESSAGE = 'CSV File should contain headers with text: Choose another file!'
 
     # load csv:
 
@@ -110,7 +111,7 @@ class ImportItemsComponent(StorePage):
     IMPORT_CSV_TABLE_COL_SELECT_ID = 'import-csv-table-column-select'
     IMPORT_ITEMS_BUTTON_ID = 'import-items-button'
 
-    # select Table columns:
+    # select columns to import:
 
     def get_csv_table_column_select_elements(self):
         return self.driver.find_element(By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID)
@@ -120,6 +121,7 @@ class ImportItemsComponent(StorePage):
 
 
 
+    # import items:
     
 
     
