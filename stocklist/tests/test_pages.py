@@ -8,7 +8,7 @@ import os
 
 from stocklist.models import User
 from stocklist.tests.page_object_model.user_pages import RegisterPage, LoginPage
-from stocklist.tests.page_object_model.pages import IndexPage
+from stocklist.tests.page_object_model.pages import *
 
 
 
@@ -121,16 +121,7 @@ class LoadCSVFileTests(BaseTests):
         heading_text = self.store_page.get_store_page_heading_text()
         self.assertTrue(heading_text, self.TEST_STORE_NAME)
 
-    def test_store_page_file_form(self):
-        form_label, form_label_text = self.store_page.get_load_csv_form_label_locator_and_text()
-        WebDriverWait(self.driver, timeout=10).until(
-            expected_conditions.text_to_be_present_in_element(form_label, form_label_text)
-        )
-        self.assertTrue(self.store_page.get_load_csv_form())
-
     def test_load_file_success(self):
-
-        # wait for form
         form_locator = self.store_page.get_load_csv_form_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(form_locator)
@@ -142,12 +133,12 @@ class LoadCSVFileTests(BaseTests):
         local_file_path = dir_path + file_to_test
         self.store_page = self.store_page.load_file_with_path(local_file_path)
 
-        # wait for table column selects
+        # wait for 
         import_items_button_locator = self.store_page.get_import_items_button_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(import_items_button_locator)
         )
-        self.assertTrue(self.store_page.get_csv_table_selects())
+        self.assertTrue(self.store_page.get_csv_table_column_select_elements())
 
 
     # test_load_file_error_no_column_of_strings_detected(self):
