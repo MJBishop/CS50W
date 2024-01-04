@@ -9,11 +9,16 @@ class StorePage(BasePage):
 
     # Elements
     STORE_NAME_ELEMENT_ID = 'store-name-heading'
+    LOAD_CSV_FORM_LABEL_ID = "form-label"
+    LOAD_CSV_FORM_LABEL_TEXT = "Select a CSV File:"
     LOAD_CSV_FORM_ID = 'import-csv-form'
     LOAD_FILE_INPUT_ID = "input-file"
     LOAD_FILE_INPUT_SUBMIT_XPATH = '//input[@value="Load File"]'
+    LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID = 'load-csv-error-message'
+
     IMPORT_CSV_TABLE_DIV_ID = 'import-csv-table-div'
     IMPORT_CSV_TABLE_COL_SELECT_ID = 'import-csv-table-column-select'
+    IMPORT_ITEMS_BUTTON_ID = 'import-items-button'
 
     def __init__(self, driver, live_server_url, url="/store/1", navigate=False):
         super().__init__(driver, live_server_url, navigate=False)
@@ -25,15 +30,31 @@ class StorePage(BasePage):
     def get_store_page_heading_text(self):
         return self.driver.find_element(By.ID, self.STORE_NAME_ELEMENT_ID).text
 
-    def get_import_items_form(self):
+    def get_load_csv_form_locator(self):
+        return (By.ID, self.LOAD_CSV_FORM_ID)
+
+    def get_load_csv_form(self):
         return self.driver.find_element(By.ID, self.LOAD_CSV_FORM_ID)
+    
+    def get_load_csv_form_label_locator_and_text(self):
+        return (By.ID, self.LOAD_CSV_FORM_LABEL_ID), self.LOAD_CSV_FORM_LABEL_TEXT
+    
+    def get_load_CSV_error_message_text(self):
+        return self.driver.find_element(By.ID, self.LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID).text
     
     def set_file_path(self, path):
         self.fill_form_by_id(self.LOAD_FILE_INPUT_ID, path)
 
+
     # select Table columns
+    def get_csv_table_selects_locator(self):
+        return (By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID)
+
     def get_csv_table_selects(self):
         return self.driver.find_element(By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID)
+    
+    def get_import_items_button_locator(self):
+        return (By.ID, self.IMPORT_ITEMS_BUTTON_ID)
 
     
     # success:

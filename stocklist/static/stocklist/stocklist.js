@@ -583,6 +583,7 @@ function import_items_button() {
     // reply button
     const button = document.createElement('button');
     button.textContent = 'Import Items';
+    button.setAttribute('id', 'import-items-button')
     button.classList.add('btn');
     button.classList.add('btn-primary');
   

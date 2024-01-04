@@ -1,11 +1,9 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
-# from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 import os
 
 from stocklist.models import User
@@ -104,7 +102,13 @@ class IndexTests(BaseTests):
         # only one store per user
 
 
-class ImportItemsTests(BaseTests):
+class LoadCSVFileTests(BaseTests):
+    
+    # Test Files
+    TEST_FILE_FOLDER = '/csv_test_files/'
+    STRINGS_AND_NUMBERS_FILE = 'strings_and_numbers.csv'
+    NO_STRINGS_FILE = 'no_strings.csv'
+
 
     def setUp(self):
         super().setUp()
@@ -118,27 +122,48 @@ class ImportItemsTests(BaseTests):
         self.assertTrue(heading_text, self.TEST_STORE_NAME)
 
     def test_store_page_file_form(self):
+        form_label, form_label_text = self.store_page.get_load_csv_form_label_locator_and_text()
         WebDriverWait(self.driver, timeout=10).until(
-            EC.text_to_be_present_in_element((By.ID, "form-label"), "Select a CSV File:")
+            expected_conditions.text_to_be_present_in_element(form_label, form_label_text)
         )
-        self.assertTrue(self.store_page.get_import_items_form())
+        self.assertTrue(self.store_page.get_load_csv_form())
 
     def test_load_file_success(self):
+
+        # wait for form
+        form_locator = self.store_page.get_load_csv_form_locator()
         WebDriverWait(self.driver, timeout=10).until(
-            EC.presence_of_element_located((By.ID, 'import-csv-form'))
+            expected_conditions.presence_of_element_located(form_locator)
         )
 
-        file_to_test = '/csv_test_files/item_amount.csv'
+        # load local file
+        file_to_test = self.TEST_FILE_FOLDER + self.STRINGS_AND_NUMBERS_FILE
         dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
         local_file_path = dir_path + file_to_test
         self.store_page = self.store_page.load_file_with_path(local_file_path)
 
+        # wait for table column selects
+        import_items_button_locator = self.store_page.get_import_items_button_locator()
         WebDriverWait(self.driver, timeout=10).until(
-            EC.presence_of_element_located((By.ID, 'import-csv-table-column-select'))
+            expected_conditions.presence_of_element_located(import_items_button_locator)
         )
         self.assertTrue(self.store_page.get_csv_table_selects())
 
+
+    # test_load_file_error_no_column_of_strings_detected(self):
+    # test_load_file_fail_no_header_row(self):
         
+
+# class ImportItemsTests(LoadCSVFileTests):
+    # test_table_column_select_options_for_type_string(self):
+    # test_table_column_select_options_for_type_ynumber(self):
+    # test_table_column_select_options_for_type_other(self):
+        
+    # test_save_items_fail_no_columns_selected(self):
+    # test_save_items_success_item_name_column(self):
+    # test_save_items_succes_item_name_and_amount(self);
+    # test_save_items_succes_item_name_from_multiple_columns(self);
+    
 
 
 class BaseStoreTests(BaseTests):
