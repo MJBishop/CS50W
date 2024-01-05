@@ -168,7 +168,8 @@ class LoadCSVFileTests(BaseImportTests):
         self.assertEqual(self.load_file_component.get_csv_load_error_message_text(), self.load_file_component.LOAD_FILE_HEADER_ERROR_MESSAGE)
         
 
-class ImportItemsTests(BaseImportTests):
+class BaseSelectColumnTests(BaseImportTests):
+
     def setUp(self):
         super().setUp()
 
@@ -181,6 +182,12 @@ class ImportItemsTests(BaseImportTests):
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(import_items_button_locator)
         )
+
+
+class SelectTableColumnTests(BaseSelectColumnTests):
+
+    def setUp(self):
+        super().setUp()
 
     def test_table_column_select_options_for_type_string(self):
         select_element = self.import_items_component.get_select_at_col_index(0)
@@ -282,8 +289,24 @@ class ImportItemsTests(BaseImportTests):
         second_select.select_by_index(1)
         self.assertTrue(second_item_name_element.is_selected)
 
-        
-    # test_save_items_fail_no_columns_selected(self):
+
+class ImportItemsTests(BaseSelectColumnTests):
+
+    def setUp(self):
+        super().setUp()
+
+    def test_save_items_fail_no_columns_selected(self):
+        self.import_items_component.expect_failure_to_save_items()
+
+        # wait for error message
+        import_items_error_message_locator = self.import_items_component.get_import_items_error_message_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(import_items_error_message_locator)
+        )
+        self.assertEqual(self.import_items_component.get_import_items_error_message_text(), self.import_items_component.IMPORT_ITEMS_COLUMN_ERROR_MESSAGE)
+
+
+
     # test_save_items_success_item_name_column(self):
     # test_save_items_succes_item_name_and_amount(self);
     # test_save_items_succes_item_name_from_multiple_columns(self);
