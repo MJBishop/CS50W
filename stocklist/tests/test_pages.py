@@ -368,26 +368,33 @@ class ImportItemsTests(BaseSelectColumnTests):
         self.assertEqual(row_header_innerHTML, 'Vodka 70cl')
     
 
-class CountItemsTests(BaseSelectColumnTests):
+
+class BaseFixtureTests(SeleniumTests):
+    fixtures = ['test_db.json']
+
+    USERNAME = "bishop"
+    PASSWORD = "36tnJ.PO"
 
     def setUp(self):
         super().setUp()
 
-
-
-class BaseStoreTests(BaseTests):
-    fixtures = ['test_data.json']
-
-    def setUp(self):
-        super().setUp()
-        
         self.login_page = LoginPage(self.driver, self.live_server_url, navigate=True)
         self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
-        # self.store_page = 
+        self.items_table_component = ItemsTableComponent(self.driver, self.live_server_url)
 
+        # wait for items table selected header
+        selected_table_header_locator = self.items_table_component.get_selected_table_header_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(selected_table_header_locator)
+        )
 
-# class StoreTests(BaseStoreTests):
+class CountItemsTests(BaseFixtureTests):
 
-#     def setUp(self):
-#         super().setUp()
+    def setUp(self):
+        super().setUp()
+
+    def test_fixtures_ok(self):
+        
+        self.assertTrue(self.items_table_component.get_items_table_body_rows())
+
         
