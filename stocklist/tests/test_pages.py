@@ -239,8 +239,33 @@ class ImportItemsTests(BaseImportTests):
         expected_selection = [ignore_element]
         self.assertEqual(selected_option_list, expected_selection)
 
-        # with self.assertRaises(NotImplementedError): 
-        #     select.select_by_index(0)
+    def test_table_column_select_options_for_multiple_type_number(self):
+        first_select_element = self.import_items_component.get_select_at_col_index(1)
+        first_item_quantity_element = self.import_items_component.get_option_for_select_with_value(first_select_element, '2')
+        second_select_element = self.import_items_component.get_select_at_col_index(3)
+        second_item_quantity_element = self.import_items_component.get_option_for_select_with_value(second_select_element, '2')
+        second_ignore_element = self.import_items_component.get_option_for_select_with_value(second_select_element, '0')
+
+        first_select = Select(first_select_element)
+        second_select = Select(second_select_element)
+
+        # select first item quantity
+        first_select.select_by_index(2)
+        self.assertTrue(first_item_quantity_element.is_selected)
+        # second item quantity is disabled - no change
+        second_select.select_by_index(2)
+        second_selected_option_list = second_select.all_selected_options
+        expected_selection = [second_ignore_element]
+        self.assertEqual(second_selected_option_list, expected_selection)
+
+        # deselect first item quantity
+        first_select.select_by_index(0)
+        # second item quantity can be selected
+        second_select.select_by_index(2)
+        second_selected_option_list = second_select.all_selected_options
+        expected_selection = [second_item_quantity_element]
+        self.assertEqual(second_selected_option_list, expected_selection)
+
         
     # test_save_items_fail_no_columns_selected(self):
     # test_save_items_success_item_name_column(self):
