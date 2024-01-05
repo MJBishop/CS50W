@@ -266,6 +266,22 @@ class ImportItemsTests(BaseImportTests):
         expected_selection = [second_item_quantity_element]
         self.assertEqual(second_selected_option_list, expected_selection)
 
+    def test_table_column_select_options_for_multiple_type_string(self):
+        first_select_element = self.import_items_component.get_select_at_col_index(0)
+        first_item_name_element = self.import_items_component.get_option_for_select_with_value(first_select_element, '1')
+        second_select_element = self.import_items_component.get_select_at_col_index(3)
+        second_item_name_element = self.import_items_component.get_option_for_select_with_value(second_select_element, '1')
+
+        first_select = Select(first_select_element)
+        second_select = Select(second_select_element)
+
+        # select first item name
+        first_select.select_by_index(1)
+        self.assertTrue(first_item_name_element.is_selected)
+        # second item quantity is disabled - no change
+        second_select.select_by_index(1)
+        self.assertTrue(second_item_name_element.is_selected)
+
         
     # test_save_items_fail_no_columns_selected(self):
     # test_save_items_success_item_name_column(self):
