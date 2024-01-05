@@ -202,8 +202,7 @@ class ImportItemsTests(BaseImportTests):
         select.select_by_index(0)
         self.assertTrue(ignore_element.is_selected)
 
-
-    def test_table_column_select_options_for_type_ynumber(self):
+    def test_table_column_select_options_for_type_number(self):
         select_element = self.import_items_component.get_select_at_col_index(1)
         ignore_element = self.import_items_component.get_option_for_select_with_value(select_element, '0')
         item_name_element = self.import_items_component.get_option_for_select_with_value(select_element, '1')
@@ -227,10 +226,21 @@ class ImportItemsTests(BaseImportTests):
         select.select_by_index(1)
         self.assertTrue(item_quantity_element.is_selected)
 
+    def test_table_column_select_options_for_type_other(self):
+        select_element = self.import_items_component.get_select_at_col_index(2)
+        ignore_element = self.import_items_component.get_option_for_select_with_value(select_element, '0')
 
+        select = Select(select_element)
+        option_list = select.options
+        expected_options = [ignore_element]
+        self.assertEqual(option_list, expected_options)
 
+        selected_option_list = select.all_selected_options
+        expected_selection = [ignore_element]
+        self.assertEqual(selected_option_list, expected_selection)
 
-    # test_table_column_select_options_for_type_other(self):
+        # with self.assertRaises(NotImplementedError): 
+        #     select.select_by_index(0)
         
     # test_save_items_fail_no_columns_selected(self):
     # test_save_items_success_item_name_column(self):
