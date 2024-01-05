@@ -657,8 +657,10 @@ function validate_selections(button) {
         };
         for (let i = 0; i < item_name_selections.length; i++) {
             name_column_key = item_name_selections[i].field;
+            if (i > 0) {
+                properites["name"] += ' ';
+            }
             properites["name"] += item[name_column_key];
-            properites["name"] += ' ';
         }
         if (item_amount_selections.length) {
             amount_column_key = item_amount_selections[0].field;

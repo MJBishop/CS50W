@@ -165,15 +165,19 @@ class ItemsTableComponent(StorePage):
     ITEMS_TABLE_VIEW = "table-view"
     ITEMS_TABLE_SELECTED_HEADER_CLASS ='selected'
     ITEMS_TABLE_BODY_ROW_CLASS = "items-table-body-row"
+    ITEMS_TABLE_BODY_ID = "items-table-body"
 
 
-    def get_items_table_view_rows(self):
+    def get_items_table_body_rows(self):
         return self.driver.find_elements(By.CLASS_NAME, self.ITEMS_TABLE_BODY_ROW_CLASS)
 
     def get_selected_table_header_locator(self):
         return (By.CLASS_NAME, self.ITEMS_TABLE_SELECTED_HEADER_CLASS)
     
-    def get_table_cell_innerHTML_at_index_in_table_row_(self, column_index, table_row):
+    def get_table_cell_innerHTML_at_index_in_table_row(self, column_index, table_row):
         return table_row.find_elements(By.XPATH, "//td")[column_index].get_attribute("innerHTML")
+    
+    def get_table_header_innerHTML_in_table_row(self, table_row):
+        return table_row.find_element(By.TAG_NAME, "th").get_attribute("innerHTML")
 
     
