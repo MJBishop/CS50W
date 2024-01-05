@@ -296,18 +296,33 @@ class ImportItemsTests(BaseSelectColumnTests):
         super().setUp()
 
     def test_save_items_fail_no_columns_selected(self):
-        self.import_items_component.expect_failure_to_save_items()
+        import_items_component = self.import_items_component.expect_failure_to_save_items()
 
         # wait for error message
-        import_items_error_message_locator = self.import_items_component.get_import_items_error_message_locator()
+        import_items_error_message_locator = import_items_component.get_import_items_error_message_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(import_items_error_message_locator)
         )
-        self.assertEqual(self.import_items_component.get_import_items_error_message_text(), self.import_items_component.IMPORT_ITEMS_COLUMN_ERROR_MESSAGE)
+        self.assertEqual(import_items_component.get_import_items_error_message_text(), import_items_component.IMPORT_ITEMS_COLUMN_ERROR_MESSAGE)
+
+    def test_save_items_success_item_name_column(self):
+        select_element = self.import_items_component.get_select_at_col_index(0)
+        item_name_element = self.import_items_component.get_option_for_select_with_value(select_element, '1')
+
+        select = Select(select_element)
+        select.select_by_index(1)
+        
+        
+        items_table_component = self.import_items_component.save_items()
+
+        # wait for items table
+        selected_table_header_locator = items_table_component.get_selected_table_header_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(selected_table_header_locator)
+        )
+        self.assertTrue(items_table_component.get_items_table_view_rows())
 
 
-
-    # test_save_items_success_item_name_column(self):
     # test_save_items_succes_item_name_and_amount(self);
     # test_save_items_succes_item_name_from_multiple_columns(self);
     

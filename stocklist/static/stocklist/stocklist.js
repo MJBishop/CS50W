@@ -147,6 +147,7 @@ function load_table_with_data(data) {
         // Table Row
         var table_row = document.createElement('tr');
         table_row.setAttribute('id', item_id);
+        table_row.classList.add('items-table-body-row');
 
         // row_header_cell_with_item_list_name(item, list_name)
         var header_cell = document.createElement('th');

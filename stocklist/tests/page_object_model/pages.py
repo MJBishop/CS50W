@@ -113,7 +113,7 @@ class ImportItemsComponent(StorePage):
 
 
     IMPORT_ITEMS_BUTTON_ID = 'import-items-button'
-    # IMPORT_ITEMS_BUTTON_XPATH = '//button[@textContent="Import Items"]'
+    # IMPORT_ITEMS_BUTTON_XPATH = '//button[@textContent="Import Items"]' 
     IMPORT_ITEMS_ERROR_MESSAGE_ELEMENT_ID = 'save-items-error-message'
     IMPORT_ITEMS_COLUMN_ERROR_MESSAGE = 'Select an Item Name column!'
 
@@ -139,12 +139,10 @@ class ImportItemsComponent(StorePage):
     def get_import_items_error_message_text(self):
         return self.driver.find_element(By.ID, self.IMPORT_ITEMS_ERROR_MESSAGE_ELEMENT_ID).text
 
-
-
     # save items success:
 
     def submit(self):
-        self.driver.find_element(By.ID, self.IMPORT_ITEMS_BUTTON_ID).click()
+        self.driver.find_element(By.XPATH, "//button[@id='" + self.IMPORT_ITEMS_BUTTON_ID + "']").click()
         return ItemsTableComponent(self.driver, self.live_server_url)
 
     def save_items(self):
@@ -161,7 +159,18 @@ class ImportItemsComponent(StorePage):
     
 
 class ItemsTableComponent(StorePage):
+    
     # elements:
-    pass
+    
+    ITEMS_TABLE_VIEW = "table-view"
+    ITEMS_TABLE_SELECTED_HEADER_CLASS ='selected'
+    ITEMS_TABLE_BODY_ROW_CLASS = "items-table-body-row"
+
+
+    def get_items_table_view_rows(self):
+        return self.driver.find_elements(By.CLASS_NAME, self.ITEMS_TABLE_BODY_ROW_CLASS)
+
+    def get_selected_table_header_locator(self):
+        return (By.CLASS_NAME, self.ITEMS_TABLE_SELECTED_HEADER_CLASS)
 
     
