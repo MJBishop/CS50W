@@ -422,6 +422,7 @@ function parse_csv() {
     const file_name = selected_file['name'];
     const file_type = selected_file['type'];
 
+
     // Parse local CSV file
     Papa.parse(selected_file,  {
         header: true,
@@ -431,16 +432,18 @@ function parse_csv() {
         complete: function(results) {
             console.log("Finished:", results.data);
             // console.log("Meta:", results.meta);
-            console.log("Fields:", results.meta.fields);
+            // console.log("Fields:", results.meta.fields);
 
-
-            // headers should be strings
+            
             if (results.meta.fields.find((field) => isNaN(Number(field)) === false)) {
-                file_input_error('CSV File should contain headers with text: Choose another file!')
+
+                // headers should be strings
+                display_error('CSV File should contain headers with text: Choose another file!')
             }
-            // 1+ columns should be strings
             else if (!Object.values(results.data[0]).find((column_sample) => typeof column_sample === 'string')) {
-                file_input_error('CSV File should contain a column of text: Choose another file!');
+                
+                // 1+ columns should contain strings
+                display_error('CSV File should contain a column of text: Choose another file!');
             }
             else {
                 display_parsed_csv_table(results);
@@ -452,13 +455,13 @@ function parse_csv() {
             // localStorage.setItem('fields', JSON.stringify(results.meta.fields));
         },
         error: function(error, file) {
-            console.log("Erroe:", error);
+            console.log("Error:", error);
         }
     });    
 }
 
 
-function file_input_error(message) {
+function display_error(message) {
     error_p = document.querySelector('#load-csv-error-message')
     error_p.innerHTML = message;
     set_up_on_change_for_file_input(error_p);
@@ -487,8 +490,6 @@ function clear_import_table() {
 }
 
 function display_parsed_csv_table(results) {
-    // console.log("display_parsed_csv_table")
-    // console.log(results.meta.fields)
 
     const data = results.data;
     const fields = results.meta.fields;
@@ -500,19 +501,6 @@ function display_parsed_csv_table(results) {
     // Show table
     document.querySelector('#import-csv-table-div').hidden = false;
     
-
-    const sample_row_data = results.data[0];
-
-    // // check for at least one column of type string
-    // Object.values(sample_row_data).forEach((value) => {
-    //     console.log(typeof value);
-
-    // });
-    
-
-
-
-
 
     //  Display Table Header
     const table_header_row = document.createElement('tr');
@@ -540,12 +528,14 @@ function display_parsed_csv_table(results) {
     
     // Display Column DropDowns
     const table_col_select_row = document.createElement('tr');
-    fields.forEach(field => {
+    const sample_row_data = results.data[0];
+    fields.forEach((field, index) => {
 
         // select
         const select = select_element_for_field(typeof sample_row_data[field])
         select.setAttribute('data-field', field);
-        select.setAttribute('id', 'import-csv-table-column-select');
+        select.classList.add('import-csv-table-column-select');
+        select.setAttribute('id', 'select_' + index.toString())
         select.addEventListener(
             'change',
             function() { toggleDisability(this); },
@@ -596,7 +586,7 @@ function select_element_for_field(typeof_field) {
 function toggleDisability(selected) {
     selected_index = selected.selectedIndex;
     if (selected_index == 2) {
-        document.querySelectorAll('#import-csv-table-column-select').forEach(function(select) {
+        document.querySelectorAll('.import-csv-table-column-select').forEach(function(select) {
             if (select.options[selected_index]) {
                 select.options[selected_index].disabled = true;
             }
@@ -604,7 +594,7 @@ function toggleDisability(selected) {
         selected.options[selected_index].disabled = false;
         selected.classList.add('selected-amount');
     } else if (selected.classList.contains('selected-amount')) {
-        document.querySelectorAll('#import-csv-table-column-select').forEach(function(select) {
+        document.querySelectorAll('.import-csv-table-column-select').forEach(function(select) {
             if (select.options[2]) {
                 select.options[2].disabled = false;
             }
@@ -635,7 +625,7 @@ function validate_selections(button) {
 
     // Gather Selections
     let selections = [];
-    document.querySelectorAll('#import-csv-table-column-select').forEach(function(select) {
+    document.querySelectorAll('.import-csv-table-column-select').forEach(function(select) {
         let selection = {
             'field' : select.dataset.field,
             'value' : select.value 

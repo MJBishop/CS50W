@@ -4,6 +4,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium import webdriver
+from selenium.webdriver.support.select import Select
 import os
 
 from stocklist.models import User
@@ -102,14 +103,13 @@ class IndexTests(BaseTests):
         # only one store per user
 
 
-class LoadCSVFileTests(BaseTests):
-    
+class BaseImportTests(BaseTests):
+
     # Test Files
     TEST_FILE_FOLDER = '/csv_test_files/'
     STRINGS_AND_NUMBERS_FILE = 'strings_and_numbers.csv'
     NO_STRINGS_FILE = 'no_strings.csv'
     NO_HEADERS_FILE = 'no_headers.csv'
-
 
     def setUp(self):
         super().setUp()
@@ -118,6 +118,12 @@ class LoadCSVFileTests(BaseTests):
         self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
         self.load_file_component = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
         self.dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
+
+
+class LoadCSVFileTests(BaseImportTests):
+
+    def setUp(self):
+        super().setUp()
 
         # wait for form
         form_locator = self.load_file_component.get_csv_load_form_locator()
@@ -162,8 +168,41 @@ class LoadCSVFileTests(BaseTests):
         self.assertEqual(self.load_file_component.get_csv_load_error_message_text(), self.load_file_component.LOAD_FILE_HEADER_ERROR_MESSAGE)
         
 
-# class ImportItemsTests(LoadCSVFileTests):
-    # test_table_column_select_options_for_type_string(self):
+class ImportItemsTests(BaseImportTests):
+    def setUp(self):
+        super().setUp()
+
+        file_to_test = self.TEST_FILE_FOLDER + self.STRINGS_AND_NUMBERS_FILE
+        local_file_path = self.dir_path + file_to_test
+        self.import_items_component = self.load_file_component.load_file_with_path(local_file_path)
+
+        # wait for import items button
+        import_items_button_locator = self.import_items_component.get_import_items_button_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(import_items_button_locator)
+        )
+
+    def test_table_column_select_options_for_type_string(self):
+        select_element = self.import_items_component.get_select_at_col_index(0)
+        ignore_element = self.import_items_component.get_option_for_select_with_value(select_element, '0')
+        item_name_element = self.import_items_component.get_option_for_select_with_value(select_element, '1')
+
+        select = Select(select_element)
+        option_list = select.options
+        expected_options = [ignore_element, item_name_element]
+        self.assertEqual(option_list, expected_options)
+
+        selected_option_list = select.all_selected_options
+        expected_selection = [ignore_element]
+        self.assertEqual(selected_option_list, expected_selection)
+
+        select.select_by_index(1)
+        self.assertTrue(item_name_element.is_selected)
+
+        select.select_by_index(0)
+        self.assertTrue(ignore_element.is_selected)
+
+
     # test_table_column_select_options_for_type_ynumber(self):
     # test_table_column_select_options_for_type_other(self):
         

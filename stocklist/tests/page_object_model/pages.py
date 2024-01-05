@@ -108,17 +108,28 @@ class ImportItemsComponent(StorePage):
     # elements:
 
     IMPORT_CSV_TABLE_DIV_ID = 'import-csv-table-div'
-    IMPORT_CSV_TABLE_COL_SELECT_ID = 'import-csv-table-column-select'
+    IMPORT_CSV_TABLE_COL_SELECT_CLASS = 'import-csv-table-column-select'
+    IMPORT_CSV_TABLE_COL_SELECT_ID_PREFIX = 'select_'
+
+
     IMPORT_ITEMS_BUTTON_ID = 'import-items-button'
+    IMPORT_ITEMS_BUTTON_XPATH = '//button[@value="Import Items"]'
+    IMPORT_ITEMS_ERROR_MESSAGE_ELEMENT_ID = 'save-items-error-message'
+    IMPORT_ITEMS_COLUMN_ERROR_MESSAGE = 'Select an Item Name column!'
 
     # select columns to import:
 
     def get_csv_table_column_select_elements(self):
-        return self.driver.find_element(By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID)
+        return self.driver.find_elements(By.CLASS_NAME, self.IMPORT_CSV_TABLE_COL_SELECT_CLASS)
     
     def get_import_items_button_locator(self):
         return (By.ID, self.IMPORT_ITEMS_BUTTON_ID)
 
+    def get_select_at_col_index(self, index):
+        return self.driver.find_element(By.ID, self.IMPORT_CSV_TABLE_COL_SELECT_ID_PREFIX + str(index))
+    
+    def get_option_for_select_with_value(self, select, value):
+        return select.find_element(By.CSS_SELECTOR, "option[value='" + value + "']")
 
 
     # import items:
