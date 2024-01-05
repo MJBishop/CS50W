@@ -172,5 +172,8 @@ class ItemsTableComponent(StorePage):
 
     def get_selected_table_header_locator(self):
         return (By.CLASS_NAME, self.ITEMS_TABLE_SELECTED_HEADER_CLASS)
+    
+    def get_first_table_cell_innerHTML_for_table_row(self, table_row):
+        return table_row.find_element(By.XPATH, "//td").get_attribute("innerHTML")
 
     

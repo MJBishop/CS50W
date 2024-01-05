@@ -305,25 +305,46 @@ class ImportItemsTests(BaseSelectColumnTests):
         )
         self.assertEqual(import_items_component.get_import_items_error_message_text(), import_items_component.IMPORT_ITEMS_COLUMN_ERROR_MESSAGE)
 
-    def test_save_items_success_item_name_column(self):
+    def test_save_items_success_item_name_selected(self):
         select_element = self.import_items_component.get_select_at_col_index(0)
-        item_name_element = self.import_items_component.get_option_for_select_with_value(select_element, '1')
 
+        # select an item name column 
         select = Select(select_element)
         select.select_by_index(1)
-        
-        
         items_table_component = self.import_items_component.save_items()
 
-        # wait for items table
+        # wait for items table selected header
         selected_table_header_locator = items_table_component.get_selected_table_header_locator()
         WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.presence_of_element_located(selected_table_header_locator)
         )
         self.assertTrue(items_table_component.get_items_table_view_rows())
 
+    def test_save_items_succes_item_name_and_amount(self):
+        name_select_element = self.import_items_component.get_select_at_col_index(0)
+        amount_select_element = self.import_items_component.get_select_at_col_index(1)
 
-    # test_save_items_succes_item_name_and_amount(self);
+        # select an item name column 
+        name_select = Select(name_select_element)
+        name_select.select_by_index(1)
+        # select an item amount column 
+        amount_select = Select(amount_select_element)
+        amount_select.select_by_index(2)
+
+        items_table_component = self.import_items_component.save_items()
+
+        # wait for items table selected header
+        selected_table_header_locator = items_table_component.get_selected_table_header_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(selected_table_header_locator)
+        )
+        table_row_elements = items_table_component.get_items_table_view_rows()
+        first_table_row = table_row_elements[0]
+        first_cell_innerHTML = items_table_component.get_first_table_cell_innerHTML_for_table_row(first_table_row)
+        self.assertEqual(first_cell_innerHTML, '5')
+
+
+
     # test_save_items_succes_item_name_from_multiple_columns(self);
     
 
