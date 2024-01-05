@@ -424,6 +424,19 @@ class CreateListItemTestCase(ImportTestCase):
         self.assertEqual(list_items[0].amount, 1)
         self.assertEqual(response.status_code, 201)
 
+    def test_POST_create_list_item_creates_list_item_with_decimal_amount(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+        store = Store.objects.create(name='Test Store', user=self.user1)
+        list = List.objects.create(name='Test List', type='CO', store=store)
+        item = Item.objects.create(store=store, name="TEST ITEM NAME")
+
+        path = "/create_list_item/{}/{}".format(list.pk, item.pk)
+        response = self.client.generic('POST', path, json.dumps({'amount':'1.1'}))
+        list_items = ListItem.objects.filter(list=list, item=item)
+        self.assertTrue(list_items.exists())
+        self.assertEqual(list_items[0].amount, Decimal('1.1'))
+        self.assertEqual(response.status_code, 201)
+
     def test_POST_create_list_item_updates_list_item_if_exists(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
         store = Store.objects.create(name='Test Store', user=self.user1)
