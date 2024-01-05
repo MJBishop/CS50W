@@ -281,10 +281,14 @@ function count_item(button) {
     // input
     var count_item_amount_input = document.querySelector('#count-item-amount-input')
     var amount = count_item_amount_input.value;
+    console.log('amount:')
+    console.log(amount)
+    console.log(typeof amount)
    
     // Save Amount
     const list_item = current_item.list_items.find((list_item) => list_item.list_id == current_list.id);
 
+    
     if (amount.length > 0 && (typeof list_item === "undefined" || (Number(list_item.amount).toString() != amount))) {
         console.log('save list_item.amount');
 
@@ -292,8 +296,8 @@ function count_item(button) {
         // csrf token from cookie
         const csrftoken = getCookie('csrftoken');
 
-        // data to save
-        let new_list_item = { 'amount': Number(amount) };
+        // data to save//error here!
+        let new_list_item = { 'amount': amount };
             
         // Import Lists & Items
         const path = '/create_list_item/' + current_list.id + '/' + current_item.id;

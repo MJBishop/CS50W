@@ -293,7 +293,6 @@ class SelectTableColumnTests(BaseSelectColumnTests):
 
 class ImportItemsTests(BaseSelectColumnTests):
 
-
     def setUp(self):
         super().setUp()
 
@@ -343,7 +342,7 @@ class ImportItemsTests(BaseSelectColumnTests):
         table_body_row_elements = items_table_component.get_items_table_body_rows()
         first_table_row = table_body_row_elements[0]
         first_cell_innerHTML = items_table_component.get_table_cell_innerHTML_at_index_in_table_row(0, first_table_row)
-        self.assertEqual(first_cell_innerHTML, '5')
+        self.assertEqual(first_cell_innerHTML, '10')
 
     def test_save_items_success_item_name_from_multiple_columns(self):
         name_select_element_1 = self.import_items_component.get_select_at_col_index(0)
@@ -366,8 +365,14 @@ class ImportItemsTests(BaseSelectColumnTests):
         table_body_row_elements = items_table_component.get_items_table_body_rows()
         first_table_row = table_body_row_elements[0]
         row_header_innerHTML = items_table_component.get_table_header_innerHTML_in_table_row(first_table_row)
-        self.assertEqual(row_header_innerHTML, 'Bar Caddy 70cl')
+        self.assertEqual(row_header_innerHTML, 'Vodka 70cl')
     
+
+class CountItemsTests(BaseSelectColumnTests):
+
+    def setUp(self):
+        super().setUp()
+
 
 
 class BaseStoreTests(BaseTests):

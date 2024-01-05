@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
@@ -216,7 +217,7 @@ def items(request, store_id):
 
     if request.method == 'GET':
 
-        items = Item.objects.filter(store_id=store_id).prefetch_related("list_items")
+        items = Item.objects.filter(store_id=store_id).prefetch_related("list_items").order_by('id')
 
         data = {
             'items' : [item.serialize() for item in items],
@@ -296,6 +297,9 @@ def create_list_item(request, list_id, item_id): #list_item
     if request.method == 'POST':
         data = json.loads(request.body)
         item_amount = data.get("amount", "")
+        # item_amount = Decimal(item_amount)
+        print("item_amount:")
+        print(type(item_amount))
 
         created = False
         try:
