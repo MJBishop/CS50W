@@ -203,7 +203,33 @@ class ImportItemsTests(BaseImportTests):
         self.assertTrue(ignore_element.is_selected)
 
 
-    # test_table_column_select_options_for_type_ynumber(self):
+    def test_table_column_select_options_for_type_ynumber(self):
+        select_element = self.import_items_component.get_select_at_col_index(1)
+        ignore_element = self.import_items_component.get_option_for_select_with_value(select_element, '0')
+        item_name_element = self.import_items_component.get_option_for_select_with_value(select_element, '1')
+        item_quantity_element = self.import_items_component.get_option_for_select_with_value(select_element, '2')
+
+        select = Select(select_element)
+        option_list = select.options
+        expected_options = [ignore_element, item_name_element, item_quantity_element]
+        self.assertEqual(option_list, expected_options)
+
+        selected_option_list = select.all_selected_options
+        expected_selection = [ignore_element]
+        self.assertEqual(selected_option_list, expected_selection)
+
+        select.select_by_index(1)
+        self.assertTrue(item_name_element.is_selected)
+
+        select.select_by_index(0)
+        self.assertTrue(ignore_element.is_selected)
+
+        select.select_by_index(1)
+        self.assertTrue(item_quantity_element.is_selected)
+
+
+
+
     # test_table_column_select_options_for_type_other(self):
         
     # test_save_items_fail_no_columns_selected(self):
