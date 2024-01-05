@@ -340,7 +340,7 @@ class ImportItemsTests(BaseSelectColumnTests):
         )
         table_row_elements = items_table_component.get_items_table_view_rows()
         first_table_row = table_row_elements[0]
-        first_cell_innerHTML = items_table_component.get_first_table_cell_innerHTML_for_table_row(first_table_row)
+        first_cell_innerHTML = items_table_component.get_table_cell_innerHTML_at_index_in_table_row_(0, first_table_row)
         self.assertEqual(first_cell_innerHTML, '5')
 
 
