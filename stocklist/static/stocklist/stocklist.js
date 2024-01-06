@@ -781,7 +781,6 @@ function download_csv_link(file_name, csv) {
         link.onclick = function(event) {
             event.preventDefault();
         }
-
         reset_buttons();
     });
 

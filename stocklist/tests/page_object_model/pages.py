@@ -165,6 +165,12 @@ class ItemsTableComponent(StorePage):
     ITEMS_TABLE_BODY_ROW_CLASS = "items-table-body-row"
     ITEMS_TABLE_BODY_ID = "items-table-body"
 
+    COUNT_ITEMS_BUTTON_ID = "count-items-button"
+    COUNT_ITEM_NAME_LABEL_ID = "count-item-name-label"
+    COUNT_ITEM_AMOUNT_INPUT_ID = "count-item-amount-input"
+    COUNT_ITEM_PREVIOUS_BUTTON_ID = "count-item-previous-button"
+    COUNT_ITEM_NEXT_BUTTON_ID = "count-item-next-button"
+
     # table:
 
     def get_items_table_body_rows(self):
@@ -230,6 +236,9 @@ class DeleteStoreComponent(ItemsTableComponent):
 
     def get_delete_store_input_locator(self):
         return (By.ID, self.DELETE_STORE_INPUT_ID)
+    
+    def get_delete_store_input(self):
+        return self.driver.find_element(By.ID, self.DELETE_STORE_INPUT_ID)
 
     # success:
 

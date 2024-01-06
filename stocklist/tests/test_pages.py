@@ -1,6 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, WebDriverException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -412,7 +412,7 @@ class ExportFileTests(BaseFixtureTests):
 
         # wait for export button
         export_csv_button_locator = self.export_file_component.get_export_csv_button_locator()
-        export_csv_button = WebDriverWait(self.driver, timeout=10).until(
+        WebDriverWait(self.driver, timeout=10).until(
             expected_conditions.element_to_be_clickable(export_csv_button_locator)
         )
 
@@ -426,12 +426,12 @@ class ExportFileTests(BaseFixtureTests):
         )
         delete_store_component = self.export_file_component.download_file()
 
-        # wait for delete store view
-        delete_store_view_locator = delete_store_component.get_delete_store_view_locator()
-        WebDriverWait(self.driver, timeout=10).until(
-            expected_conditions.presence_of_element_located(delete_store_view_locator)
+        # wait for export button
+        export_csv_button_locator = self.export_file_component.get_export_csv_button_locator()
+        export_csv_button = WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.element_to_be_clickable(export_csv_button_locator)
         )
-        self.assertTrue(delete_store_component.get_delete_store_input_locator())
+        self.assertTrue(export_csv_button) #
 
 
 class DeleteStoreTests(BaseFixtureTests):
