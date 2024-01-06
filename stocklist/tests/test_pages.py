@@ -438,16 +438,6 @@ class CountItemsTests(BaseFixtureTests):
         self.assertEqual(third_cell_innerHTML, '')
 
 
-
-
-
-
-
-
-
-
-
-
 class ExportFileTests(BaseFixtureTests):
 
     def setUp(self):
