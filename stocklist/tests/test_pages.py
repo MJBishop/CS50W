@@ -429,17 +429,25 @@ class ExportFileTests(BaseFixtureTests):
         # wait for delete store view
         delete_store_view_locator = delete_store_component.get_delete_store_view_locator()
         WebDriverWait(self.driver, timeout=10).until(
-            expected_conditions.element_to_be_clickable(delete_store_view_locator)
+            expected_conditions.presence_of_element_located(delete_store_view_locator)
         )
         self.assertTrue(delete_store_component.get_delete_store_input_locator())
 
-    # def test_delete_store(self):
-    #     pass
-         # wait for items table selected header
-        # delete_store_input_locator = delete_store_component.get_delete_store_input_locator()
-        # WebDriverWait(self.driver, timeout=10).until(
-        #     expected_conditions.element_to_be_clickable(delete_store_input_locator)
-        # )
-        # index_page = delete_store_component.delete_store()
-        # self.assertTrue(index_page.get_store_name_form())
+
+class DeleteStoreTests(BaseFixtureTests):
+
+    def setUp(self):
+        super().setUp()
+
+        self.delete_store_component = DeleteStoreComponent(self.driver, self.live_server_url)
+
+        # wait for delete store view
+        delete_store_view_locator = self.delete_store_component.get_delete_store_view_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.element_to_be_clickable(delete_store_view_locator)
+        )
+
+    def test_delete_store(self):
+        index_page = self.delete_store_component.delete_store()
+        self.assertTrue(index_page.get_store_name_form())
 
