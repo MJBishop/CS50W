@@ -11,14 +11,17 @@ class BasePage(object):
 
     def fill_form_by_css(self, form_css, value):
         elem = self.driver.find(form_css)
+        elem.clear()
         elem.send_keys(value)
 
     def fill_form_by_id(self, form_element_id, value):
         elem = self.driver.find_element_by_id(form_element_id)
+        elem.clear()
         elem.send_keys(value)
 
     def fill_form_by_name(self, name, value):
         elem = self.driver.find_element_by_name(name)
+        elem.clear()
         elem.send_keys(value)
 
     @property

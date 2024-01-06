@@ -297,9 +297,6 @@ def create_list_item(request, list_id, item_id): #list_item
     if request.method == 'POST':
         data = json.loads(request.body)
         item_amount = data.get("amount", "")
-        # item_amount = Decimal(item_amount)
-        print("item_amount:")
-        print(type(item_amount))
 
         created = False
         try:

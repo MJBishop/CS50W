@@ -398,9 +398,54 @@ class CountItemsTests(BaseFixtureTests):
             expected_conditions.presence_of_element_located(selected_table_header_locator)
         )
 
-    def test_fixtures_ok(self):
-        pass
-        self.assertTrue(self.items_table_component.get_items_table_body_rows())
+    def test_count_items(self):
+        self.items_table_component = self.items_table_component.toggle_count_items_collapse()
+
+        # wait for items table selected header
+        count_items_collapse_showing_locator = self.items_table_component.get_count_items_collapse_show_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(count_items_collapse_showing_locator)
+        )
+        self.assertTrue(self.items_table_component.get_count_item_name_label())
+        self.assertEqual(self.items_table_component.get_count_item_name_label().text, 'Vodka 70cl')
+
+        # Set count for first item by clicking 'next'
+        self.items_table_component.count_item_next('15')
+
+        table_body_row_elements = self.items_table_component.get_items_table_body_rows()
+        first_table_row = table_body_row_elements[0]
+        second_cell_innerHTML = self.items_table_component.get_table_cell_innerHTML_at_index_in_table_row(1, first_table_row)
+        self.assertEqual(second_cell_innerHTML, '15')
+
+        self.items_table_component.submit_previous()
+
+        # Set count for first item by clicking 'previous'
+        self.items_table_component.count_item_previous('25')
+
+        table_body_row_elements = self.items_table_component.get_items_table_body_rows()
+        first_table_row = table_body_row_elements[0]
+        second_cell_innerHTML = self.items_table_component.get_table_cell_innerHTML_at_index_in_table_row(1, first_table_row)
+        self.assertEqual(second_cell_innerHTML, '25')
+
+        self.items_table_component.submit_next()
+
+        # select next column
+        self.items_table_component.select_end_column_table_header()
+
+        table_body_row_elements = self.items_table_component.get_items_table_body_rows()
+        first_table_row = table_body_row_elements[0]
+        third_cell_innerHTML = self.items_table_component.get_table_cell_innerHTML_at_index_in_table_row(2, first_table_row)
+        self.assertEqual(third_cell_innerHTML, '')
+
+
+
+
+
+
+
+
+
+
 
 
 class ExportFileTests(BaseFixtureTests):

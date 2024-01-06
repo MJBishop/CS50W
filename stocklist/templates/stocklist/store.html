@@ -72,7 +72,7 @@
                     <form class="" action="{% url 'store' store.id %}" method="post">
                         {% csrf_token %}
                         <div class="">
-                            <input type="submit" value="Delete Store" class="btn btn-outline-danger form-control col-12"></input>
+                            <input id="delete-store-input" type="submit" value="Delete Store" class="btn btn-outline-danger form-control col-12"></input>
                         </div>
                     </form>
                 </div>

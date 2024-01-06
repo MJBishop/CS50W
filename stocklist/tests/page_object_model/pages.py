@@ -162,6 +162,7 @@ class ItemsTableComponent(StorePage):
     
     ITEMS_TABLE_VIEW = "table-view"
     ITEMS_TABLE_SELECTED_HEADER_CLASS ='selected'
+    ITEMS_TABLE_END_COUNT_HEADER_ID = "items-table-end-header"
     ITEMS_TABLE_BODY_ROW_CLASS = "items-table-body-row"
     ITEMS_TABLE_BODY_ID = "items-table-body"
 
@@ -170,6 +171,7 @@ class ItemsTableComponent(StorePage):
     COUNT_ITEM_AMOUNT_INPUT_ID = "count-item-amount-input"
     COUNT_ITEM_PREVIOUS_BUTTON_ID = "count-item-previous-button"
     COUNT_ITEM_NEXT_BUTTON_ID = "count-item-next-button"
+    COUNT_ITEM_COLLAPSE_SHOW_CLASS = "show"
 
     # table:
 
@@ -185,7 +187,44 @@ class ItemsTableComponent(StorePage):
     def get_table_header_innerHTML_in_table_row(self, table_row):
         return table_row.find_element(By.TAG_NAME, "th").get_attribute("innerHTML")
     
+    def select_end_column_table_header(self):
+        return self.driver.find_element(By.ID, self.ITEMS_TABLE_END_COUNT_HEADER_ID).click()
+    
     # count:
+
+    def get_count_items_button(self):
+        return self.driver.find_element(By.ID, self.COUNT_ITEMS_BUTTON_ID)
+    
+    def get_count_items_collapse_show_locator(self):
+        return (By.CLASS_NAME, self.COUNT_ITEM_COLLAPSE_SHOW_CLASS)
+    
+    def get_count_item_name_label(self):
+        return self.driver.find_element(By.ID, self.COUNT_ITEM_NAME_LABEL_ID)
+    
+    def set_item_count(self, amount):
+        self.fill_form_by_id(self.COUNT_ITEM_AMOUNT_INPUT_ID, amount)
+    
+    # 
+
+    def toggle_count_items_collapse(self):
+        self.driver.find_element(By.ID, self.COUNT_ITEMS_BUTTON_ID).click()
+        return ItemsTableComponent(self.driver, self.live_server_url)
+    
+    def submit_next(self):
+        self.driver.find_element(By.ID, self.COUNT_ITEM_NEXT_BUTTON_ID).click()
+        return ItemsTableComponent(self.driver, self.live_server_url)
+    
+    def count_item_next(self, amount):
+        self.set_item_count(amount)
+        self.submit_next()
+
+    def submit_previous(self):
+        self.driver.find_element(By.ID, self.COUNT_ITEM_PREVIOUS_BUTTON_ID).click()
+        return ItemsTableComponent(self.driver, self.live_server_url)
+    
+    def count_item_previous(self, amount):
+        self.set_item_count(amount)
+        self.submit_previous()
 
     
 class ExportFileComponent(ItemsTableComponent):
