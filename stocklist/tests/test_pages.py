@@ -3,8 +3,10 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.firefox.options import Options
 import os
 
 from stocklist.models import User
@@ -22,6 +24,7 @@ class SeleniumTests(StaticLiveServerTestCase):
         #  Set Up Driver
         cls.driver = webdriver.Firefox()
         cls.driver.maximize_window()
+        # print(cls.driver.get_window_size())
 
     @classmethod
     def tearDownClass(cls):
@@ -121,7 +124,7 @@ class BaseImportTests(BaseTests):
         self.dir_path = os.path.dirname(os.path.abspath(__file__))  # print(dir_path)
 
 
-class LoadCSVFileTests(BaseImportTests):
+class LoadFileTests(BaseImportTests):
 
     def setUp(self):
         super().setUp()
@@ -370,7 +373,7 @@ class ImportItemsTests(BaseSelectColumnTests):
 
 
 class BaseFixtureTests(SeleniumTests):
-    fixtures = ['test_db.json']
+    fixtures = ['db.json']
 
     USERNAME = "bishop"
     PASSWORD = "36tnJ.PO"
@@ -380,6 +383,13 @@ class BaseFixtureTests(SeleniumTests):
 
         self.login_page = LoginPage(self.driver, self.live_server_url, navigate=True)
         self.index_page = self.login_page.login_as(self.USERNAME, self.PASSWORD)
+        
+
+class CountItemsTests(BaseFixtureTests):
+
+    def setUp(self):
+        super().setUp()
+        
         self.items_table_component = ItemsTableComponent(self.driver, self.live_server_url)
 
         # wait for items table selected header
@@ -388,13 +398,48 @@ class BaseFixtureTests(SeleniumTests):
             expected_conditions.presence_of_element_located(selected_table_header_locator)
         )
 
-class CountItemsTests(BaseFixtureTests):
+    def test_fixtures_ok(self):
+        pass
+        self.assertTrue(self.items_table_component.get_items_table_body_rows())
+
+
+class ExportFileTests(BaseFixtureTests):
 
     def setUp(self):
         super().setUp()
 
-    def test_fixtures_ok(self):
-        
-        self.assertTrue(self.items_table_component.get_items_table_body_rows())
+        self.export_file_component = ExportFileComponent(self.driver, self.live_server_url)
 
-        
+        # wait for export button
+        export_csv_button_locator = self.export_file_component.get_export_csv_button_locator()
+        export_csv_button = WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.element_to_be_clickable(export_csv_button_locator)
+        )
+
+    def test_export_file(self):
+        self.export_file_component = self.export_file_component.export_items()
+
+        # wait for download link
+        download_file_link_locator = self.export_file_component.get_download_file_link_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(download_file_link_locator)
+        )
+        delete_store_component = self.export_file_component.download_file()
+
+        # wait for delete store view
+        delete_store_view_locator = delete_store_component.get_delete_store_view_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.element_to_be_clickable(delete_store_view_locator)
+        )
+        self.assertTrue(delete_store_component.get_delete_store_input_locator())
+
+    # def test_delete_store(self):
+    #     pass
+         # wait for items table selected header
+        # delete_store_input_locator = delete_store_component.get_delete_store_input_locator()
+        # WebDriverWait(self.driver, timeout=10).until(
+        #     expected_conditions.element_to_be_clickable(delete_store_input_locator)
+        # )
+        # index_page = delete_store_component.delete_store()
+        # self.assertTrue(index_page.get_store_name_form())
+

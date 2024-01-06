@@ -1,0 +1,399 @@
+[
+{
+  "model": "stocklist.list",
+  "pk": 214,
+  "fields": {
+    "store": 119,
+    "name": "Import",
+    "type": "AD",
+    "date_added": "2024-01-05T16:45:16.051Z"
+  }
+},
+{
+  "model": "stocklist.list",
+  "pk": 215,
+  "fields": {
+    "store": 119,
+    "name": "Start",
+    "type": "CO",
+    "date_added": "2024-01-05T16:45:16.238Z"
+  }
+},
+{
+  "model": "stocklist.list",
+  "pk": 216,
+  "fields": {
+    "store": 119,
+    "name": "End",
+    "type": "CO",
+    "date_added": "2024-01-05T16:45:16.241Z"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2350,
+  "fields": {
+    "store": 119,
+    "name": "Vodka 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2351,
+  "fields": {
+    "store": 119,
+    "name": "Gin 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2352,
+  "fields": {
+    "store": 119,
+    "name": "White Rum 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2353,
+  "fields": {
+    "store": 119,
+    "name": "Dark Rum 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2354,
+  "fields": {
+    "store": 119,
+    "name": "Spiced Rum 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2355,
+  "fields": {
+    "store": 119,
+    "name": "Reposado Tequila 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2356,
+  "fields": {
+    "store": 119,
+    "name": "Scotch Whisky 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2357,
+  "fields": {
+    "store": 119,
+    "name": "Irish Whiskey 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2358,
+  "fields": {
+    "store": 119,
+    "name": "Cognac 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2359,
+  "fields": {
+    "store": 119,
+    "name": "Orange Liqueur 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2360,
+  "fields": {
+    "store": 119,
+    "name": "Raspberry Liqueur 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2361,
+  "fields": {
+    "store": 119,
+    "name": "Fresh Lemon Juice 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2362,
+  "fields": {
+    "store": 119,
+    "name": "Fresh Lime Juice 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2363,
+  "fields": {
+    "store": 119,
+    "name": "Sugar Syrup 70cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2364,
+  "fields": {
+    "store": 119,
+    "name": "Grapefruit Juice 100cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2365,
+  "fields": {
+    "store": 119,
+    "name": "Apple Juice 100cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2366,
+  "fields": {
+    "store": 119,
+    "name": "Pineapple Juice 100cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2367,
+  "fields": {
+    "store": 119,
+    "name": "Orange Juice 100cl"
+  }
+},
+{
+  "model": "stocklist.item",
+  "pk": 2368,
+  "fields": {
+    "store": 119,
+    "name": "Cranberry Juice 100cl"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 803,
+  "fields": {
+    "list": 214,
+    "item": 2350,
+    "amount": "10.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 804,
+  "fields": {
+    "list": 214,
+    "item": 2351,
+    "amount": "5.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 805,
+  "fields": {
+    "list": 214,
+    "item": 2352,
+    "amount": "10.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 806,
+  "fields": {
+    "list": 214,
+    "item": 2353,
+    "amount": "12.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 807,
+  "fields": {
+    "list": 214,
+    "item": 2354,
+    "amount": "6.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 808,
+  "fields": {
+    "list": 214,
+    "item": 2355,
+    "amount": "5.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 809,
+  "fields": {
+    "list": 214,
+    "item": 2356,
+    "amount": "10.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 810,
+  "fields": {
+    "list": 214,
+    "item": 2357,
+    "amount": "8.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 811,
+  "fields": {
+    "list": 214,
+    "item": 2358,
+    "amount": "7.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 812,
+  "fields": {
+    "list": 214,
+    "item": 2359,
+    "amount": "5.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 813,
+  "fields": {
+    "list": 214,
+    "item": 2360,
+    "amount": "4.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 814,
+  "fields": {
+    "list": 214,
+    "item": 2361,
+    "amount": "3.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 815,
+  "fields": {
+    "list": 214,
+    "item": 2362,
+    "amount": "10.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 816,
+  "fields": {
+    "list": 214,
+    "item": 2363,
+    "amount": "6.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 817,
+  "fields": {
+    "list": 214,
+    "item": 2364,
+    "amount": "5.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 818,
+  "fields": {
+    "list": 214,
+    "item": 2365,
+    "amount": "6.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 819,
+  "fields": {
+    "list": 214,
+    "item": 2366,
+    "amount": "12.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 820,
+  "fields": {
+    "list": 214,
+    "item": 2367,
+    "amount": "15.0"
+  }
+},
+{
+  "model": "stocklist.listitem",
+  "pk": 821,
+  "fields": {
+    "list": 214,
+    "item": 2368,
+    "amount": "4.0"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "8situbxb5sd8c6y3iwl7wsjvt1i05sv0",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQRO_iGlla_Kek5wzW2uvFAWRLcVIh7k4ipYBminlv5i0irkuN6yhznEhcBIjTb5cwP0vbAT2w3bvMvS3zlOSuyIMOeetUXtfD_TuoOOq2xuAocCghoaLMxHRmwxAAwbN2DAW89mSVVdpjZtjSUQZjEMEmEp8vEmE41Q:1rIpxN:FtIafpQ0ytnwzfVZClWvqJi_7i9ELtRgY_T5IF7sZdQ",
+    "expire_date": "2024-01-11T12:57:49.900Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ay5q8oz2wee9495uaqyncva7kesed3ag",
+  "fields": {
+    "session_data": ".eJxVjDEOgzAQBP_iOrKw8WGTMj1vsO58R0wSGQlDFeXvAYkiabbYmd23iritOW5VljixuiqjLr8dYXpKOQA_sNxnneayLhPpQ9EnrXqYWV630_07yFjzvrYjWOohIYPpIIAxVqxxDrn1tIdLEkZhTg00oetRPCNZ8AQELbFRny_kSjhP:1rLkAE:Pa44We4hO6-zzasJEnAWoRNkgA44bB6Hys0rVGhRSl8",
+    "expire_date": "2024-01-19T13:23:06.279Z"
+  }
+},
+{
+  "model": "stocklist.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$anf6oeTnnShfAjMNmtBsLu$J1Aa1cGub5+YBYMRRiU2Y85CyMsLKi+QvN4W+Mg+T8Q=",
+    "last_login": "2024-01-05T13:23:06.277Z",
+    "is_superuser": true,
+    "username": "bishop",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2023-12-28T12:24:12.034Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "stocklist.store",
+  "pk": 119,
+  "fields": {
+    "user": [
+      "bishop"
+    ],
+    "name": "store"
+  }
+}
+]

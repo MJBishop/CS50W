@@ -18,6 +18,7 @@ body {
 }
 body > .container {
     padding: 74px 0 60px 0;
+    /* height: calc(100vh - 100px); */
 }
 #main-nav {
     background-color: white;
@@ -50,6 +51,14 @@ body > .container {
 
 /*  Items Table
 ********************************/
+#table-view {
+    /* height: 320px; */
+    overflow-y: auto;
+}
+#items-table .items-table-header {
+    text-align: center;
+    min-width: 70px;
+}
 #items-table .items-table-header {
     text-align: center;
     min-width: 70px;
@@ -105,13 +114,47 @@ body > .container {
 
 
 
-
 /* media queries 
 ********************************/
-/* @media only screen and (min-width : 768px) {
-    .card-columns {
-        
-        column-count: 2;
-        
-      }
-} */
+/* Portrait */
+@media only screen and (min-width : 300px) and (orientation: portrait) {
+    #table-view { height: 320px;  }
+}
+@media only screen and (min-width : 350px) and (orientation: portrait) {
+    #table-view { height: 420px;  }
+}
+@media only screen and (min-width : 400px) and (orientation: portrait) {
+    #table-view { height: 480px;  }
+}
+@media only screen and (min-width : 700px) and (orientation: portrait) {
+    #table-view { height: 780px;  }
+}
+@media only screen and (min-width : 800px) and (orientation: portrait) {
+    #table-view { height: 900px;  }
+}
+@media only screen and (min-width : 1000px) and (orientation: portrait) {
+    #table-view { height: 1120px;  }
+}
+/* Landscape */
+@media only screen and (min-width : 550px) and (orientation: landscape) {
+    #table-view { height: 80px;  }
+}
+@media only screen and (min-width : 650px) and (orientation: landscape) {
+    #table-view { height: 130px;  }
+}
+@media only screen and (min-width : 700px) and (orientation: landscape) {
+    #table-view { height: 175px;  }
+}
+@media only screen and (min-width : 1000px) and (orientation: landscape) {
+    #table-view { height: 575px;  }
+}
+@media only screen and (min-width : 1100px) and (orientation: landscape) {
+    #table-view { height: 580px;  }
+}
+@media only screen and (min-width : 1300px) {
+    #table-view { height: 580px;  }
+}
+@media only screen and (min-width : 1400px)  {
+    #table-view { height: 600px;  }
+}
+

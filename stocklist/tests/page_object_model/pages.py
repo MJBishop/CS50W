@@ -63,7 +63,7 @@ class LoadFileComponent(StorePage):
 
     LOAD_FILE_FORM_ID = 'import-csv-form'
     LOAD_FILE_INPUT_ID = 'input-file'
-    LOAD_FILE_INPUT_SUBMIT_XPATH = '//input[@value="Load File"]'
+    LOAD_FILE_INPUT_XPATH = '//input[@value="Load File"]'
     LOAD_FILE_ERROR_MESSAGE_ELEMENT_ID = 'load-csv-error-message'
     LOAD_FILE_COLUMN_ERROR_MESSAGE = 'CSV File should contain a column of text: Choose another file!'
     LOAD_FILE_HEADER_ERROR_MESSAGE = 'CSV File should contain headers with text: Choose another file!'
@@ -85,7 +85,7 @@ class LoadFileComponent(StorePage):
     # success:
 
     def submit(self):
-        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_SUBMIT_XPATH).click()
+        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_XPATH).click()
         return ImportItemsComponent(self.driver, self.live_server_url)
 
     def load_file_with_path(self, file_local_path):
@@ -95,7 +95,7 @@ class LoadFileComponent(StorePage):
     # failure:
 
     def submitExpectingFailure(self):
-        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_SUBMIT_XPATH).click()
+        self.driver.find_element(By.XPATH, self.LOAD_FILE_INPUT_XPATH).click()
         return LoadFileComponent(self.driver, self.live_server_url)
 
     def expect_failure_to_load_file_with_path(self, file_local_path):
@@ -111,9 +111,7 @@ class ImportItemsComponent(StorePage):
     IMPORT_CSV_TABLE_COL_SELECT_CLASS = 'import-csv-table-column-select'
     IMPORT_CSV_TABLE_COL_SELECT_ID_PREFIX = 'select_'
 
-
     IMPORT_ITEMS_BUTTON_ID = 'import-items-button'
-    # IMPORT_ITEMS_BUTTON_XPATH = '//button[@textContent="Import Items"]' 
     IMPORT_ITEMS_ERROR_MESSAGE_ELEMENT_ID = 'save-items-error-message'
     IMPORT_ITEMS_COLUMN_ERROR_MESSAGE = 'Select an Item Name column!'
 
@@ -142,7 +140,7 @@ class ImportItemsComponent(StorePage):
     # save items success:
 
     def submit(self):
-        self.driver.find_element(By.XPATH, "//button[@id='" + self.IMPORT_ITEMS_BUTTON_ID + "']").click()
+        self.driver.find_element(By.ID, self.IMPORT_ITEMS_BUTTON_ID).click()
         return ItemsTableComponent(self.driver, self.live_server_url)
 
     def save_items(self):
@@ -167,6 +165,7 @@ class ItemsTableComponent(StorePage):
     ITEMS_TABLE_BODY_ROW_CLASS = "items-table-body-row"
     ITEMS_TABLE_BODY_ID = "items-table-body"
 
+    # table:
 
     def get_items_table_body_rows(self):
         return self.driver.find_elements(By.CLASS_NAME, self.ITEMS_TABLE_BODY_ROW_CLASS)
@@ -179,5 +178,64 @@ class ItemsTableComponent(StorePage):
     
     def get_table_header_innerHTML_in_table_row(self, table_row):
         return table_row.find_element(By.TAG_NAME, "th").get_attribute("innerHTML")
+    
+    # count:
 
     
+class ExportFileComponent(ItemsTableComponent):
+
+    # elements:
+    
+    EXPORT_CSV_BUTTON_ID = "export-csv-button"
+    DOWNLOAD_FILE_LINK_ELEMENT_ID = "export-csv-link"
+
+    #  export csv
+
+    def get_export_csv_button_locator(self):
+        return (By.ID, self.EXPORT_CSV_BUTTON_ID)
+
+    def get_download_file_link_locator(self):
+        return (By.ID, self.DOWNLOAD_FILE_LINK_ELEMENT_ID)
+
+    # export success:
+
+    def submit_export(self):
+        self.driver.find_element(By.ID, self.EXPORT_CSV_BUTTON_ID).click()
+        return ExportFileComponent(self.driver, self.live_server_url)
+    
+    def export_items(self):
+        return self.submit_export()
+    
+    #  download success:
+
+    def submit_download(self):
+        self.driver.find_element(By.ID, self.DOWNLOAD_FILE_LINK_ELEMENT_ID).click()
+        return DeleteStoreComponent(self.driver, self.live_server_url)
+    
+    def download_file(self):
+        return self.submit_download()
+
+    
+class DeleteStoreComponent(ItemsTableComponent):
+     
+    # elements:
+    DELETE_STORE_VIEW_ID = "delete-store-view"
+    DELETE_STORE_INPUT_ID = "delete-store-input"
+    DELETE_STORE_INPUT_XPATH = '//input[@value="Delete Store"]'
+     
+    # delete store:
+
+    def get_delete_store_view_locator(self):
+        return (By.ID, self.DELETE_STORE_VIEW_ID)
+
+    def get_delete_store_input_locator(self):
+        return (By.ID, self.DELETE_STORE_INPUT_ID)
+
+    # success:
+
+    def submit(self):
+        self.driver.find_element(By.XPATH, self.DELETE_STORE_INPUT_XPATH).click()
+        return IndexPage(self.driver, self.live_server_url)
+
+    def delete_store(self):
+        return self.submit()

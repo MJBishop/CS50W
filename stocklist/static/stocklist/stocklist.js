@@ -769,6 +769,7 @@ function download_csv_link(file_name, csv) {
     link.textContent = 'Download';
     link.classList.add('btn', 'btn-primary');
     link.classList.add('col-12');
+    link.setAttribute('id', "export-csv-link")
     link.setAttribute('target', "_blank");
     link.setAttribute('download', file_name);
     link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
