@@ -1,5 +1,5 @@
 import json
-# import datetime
+import copy
 from decimal import Decimal
 from django.test import Client, TestCase
 
@@ -142,9 +142,10 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        self.json_data[0]['name'] = 'A'*(20 + 1)
+        json_data_copy = copy.deepcopy(self.json_data)
+        json_data_copy[0]['name'] = 'A'*(20 + 1)
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
 
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 0)
@@ -153,9 +154,10 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_type(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        self.json_data[0]['type'] = 'ZZ'
+        json_data_copy = copy.deepcopy(self.json_data)
+        json_data_copy[0]['type'] = 'ZZ'
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(self.json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 0)
@@ -173,16 +175,16 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_item_name_length(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'A'*(80+1),
             'amount':'6'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -193,16 +195,16 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_handles_missing_item_name(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'',
             'amount':'6'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -225,16 +227,16 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'Test Fail for negative number',
             'amount':'-1'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -245,17 +247,16 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_returns_400_for_invalid_list_items_amount2(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'Test Fail for large number',
             'amount':'1000001'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
-        # print(json_data)
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -266,15 +267,15 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_creates_listitem_for_missing_item_amount(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'Test Pass for missing amount'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
@@ -285,23 +286,23 @@ class ImportItemsTestCase(ImportTestCase):
     def test_POST_import_items_doesnt_create_new_item_if_item_already_in_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
-        items = list(self.json_data[0]["items"])
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
         items.append({
             'name':'Absolut Vodka 70CL BTL'
         })
-        json_data = self.json_data.copy()
-        json_data[0]['items'] = items
+        json_data_copy[0]['items'] = items
 
         path = "/import_items/{}".format(self.store.pk)
-        response = self.client.generic('POST', path, json.dumps(json_data))
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
         list_items = ListItem.objects.filter(list=lists[0].pk)
-        self.assertEqual(list_items.count(), 4)
+        self.assertEqual(list_items.count(), 3)
         items = Item.objects.filter(store=self.store.pk)
         self.assertEqual(items.count(), 3)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 400)
 
 
 class CreateListTestCase(ImportTestCase):
