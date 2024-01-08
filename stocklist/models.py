@@ -1,13 +1,9 @@
 from decimal import Decimal
-# from datetime import date, timedelta
-from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Q
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-
 from django.core.exceptions import ValidationError
+
 
 MAX_STORE_NAME_LENGTH = 20
 DEFAULT_STORE_NAME = 'Store'
@@ -66,7 +62,7 @@ class CountListManager(models.Manager):
 class List(models.Model):
     ADDITION = 'AD'
     SUBTRACTION = 'SU'
-    COUNT = 'CO' # FOR Stocklist: ORDER = 'OR', PAR = 'PA', CHECKLIST = 'CH'...
+    COUNT = 'CO' # + ORDER = 'OR', PAR = 'PA', CHECKLIST = 'CH'...
     LIST_TYPE_CHOICES = [
         (ADDITION, "Addition"),
         (SUBTRACTION, "Subtraction"),
@@ -75,10 +71,10 @@ class List(models.Model):
 
     store = models.ForeignKey(Store, editable=False, on_delete=models.CASCADE, related_name="lists")
     name = models.CharField(max_length=MAX_LIST_NAME_LENGTH)
-    # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) # both blank? editable?
-    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=COUNT, blank=False) #default=COUNT?
+    # origin = models.CharField(blank=True, max_length=MAX_ITEM_ORIGIN_NAME_LENGTH) 
+    type = models.CharField(editable=False, max_length=2, choices=LIST_TYPE_CHOICES, default=COUNT, blank=False)
     date_added = models.DateTimeField(
-        default=timezone.now, 
+        auto_now_add=True, 
         help_text="The date these items were added/removed from the Store."
     )
     objects = models.Manager()
@@ -87,7 +83,7 @@ class List(models.Model):
     counts = CountListManager()
 
     def __str__(self):
-        return self.name#'{} List - {} {}'.format(self.name, self.store.name, self.get_type_display())
+        return self.name
     
     def save(self, *args, **kwargs): # Save or Clean??
         if not [i for i in List.LIST_TYPE_CHOICES if self.type in i]:
