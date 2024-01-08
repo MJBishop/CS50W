@@ -1,7 +1,16 @@
 asgiref==3.4.1
+brotlipy==0.7.0
 certifi==2021.5.30
+cffi @ file:///opt/concourse/worker/volumes/live/6ed3f91b-28f6-4d58-6a9b-7a5e864c6554/volume/cffi_1625814710543/work
 coverage @ file:///opt/concourse/worker/volumes/live/aa96dc61-03a4-4f95-77ba-29dfe6dcc93a/volume/coverage_1614614853414/work
+cryptography @ file:///opt/concourse/worker/volumes/live/efc30a4d-1b2f-4c46-6f02-ff41b1cfc0e9/volume/cryptography_1635366582988/work
 Django==3.2.11
+idna @ file:///tmp/build/80754af9/idna_1637925883363/work
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pyOpenSSL @ file:///opt/conda/conda-bld/pyopenssl_1643788558760/work
+PySocks @ file:///opt/concourse/worker/volumes/live/286ddfa9-f2fd-40b3-4c68-b14dbfd7c9fa/volume/pysocks_1605305809963/work
 pytz==2021.3
+selenium @ file:///opt/concourse/worker/volumes/live/c293f86f-ed90-4e11-501a-15caa99ed1fc/volume/selenium_1614267852857/work
 sqlparse==0.4.2
 typing_extensions==4.0.1
+urllib3 @ file:///opt/conda/conda-bld/urllib3_1643638302206/work
