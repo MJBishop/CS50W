@@ -1,13 +1,12 @@
+
+import os
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, WebDriverException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.firefox.options import Options
-import os
 
 from stocklist.models import User
 from stocklist.tests.page_object_model.user_pages import RegisterPage, LoginPage
@@ -101,10 +100,6 @@ class IndexTests(BaseTests):
         store_page = self.index_page.create_store_named_as(self.TEST_STORE_NAME)
         self.assertEqual(store_page.get_store_page_heading_text(), self.TEST_STORE_NAME)
 
-    def test_set_store_name_fail_store_name_exists(self):
-        pass
-        # only one store per user
-
 
 class BaseImportTests(BaseTests):
 
@@ -114,6 +109,7 @@ class BaseImportTests(BaseTests):
     NO_STRINGS_FILE = 'no_strings.csv'
     NO_HEADERS_FILE = 'no_headers.csv'
     MULTIPLE_NAME_COLUMNS_FILE = 'multiple_name_columns.csv'
+
 
     def setUp(self):
         super().setUp()

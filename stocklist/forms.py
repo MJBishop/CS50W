@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from django.utils import timezone
 from datetime import date
 
-from stocklist.models import Store, List#, StockPeriod, Stocktake
+from stocklist.models import Store, List
 
 class StoreNameForm(ModelForm):
     class Meta:

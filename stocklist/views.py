@@ -1,16 +1,11 @@
 import json
-from decimal import Decimal
-from django.shortcuts import redirect, render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
-from django.db.models import F
-from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
-
-from django.db.models import F
-from django.db.models.lookups import Exact
+from django.db.utils import IntegrityError
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
 
 from stocklist.forms import StoreNameForm
 from .models import User, Store, Item, List, ListItem, MIN_LIST_ITEM_AMOUNT
@@ -98,6 +93,7 @@ def store(request, store_id):
     return HttpResponseRedirect(reverse("index"))
 
 
+# TODO:
 # @login_required
 # def delete_store(request, store_id):
 
@@ -141,7 +137,7 @@ def update_store(request, store_id):
 
 
 @login_required
-def import_items(request, store_id): # import_list
+def import_items(request, store_id): 
 
     # check for valid store
     store = get_object_or_404(Store, user=request.user, pk=store_id)
@@ -170,7 +166,7 @@ def import_items(request, store_id): # import_list
             # create ListItems
             for item_data in items:
 
-                item_name = item_data.get("name", "") # default name? line number?
+                item_name = item_data.get("name", "")
                 if item_name == '':
                     # skip rows with empty names - TODO - record total skipped?
                     pass

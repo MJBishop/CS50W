@@ -202,7 +202,7 @@ class ItemsTableComponent(StorePage):
         return self.driver.find_element(By.ID, self.COUNT_ITEM_NAME_LABEL_ID)
     
     def set_item_count(self, amount):
-        self.fill_form_by_id(self.COUNT_ITEM_AMOUNT_INPUT_ID, amount)
+        self.clear_and_fill_form_by_id(self.COUNT_ITEM_AMOUNT_INPUT_ID, amount)
     
     # 
 

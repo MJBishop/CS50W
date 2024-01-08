@@ -16,6 +16,4 @@ urlpatterns = [
     path("create_list_item/<int:list_id>/<int:item_id>", views.create_list_item, name="create_list_item"),
     path("create_item/<int:store_id>", views.create_item, name="create_item"),
     
-
-
 ]

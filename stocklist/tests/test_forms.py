@@ -1,10 +1,9 @@
 from datetime import date
 from django.utils import timezone
-from django.test import Client, TestCase
-from django.core.exceptions import ValidationError
+from django.test import TestCase
 
-from stocklist.models import User, Store, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH #StockPeriod,
-from stocklist.forms import StoreNameForm #StockPeriodForm, StocktakeForm, StockListForm#, StockListInviteForm
+from stocklist.models import User, MAX_STORE_NAME_LENGTH, MAX_LIST_NAME_LENGTH 
+from stocklist.forms import StoreNameForm 
 
 
 class StoreNameFormTestCase(TestCase):
@@ -52,12 +51,4 @@ class StoreNameFormTestCase(TestCase):
             'name': ['Ensure this value has at most 20 characters (it has 21).'],
         })
 
-    # do we need this here?
-    # def test_unique_form_data(self):
-    #     test_store_name = 'Test Store name'
-    #     store = Store.objects.create(name=test_store_name, user=self.user)
-    #     form = StoreNameForm({
-    #         'name':test_store_name,
-    #     })
-    #     self.assertFalse(form.is_valid())
 

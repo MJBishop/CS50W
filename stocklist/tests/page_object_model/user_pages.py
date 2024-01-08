@@ -13,8 +13,8 @@ class LoginPage(BasePage):
     ERROR_ELEM_ID = 'error-message'
     INPUT_ELEM_XPATH = '//input[@value="Login"]'
 
-    def set_username(self, uesrname):
-        self.fill_form_by_name(self.USERNAME_ELEM_NAME, uesrname)
+    def set_username(self, username):
+        self.fill_form_by_name(self.USERNAME_ELEM_NAME, username)
 
     def set_password(self, password):
         self.fill_form_by_name(self.PASSWORD_ELEM_NAME, password)
@@ -35,7 +35,6 @@ class LoginPage(BasePage):
     def login_as(self, username, password):
         self.set_user_data(username, password)
         return self.submit()
-    # super?
 
     # failure:
 

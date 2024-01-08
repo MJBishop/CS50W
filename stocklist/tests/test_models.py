@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from stocklist.models import User, Store, List, ListItem, Item#, StockPeriod, StockList, Stocktake
+from stocklist.models import User, Store, List, ListItem, Item
 
 
 class UserTestCase(TestCase):
@@ -42,8 +42,6 @@ class StoreTestCase(TestCase):
         with self.assertRaises(ValidationError):
             store = Store.objects.create(user=self.user1)
             store.full_clean()
-        
-        # self.assertEqual(store.name, 'Store')
 
     def test_create_store(self):
         stores = Store.objects.all()
@@ -59,21 +57,13 @@ class StoreTestCase(TestCase):
     def test_store_string(self):
         self.assertEqual(self.store_name, self.store.__str__())
 
-    # edit store.name?
+    # edit store.name
 
     def test_max_store_name_length(self):
         long_store_name = (20 + 1)*'A'
         with self.assertRaises(ValidationError):
             store = Store.objects.create(user=self.user1, name=long_store_name)
             store.full_clean()
-
-    # def test_store_queryset_only_returns_stores_from_ownwer(self):
-    #     # create stores
-    #     store1 = Store.objects.create(user=self.user1, name=self.store_name)
-    #     store2 = Store.objects.create(user=self.user2, name=self.store_name)
-
-    #     stores = Store.objects.all()
-    #     self.assertEqual(stores.count(), 1)
             
 
 
@@ -159,9 +149,8 @@ class ListTestCase(TestCase):
             type=List.ADDITION
         )
         self.assertEqual(list.__str__(), self.list_name)
-        # self.assertEqual(list.__str__(), '{} List - {} {}'.format(self.list_name, self.store1.name, list.get_type_display()))
 
-    # edit list name?
+    # edit list name
 
     def test_max_list_name_length(self):
         long_list_name = (20 + 1)*'A'
@@ -189,6 +178,7 @@ class ListTestCase(TestCase):
         self.assertEqual(list.name, serialized_list["name"])
         self.assertEqual(list.get_type_display(), serialized_list["type"])
         self.assertEqual(0,serialized_list["count"])
+
     # TODO
     # def test_store_serializer_list_date(self):
 

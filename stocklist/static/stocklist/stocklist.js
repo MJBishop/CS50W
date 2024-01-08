@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     set_up_count_next_item_action();
     set_up_count_prev_item_action();
 
+    // 
     document.querySelector('#items-view').style.display = 'none';
     document.querySelector('#import-csv-view').style.display = 'none';
 
@@ -299,7 +300,7 @@ function count_item(button) {
         // data to save//error here!
         let new_list_item = { 'amount': amount };
             
-        // Import Lists & Items
+        // Save List item
         const path = '/create_list_item/' + current_list.id + '/' + current_item.id;
         fetch(path, {
             method: 'POST',
@@ -337,12 +338,10 @@ function count_item(button) {
         .catch(error => {
         console.log('Error:', error);
         });
-
     }
     else {
         update_count_form(next_item, current_list.id);
     }
-
 }
 
 function next_row_index(button, index, items_length) {
@@ -375,11 +374,6 @@ function update_count_button(current_list, items_count) {
     var list_count = current_list.count; //here!! undefined
     var badge_string = list_count.toString() + '/' + items_count.toString();
     count_items_button.innerHTML = current_list.name + ' ' + current_list.type + ' ' + badge_string;
-
-
-    // count_items_button.removeAttribute("disabled");
-    // count_items_button.classList.remove('btn-secondary');
-    // count_items_button.classList.add('btn-primary');
 }
 
 function update_count_form(item, current_list_id) {
@@ -410,8 +404,6 @@ function update_table_cell(item_id, list_name, amount) {
 
 
 
-
-
 // ************** CSV **************** 
 
 function parse_csv() {
@@ -436,7 +428,6 @@ function parse_csv() {
         escapeChar: '',
         complete: function(results) {
             console.log("Finished:", results.data);
-            // console.log("Meta:", results.meta);
             // console.log("Fields:", results.meta.fields);
 
             
@@ -457,7 +448,6 @@ function parse_csv() {
 
             // save data to local storage
             localStorage.setItem('data', JSON.stringify(results.data));
-            // localStorage.setItem('fields', JSON.stringify(results.meta.fields));
         },
         error: function(error, file) {
             console.log("Error:", error);

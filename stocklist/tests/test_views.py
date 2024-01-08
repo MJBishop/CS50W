@@ -2,8 +2,6 @@ import json
 # import datetime
 from decimal import Decimal
 from django.test import Client, TestCase
-from django.core.exceptions import ValidationError
-from django.db.utils import IntegrityError
 
 from stocklist.models import User, Store, List, ListItem, Item, MAX_STORE_NAME_LENGTH 
 
@@ -89,6 +87,7 @@ class ItemsTestCase(ImportTestCase):
 
         self.assertEqual(response.status_code, 200)
         data = response.json() 
+        print(data)
         items = data['items']
         self.assertEqual(items[0]['name'], 'Absolut Vodka 70CL BTL')
 
@@ -377,9 +376,6 @@ class CreateListTestCase(ImportTestCase):
         self.assertEqual(response.status_code, 201)
         
 
-        # invalid type
-        # invalid date
-
 class CreateListItemTestCase(ImportTestCase):
     
     def test_POST_create_list_item_redirects_to_login_if_not_logged_in(self):
@@ -482,8 +478,6 @@ class CreateItemTestCase(BaseTestCase):
         sup = super().setUpTestData()
         cls.store = Store.objects.create(name='Test Store', user=cls.user1)
         return sup
-    
-    # valid name & store
 
     def test_POST_create_item_redirects_to_login_if_not_logged_in(self):
         response = self.client.generic('POST', "/create_item/1", json.dumps({'name':'Test Item'}))

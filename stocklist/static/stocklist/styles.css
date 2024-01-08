@@ -1,3 +1,4 @@
+
 /* layout.html 
 ********************************/
 html {
@@ -18,7 +19,6 @@ body {
 }
 body > .container {
     padding: 74px 0 60px 0;
-    /* height: calc(100vh - 100px); */
 }
 #main-nav {
     background-color: white;
@@ -26,33 +26,23 @@ body > .container {
 }
 
 
-
-/* .store-form-view {
-    max-width: 200px;
-} */
-
-
-
 /* store.html 
 ********************************/
 
 /*  Count Input
-*****************/
+*********************/
 
 #count-items-view {
- max-width: 575px;
+    max-width: 575px;
 }
 
 .btn-group > button {
     width: 50%;
 }
 
-
-
 /*  Items Table
-********************************/
+*********************/
 #table-view {
-    /* height: 320px; */
     overflow-y: auto;
 }
 #items-table .items-table-header {
@@ -82,79 +72,38 @@ body > .container {
     background-color: rgba(51, 153, 255, 0.7);
     color: white; 
 }
-/* .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-    cursor: pointer;
-    background-color: rgba(51, 153, 255, 0.7);
-    color: white; 
-} */
-
-
-
-
-/* #items-table .selectable-inprogess {
-    background-color: white;
-    color: var(--warning);
-}
-#items-table .selectable-inprogess:hover {
-    cursor: pointer;
-    background-color: var(--warning);
-    color: white; 
-}
-#items-table .selectable-completed {
-    background-color: white;
-    color: var(--success);
-}
-#items-table .selectable-completed:hover {
-    cursor: pointer;
-    background-color: var(--success);
-    color: white; 
-} */
-
 
 
 
 
 /* media queries 
 ********************************/
+
 /* Portrait */
+
 @media only screen and (min-width : 300px) and (orientation: portrait) {
     #table-view { height: 320px;  }
 }
 @media only screen and (min-width : 350px) and (orientation: portrait) {
-    #table-view { height: 420px;  }
+    #table-view { height: 400px;  }
 }
 @media only screen and (min-width : 400px) and (orientation: portrait) {
     #table-view { height: 480px;  }
 }
-@media only screen and (min-width : 700px) and (orientation: portrait) {
-    #table-view { height: 780px;  }
-}
-@media only screen and (min-width : 800px) and (orientation: portrait) {
-    #table-view { height: 900px;  }
-}
-@media only screen and (min-width : 1000px) and (orientation: portrait) {
-    #table-view { height: 1120px;  }
-}
+
 /* Landscape */
-@media only screen and (min-width : 550px) and (orientation: landscape) {
+
+/* @media only screen and (min-width : 550px) and (orientation: landscape) {
     #table-view { height: 80px;  }
-}
-@media only screen and (min-width : 650px) and (orientation: landscape) {
+} */
+/* @media only screen and (min-width : 650px) and (orientation: landscape) {
     #table-view { height: 130px;  }
 }
 @media only screen and (min-width : 700px) and (orientation: landscape) {
     #table-view { height: 175px;  }
-}
+} */
 @media only screen and (min-width : 1000px) and (orientation: landscape) {
-    #table-view { height: 575px;  }
+    #table-view { height: 480px;  }
 }
-@media only screen and (min-width : 1100px) and (orientation: landscape) {
-    #table-view { height: 580px;  }
-}
-@media only screen and (min-width : 1300px) {
-    #table-view { height: 580px;  }
-}
-@media only screen and (min-width : 1400px)  {
-    #table-view { height: 600px;  }
-}
+
 
