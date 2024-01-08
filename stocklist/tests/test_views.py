@@ -87,7 +87,6 @@ class ItemsTestCase(ImportTestCase):
 
         self.assertEqual(response.status_code, 200)
         data = response.json() 
-        print(data)
         items = data['items']
         self.assertEqual(items[0]['name'], 'Absolut Vodka 70CL BTL')
 
