@@ -12,8 +12,9 @@ While there are excellent spreadsheet mobile apps available, none of them really
 A mobile first web app for counting a list of items, before and after an event. 
 The web app should allow the user to:
     - Load a CSV file containing a list of items
-    - Count these items before and after some event
-    - Export the data back to a CSV file and download it.
+    - Save these items to a database
+    - Count the items before and after some event
+    - Export the data back to a CSV file and download it
 
 
 ## Specification
@@ -23,12 +24,12 @@ The web app should allow the user to:
     * Design a strategy for successfully parsing CSV files. Files potentially may not contain headers, may be empty, or may not contain suitable data.
     * Safely parse the CSV file and provide feedback to the user highlighting errors.
 * Match Headers Fields to Model Fields: Provide an interface for users to match table columns to item names and item quantities.
-    * Select item name columns: At least one column should be selected to provide names for the item model. 
+    * Select item name fields: At least one column should be selected to provide names for the item model. 
         * Candidate columns should contain strings or numbers.
         * Multiple column selections will be concatenated.
-    * Select item quantity columns: At most one column should be selected to provide the imported quantity for each item. 
+    * Select item quantity field: At most one column should be selected to provide the imported quantity for each item. 
         * Candidate columns should only contain numbers.
-        * It should not be possible to select more than one item column at a time.
+        * It should not be possible to select more than one quantity field at a time.
 * Import items: Save the selected table columns into the database. 
     * Allow for three entries for each item: Imported quantity, Start count, End count.
     * Design a model that can be extended beyond three entries for each item.
@@ -69,17 +70,17 @@ File handling involves the following steps:
 7. JSON to CSV parsing
 8. File Download
 
-Validation and field selection are two stages that add complexity.
-CSV files contain no reference to headers or data types
-
 ##### Extending the project
 The simplest model design for this project would be two models, List and Item. Item would contain an optional Imported Amount, plus a Start Count and End Count. 
 This design is not readily extendible so I added more complexity to the project in order to allow for future development by separating Item into Item and ListItem. This allows for an unlimited Lists, referencing each ListItem to an Item, but complicates fetching, manipulating and displaying the data in table rows.
 
 
-## Improvements
-CSS, localization, reduce the number of database operations with bulk save, add another column that colculates the difference between the two counts.
-To extend the use case beyond one event, introduce another model, Stocklist, that represents a document, 
+## Future Improvements
+* CSS
+* Localization
+* Reduce the number of database operations with bulk save
+* An additional table column that calculates the difference between the two counts.
+* To extend the use case beyond one event, introduce another model, Stocklist, that represents a document.
 
 
 ## How to run Stocklist.
@@ -89,16 +90,11 @@ To run the Stocklist application from the local directory:
 python manage.py runserver
 ```
 
-## Any other additional information the staff should know about your project.
-
-
-!If you’ve added any Python packages add them to a requirements.txt file!
-!Though not a hard requirement, 500 words is likely a solid target!
-
 
 ## Documentation
 
-#### `models.py`: Contains model definitions, validators, constraints and serializers.
+#### `models.py`
+##### Contains model definitions, validators, constraints and serializers:
 * `User` 
 * `Store` - A container for Items, and Lists
     - Fields: `user`, `name`
@@ -126,7 +122,8 @@ python manage.py runserver
         - `name()` : returns `item.name`
 
 
-#### `forms.py` - Contains the ModelForm for creating a store.
+#### `forms.py`
+##### Contains the ModelForm for creating a store:
 * `StoreNameForm` - A ModelForm for creating a Store
     - models: `Store`
     - Fields: `name`
@@ -134,7 +131,8 @@ python manage.py runserver
     - Labels: `name`
 
 
-#### `views.py` - Contains methods for receiving a web request and returning a web response. 
+#### `views.py`
+#####  - Contains methods for receiving a web request and returning a web response: 
 * `index(request)` - The landing page for Stocklist
     * `GET` - Checks `User.stores`
         * None: returns `StoreNameForm()` with template `stocklist/index.html`
@@ -211,14 +209,15 @@ python manage.py runserver
     * returns to `register`
 
 
-#### `urls.py` - Contains urls for `views.py`
+#### `urls.py`
+#####  Contains urls for `views.py`.
     
-
 
 ## Static Files
 
 
-#### `static/stocklist/stocklist.js` - Contains client-side code for controlling the flow of the web app, processing data, updating UI.
+#### `static/stocklist/stocklist.js`
+##### Contains client-side code for controlling the flow of the web app, processing data, updating UI:
 
 ##### Load Document
 * `document.addEventListener()`
@@ -357,7 +356,8 @@ python manage.py runserver
     * Returns cookie with name
 
 
-#### `static/stocklist/styles.css` - Contains CSS for each page and media queries for responsive layout.
+#### `static/stocklist/styles.css`
+#####  Contains CSS for each page and media queries for responsive layout:
 * CSS for `layout.html`
 * CSS for `store.html`
 * Media Queries
@@ -365,7 +365,8 @@ python manage.py runserver
 
 ## Templates
 
-#### `templates/stocklist/layout.html` - Contains the base HTML for each page.
+#### `templates/stocklist/layout.html`
+#####  Contains the base HTML for each page:
 * Include Bootstrap CSS, `stocklist.styles.css`
 * Navigation
 * Main - `{% block body %}`
@@ -373,12 +374,14 @@ python manage.py runserver
 * Include Bootstrap, BS Custom File Input, PapaParse JS 
 
 
-#### `templates/stocklist/index.html` - Contains the store form.
+#### `templates/stocklist/index.html`
+#####  Contains the store form:
 * `page-title`
 * `store-form`
 
 
-#### `templates/stocklist/store.html` - Contains HTML for file input, the items table, count input, and store actions. 
+#### `templates/stocklist/store.html`
+#####  Contains HTML for file input, the items table, count input, and store actions: 
 * `store-name-heading`
 * `items-view`
     * `count-items-view`
@@ -391,16 +394,19 @@ python manage.py runserver
     * `import-csv-table`
 
 
-#### `templates/stocklist/register.html` - Contains the register user form HTML.
+#### `templates/stocklist/register.html`
+#####  Contains the register user form HTML:
 * `register form`
 
 
-#### `templates/stocklist/login.html` - Contains the login user form HTML.
+#### `templates/stocklist/login.html`
+#####  Contains the login user form HTML:
 * `login-form`
 
 
 ## Tests
-#### `tests/test_models.py` - Contains TDD tests for `models.py`
+#### `tests/test_models.py`
+#####  Contains TDD tests for `models.py`:
 
 * `UserTestCase` 
     * `test_user()` 
@@ -441,7 +447,8 @@ python manage.py runserver
     * `test_unique_item_for_list()` 
 
 
-#### `tests/test_forms.py` - Contains TDD tests for `forms.py`
+#### `tests/test_forms.py`
+#####  Contains TDD tests for `forms.py`:
 * `StoreNameFormTestCase`
     *  `test_empty_form()`
     *  `test_blank_form_data()`
@@ -449,7 +456,8 @@ python manage.py runserver
     *  `test_invalid_form_data()`
 
 
-#### `tests/test_views.py` - Contains TDD tests for `views.py`
+#### `tests/test_views.py`
+#####  Contains TDD tests for `views.py`:
 * `ImportTestCase()`
     * `JSON` data 
 * `ItemsTestCase(ImportTestCase)`
@@ -534,7 +542,8 @@ python manage.py runserver
     * `test_user_logout(self)`
 
 
-#### `tests/test_pages.py` - Contains the integration tests.
+#### `tests/test_pages.py`
+#####  Contains the integration tests:
 
 * `SeleniumTests(StaticLiveServerTestCase)`
     * `setUpClass(cls)`
@@ -587,7 +596,8 @@ python manage.py runserver
     * `test_delete_store(self)`
 
 
-#### `tests/page_object_model/base_page.py` - Contains the base POM class for testing.
+#### `tests/page_object_model/base_page.py`
+#####  Contains the base POM class for testing:
 
 * `BasePage(object)`
     * `__init__(self, driver, live_server_url, navigate=False)`
@@ -599,7 +609,8 @@ python manage.py runserver
     * `navigate(self)`
 
 
-#### `tests/page_object_model/user_pages.py` - Contains the user POM classes for login and registration.
+#### `tests/page_object_model/user_pages.py`
+#####  Contains the user POM classes for login and registration:
 
 * `LoginPage(BasePage)` - url, elements
     * `set_username(self, username)`
@@ -619,7 +630,8 @@ python manage.py runserver
     * `expect_failure_to_register_as(self, username, email, password, confirmation)`
 
 
-#### `tests/page_object_model/pages.py` - Contains the app specific POM classes.
+#### `tests/page_object_model/pages.py`
+#####  Contains the app specific POM classes:
 
 * `IndexPage(BasePage)` - url, Web elements
     * `get_errors(self)`
@@ -688,7 +700,8 @@ python manage.py runserver
     * `delete_store(self)`
 
 
-#### `fixtures/db.json` - Contains the test database fixture.
+#### `fixtures/db.json`
+#####  Contains the test database fixture:
 * Test database 
 
 
