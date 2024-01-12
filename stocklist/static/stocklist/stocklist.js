@@ -646,21 +646,21 @@ function validate_selections(button) {
 
     // Map Selections to Item.Properties
     let items = data.map(item =>{
-        let properites = {
+        let properties = {
             "name": ''
         };
         for (let i = 0; i < item_name_selections.length; i++) {
             name_column_key = item_name_selections[i].field;
             if (i > 0) {
-                properites["name"] += ' ';
+                properties["name"] += ' ';
             }
-            properites["name"] += item[name_column_key];
+            properties["name"] += item[name_column_key];
         }
         if (item_amount_selections.length) {
             amount_column_key = item_amount_selections[0].field;
-            properites["amount"] = item[amount_column_key]
+            properties["amount"] = item[amount_column_key]
         }
-        return properites;
+        return properties;
     });
     console.log(items);
     
