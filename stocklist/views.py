@@ -191,7 +191,7 @@ def import_items(request, store_id):
 
                     # save ListItem to List
                     item_amount = item_data.get("amount", '')
-                    if item_amount == '':
+                    if item_amount == '' or item_amount == 'null':
                         item_amount = MIN_LIST_ITEM_AMOUNT
                     try:
                         list_item = ListItem(item=item, list=list, amount=item_amount)

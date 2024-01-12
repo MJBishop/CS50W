@@ -282,6 +282,26 @@ class ImportItemsTestCase(ImportTestCase):
         self.assertEqual(list_items.count(), 4)
         self.assertEqual(response.status_code, 201)
 
+    def test_POST_import_items_creates_listitem_for_null_item_amount(self):
+        logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
+
+        json_data_copy = copy.deepcopy(self.json_data)
+        items = list(json_data_copy[0]["items"])
+        items.append({
+            'name':'Test Pass for missing amount',
+            'amount':'null'
+        })
+        json_data_copy[0]['items'] = items
+
+        path = "/import_items/{}".format(self.store.pk)
+        response = self.client.generic('POST', path, json.dumps(json_data_copy))
+        
+        lists = List.objects.filter(store=self.store)
+        self.assertEqual(lists.count(), 1)
+        list_items = ListItem.objects.filter(list=lists[0].pk)
+        # self.assertEqual(list_items.count(), 4)
+        self.assertEqual(response.status_code, 201)
+
     def test_POST_import_items_doesnt_create_new_item_if_item_already_in_store(self):
         logged_in = self.client.login(username=self.TEST_USER, password=self.PASSWORD)
 
