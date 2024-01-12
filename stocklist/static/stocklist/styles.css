@@ -8,6 +8,7 @@ html {
 }
 body {
     margin-bottom: 60px; /* bottom margin == footer height */
+    background-color: rgba(238, 238, 228, 1);
 }
 .footer {
     position: absolute;
@@ -44,6 +45,7 @@ body > .container {
 *********************/
 #table-view {
     overflow-y: auto;
+    background-color: white;
 }
 #items-table .items-table-header {
     text-align: center;

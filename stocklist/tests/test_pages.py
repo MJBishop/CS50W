@@ -109,6 +109,7 @@ class BaseImportTests(BaseTests):
     NO_STRINGS_FILE = 'no_strings.csv'
     NO_HEADERS_FILE = 'no_headers.csv'
     MULTIPLE_NAME_COLUMNS_FILE = 'multiple_name_columns.csv'
+    INCOMPLETE_COLUMN_ENTRIES_FILE = 'incomplete_column_entries.csv'
 
 
     def setUp(self):
@@ -166,6 +167,18 @@ class LoadFileTests(BaseImportTests):
             expected_conditions.presence_of_element_located(load_file_error_message_locator)
         )
         self.assertEqual(self.load_file_component.get_csv_load_error_message_text(), self.load_file_component.LOAD_FILE_HEADER_ERROR_MESSAGE)
+
+    def test_load_file_incomplete_column_entries_success(self):
+        file_to_test = self.TEST_FILE_FOLDER + self.INCOMPLETE_COLUMN_ENTRIES_FILE
+        local_file_path = self.dir_path + file_to_test
+        self.import_items_component = self.load_file_component.load_file_with_path(local_file_path)
+
+        # wait for import items button
+        import_items_button_locator = self.import_items_component.get_import_items_button_locator()
+        WebDriverWait(self.driver, timeout=10).until(
+            expected_conditions.presence_of_element_located(import_items_button_locator)
+        )
+        self.assertTrue(self.import_items_component.get_csv_table_column_select_elements())
         
 
 class BaseSelectColumnTests(BaseImportTests):

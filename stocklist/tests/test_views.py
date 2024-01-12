@@ -295,7 +295,6 @@ class ImportItemsTestCase(ImportTestCase):
 
         path = "/import_items/{}".format(self.store.pk)
         response = self.client.generic('POST', path, json.dumps(json_data_copy))
-        print(json.dumps(json_data_copy))
         
         lists = List.objects.filter(store=self.store)
         self.assertEqual(lists.count(), 1)
