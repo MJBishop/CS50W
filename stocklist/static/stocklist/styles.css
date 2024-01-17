@@ -8,7 +8,7 @@ html {
 }
 body {
     margin-bottom: 60px; /* bottom margin == footer height */
-    background-color: rgba(238, 238, 228, 1);
+    /* background-color: rgb(238, 238, 228); */
 }
 .footer {
     position: absolute;
@@ -23,7 +23,8 @@ body > .container {
 }
 #main-nav {
     background-color: white;
-    border-bottom:1px solid rgba(34, 28, 36, 0.74);
+    /* border-bottom:1px solid rgba(34, 28, 36, 0.74); */
+    box-shadow: 0 1px 6px rgba(34, 28, 36, 0.74);
 }
 
 
@@ -36,6 +37,9 @@ body > .container {
 #count-items-view {
     max-width: 575px;
 }
+#count-card-body {
+    box-shadow: 0 1px 1px rgba(121, 116, 123, 0.74);
+}
 
 .btn-group > button {
     width: 50%;
@@ -46,6 +50,11 @@ body > .container {
 #table-view {
     overflow-y: auto;
     background-color: white;
+
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
+    -webkit-box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
+    -moz-box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
 }
 #items-table .items-table-header {
     text-align: center;
