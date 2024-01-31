@@ -50,39 +50,40 @@ body > .container {
 #table-view {
     overflow-y: auto;
     background-color: white;
+    /* position: relative; */
 
     border-radius: 5px;
     box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
     -webkit-box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
     -moz-box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
 }
-#items-table .items-table-header {
-    text-align: center;
-    min-width: 70px;
-}
+
 #items-table .items-table-header {
     text-align: center;
     min-width: 70px;
 }
 #items-table .selectable-enabled {
-    background-color: white;
+    background: none;
     color: var(--primary);
 }
 #items-table .selectable-enabled:hover {
+    background: rgba(51, 153, 255, 0.7);
+    color: white;
     cursor: pointer;
-    /* background-color: rgba(16, 125, 246, 0.46); */
-    background-color: rgba(51, 153, 255, 0.7);
-    color: white;; 
 }
 #items-table .selected.selectable-enabled {
-    background-color:var(--primary); 
+    background: var(--primary);
     color: white;
 }
 #items-table .selected.selectable-enabled:hover {
-    cursor: pointer;
-    background-color: rgba(51, 153, 255, 0.7);
+    background: rgba(51, 153, 255, 0.7);
     color: white; 
+    cursor: pointer;
 }
+
+
+
+
 
 
 
