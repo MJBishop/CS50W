@@ -23,7 +23,6 @@ body > .container {
 }
 #main-nav {
     background-color: white;
-    /* border-bottom:1px solid rgba(34, 28, 36, 0.74); */
     box-shadow: 0 1px 6px rgba(34, 28, 36, 0.74);
 }
 
@@ -50,7 +49,6 @@ body > .container {
 #table-view {
     overflow-y: auto;
     background-color: white;
-    /* position: relative; */
 
     border-radius: 5px;
     box-shadow: 0 1px 4px rgba(121, 116, 123, 0.74) inset;
