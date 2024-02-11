@@ -72,6 +72,7 @@ class PostManager(models.Manager):
             post.full_clean()
             post.save()
         except ValidationError as e:
+            # e.message_dict
             raise e
         else:
             return post
