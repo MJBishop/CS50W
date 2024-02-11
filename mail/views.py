@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 
 from .models import User, Email
 
@@ -70,6 +71,7 @@ def compose(request):
         email.save()
 
     return JsonResponse({"message": "Email sent successfully."}, status=201)
+    # NB: this method doesn't check for subject length and is not enforced by model!!
 
 
 @login_required
