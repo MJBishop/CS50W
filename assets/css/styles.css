@@ -1,0 +1,48 @@
+.search-hover:hover {
+  color: var(--bs-red);
+}
+
+.wiki-hover:hover {
+  color: var(--bs-orange);
+}
+
+.commerce-hover:hover {
+  color: var(--bs-yellow);
+}
+
+.mail-hover:hover {
+  color: var(--bs-form-valid-border-color);
+}
+
+.network-hover:hover {
+  color: var(--bs-primary);
+}
+
+.capstone-hover:hover {
+  color: var(--bs-purple);
+}
+
+/*  */
+#header {
+  margin-left: 30px;
+}
+#grid {
+  display: grid;
+  grid-auto-flow:row;
+  grid-template-columns: 75% auto;
+  position: relative;
+  margin: 20px;
+}
+button {
+  width: 90%;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* index.html */
+/* li {
+    margin-bottom: 10px;
+}
+#list {
+    margin-left: 10px;
+} */
