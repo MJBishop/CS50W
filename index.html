@@ -1,52 +1,341 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>MJBishop - CS50W Projects</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <link rel="stylesheet" href="styles/styles.css">
-    </head>
-    <body>
-        <div style="top:0;left:0;right:0;width:100%;">
-            <h2 id="header">Mike Bishop - CS50’s Web Programming with Python and JavaScript</h2>
-            <h3 id="header">Specifications and Submission Videos:</h3>
-            <ul id="list">
-                <li>
-                    <h4>Project 0: Search</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/0/search/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/search">Code</a>
-                    <a href="search.html">Submission Video</a>
-                </li>
-                <li>
-                    <h4>Project 1: Wiki</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/1/wiki/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/wiki">Code</a>
-                    <a href="wiki.html">Submission Video</a>
-                </li>
-                <li>
-                    <h4>Project 2: Commerce</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/2/commerce/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/commerce">Code</a>
-                    <a href="commerce.html">Submission Video</a>
-                </li>
-                <li>
-                    <h4>Project 3: Mail</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/3/mail/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/mail">Code</a>
-                    <a href="mail.html">Submission Video</a>
-                </li>
-                <li>
-                    <h4>Project 4: Network</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/4/network/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/network">Code</a>
-                    <a href="network.html">Submission Video</a>
-                </li>
-                <li>
-                    <h4>Project 5: Capstone</h4>
-                    <a href="https://cs50.harvard.edu/web/2020/projects/final/capstone/">Specification</a>
-                    <a href="https://github.com/MJBishop/CS50W/tree/capstone">Code</a>
-                    <a href="capstone.html">Submission Video</a>
-                </li>
-            </ul>
-        </div>
-    </body>
+<html data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Projects - CS50W</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/pikaday.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <main class="page projets-page">
+        <section class="portfolio-block project-no-images">
+            <div class="container">
+                <div class="heading">
+                    <h1><span style="color: rgb(0, 0, 0);">Mike Bishop</span></h1>
+                    <h3><span style="color: rgb(0, 0, 0);">CS50’s Web Programming with Python and JavaScript</span></h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;border-top-color: var(--bs-red);min-width: 20px;">
+                            <h3 style="min-width: 20px;min-height: 20px;">Project 0 : Search</h3>
+                            <h4 style="min-width: 20px;min-height: 20px;"><span style="color: rgb(0, 0, 0);">Design a front-end for Google Search.</span></h4>
+                            <div class="social-icons" style="min-height: 20px;min-width: 20px;">
+                                <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                        <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-css3" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                        <path d="M8.5 8h7l-4.5 4h4l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-sass" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                                        <path d="M12 10.523c2.46 -.826 4 -.826 4 -2.155c0 -1.366 -1.347 -1.366 -2.735 -1.366c-1.91 0 -3.352 .49 -4.537 1.748c-.848 .902 -1.027 2.449 -.153 3.307c.973 .956 3.206 1.789 2.884 3.493c-.233 1.235 -1.469 1.823 -2.617 1.202c-.782 -.424 -.454 -1.746 .626 -2.512s2.822 -.992 4.1 -.24c.98 .575 1.046 1.724 .434 2.193"></path>
+                                    </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                        <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                        <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                        <path d="M12 15v-6"></path>
+                                        <path d="M15 11l-2 -2"></path>
+                                        <path d="M11 7l-1.9 -1.9"></path>
+                                        <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                    </svg></div>
+                            </div>
+                            <div class="position-relative" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="search-hover" href="https://github.com/MJBishop/CS50W/tree/search" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="search-hover" href="search.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="search-hover" href="https://cs50.harvard.edu/web/2020/projects/0/search/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;border-top-color: var(--bs-orange);">
+                            <h3>Project 1 : Wiki</h3>
+                            <h4><span style="color: rgb(0, 0, 0);">Design a Wikipedia-like online encyclopedia.</span></h4>
+                            <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-python" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 9h-7a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h3"></path>
+                                    <path d="M12 15h7a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-3"></path>
+                                    <path d="M8 9v-4a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v5a2 2 0 0 1 -2 2h-4a2 2 0 0 0 -2 2v5a2 2 0 0 0 2 2h4a2 2 0 0 0 2 -2v-4"></path>
+                                    <path d="M11 6l0 .01"></path>
+                                    <path d="M13 18l0 .01"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-django" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                    <path d="M12 7v8.5l-2.015 .201a2.715 2.715 0 1 1 0 -5.402l2.015 .201"></path>
+                                    <path d="M16 7v.01"></path>
+                                    <path d="M16 10v5.586c0 .905 -.36 1.774 -1 2.414"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-markdown" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 5m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
+                                    <path d="M7 15v-6l2 2l2 -2v6"></path>
+                                    <path d="M14 13l2 2l2 -2m-2 2v-6"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-bootstrap" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M2 12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"></path>
+                                    <path d="M2 12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2"></path>
+                                    <path d="M9 16v-8h3.5a2 2 0 1 1 0 4h-3.5h4a2 2 0 1 1 0 4h-4z"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 15v-6"></path>
+                                    <path d="M15 11l-2 -2"></path>
+                                    <path d="M11 7l-1.9 -1.9"></path>
+                                    <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                </svg></div>
+                            <div class="position-relative top-50" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="wiki-hover" href="https://github.com/MJBishop/CS50W/tree/wiki" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="wiki-hover" href="wiki.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="wiki-hover" href="https://cs50.harvard.edu/web/2020/projects/1/wiki/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;border-top-color: var(--bs-yellow);">
+                            <h3>Project 2 : Commerce</h3>
+                            <h4><span style="color: rgb(0, 0, 0);">Design an eBay-like e-commerce auction site.</span></h4>
+                            <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-python" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 9h-7a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h3"></path>
+                                    <path d="M12 15h7a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-3"></path>
+                                    <path d="M8 9v-4a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v5a2 2 0 0 1 -2 2h-4a2 2 0 0 0 -2 2v5a2 2 0 0 0 2 2h4a2 2 0 0 0 2 -2v-4"></path>
+                                    <path d="M11 6l0 .01"></path>
+                                    <path d="M13 18l0 .01"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-django" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                    <path d="M12 7v8.5l-2.015 .201a2.715 2.715 0 1 1 0 -5.402l2.015 .201"></path>
+                                    <path d="M16 7v.01"></path>
+                                    <path d="M16 10v5.586c0 .905 -.36 1.774 -1 2.414"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-bootstrap" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M2 12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"></path>
+                                    <path d="M2 12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2"></path>
+                                    <path d="M9 16v-8h3.5a2 2 0 1 1 0 4h-3.5h4a2 2 0 1 1 0 4h-4z"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 15v-6"></path>
+                                    <path d="M15 11l-2 -2"></path>
+                                    <path d="M11 7l-1.9 -1.9"></path>
+                                    <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                </svg></div>
+                            <div class="position-relative top-50" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="commerce-hover" href="https://github.com/MJBishop/CS50W/tree/commerce" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="commerce-hover" href="commerce.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="commerce-hover" href="https://cs50.harvard.edu/web/2020/projects/2/commerce/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;border-top-color: var(--bs-form-valid-color);">
+                            <h3>Project 3 : Mail</h3>
+                            <h4><span style="color: rgb(0, 0, 0);">Design a front-end for an email client.</span></h4>
+                            <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-django" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                    <path d="M12 7v8.5l-2.015 .201a2.715 2.715 0 1 1 0 -5.402l2.015 .201"></path>
+                                    <path d="M16 7v.01"></path>
+                                    <path d="M16 10v5.586c0 .905 -.36 1.774 -1 2.414"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-javascript" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M7.5 8h3v8l-2 -1"></path>
+                                    <path d="M16.5 8h-2.5a.5 .5 0 0 0 -.5 .5v3a.5 .5 0 0 0 .5 .5h1.423a.5 .5 0 0 1 .495 .57l-.418 2.93l-2 .5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-bootstrap" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M2 12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"></path>
+                                    <path d="M2 12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2"></path>
+                                    <path d="M9 16v-8h3.5a2 2 0 1 1 0 4h-3.5h4a2 2 0 1 1 0 4h-4z"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 15v-6"></path>
+                                    <path d="M15 11l-2 -2"></path>
+                                    <path d="M11 7l-1.9 -1.9"></path>
+                                    <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                </svg></div>
+                            <div class="position-relative top-50" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="mail-hover" href="https://github.com/MJBishop/CS50W/tree/mail" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="mail-hover" href="mail.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="mail-hover" href="https://cs50.harvard.edu/web/2020/projects/3/mail/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;">
+                            <h3>Project 4 : Network</h3>
+                            <h4><span style="color: rgb(0, 0, 0);">Design a Twitter-like social network website.</span></h4>
+                            <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-python" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 9h-7a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h3"></path>
+                                    <path d="M12 15h7a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-3"></path>
+                                    <path d="M8 9v-4a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v5a2 2 0 0 1 -2 2h-4a2 2 0 0 0 -2 2v5a2 2 0 0 0 2 2h4a2 2 0 0 0 2 -2v-4"></path>
+                                    <path d="M11 6l0 .01"></path>
+                                    <path d="M13 18l0 .01"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-django" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                    <path d="M12 7v8.5l-2.015 .201a2.715 2.715 0 1 1 0 -5.402l2.015 .201"></path>
+                                    <path d="M16 7v.01"></path>
+                                    <path d="M16 10v5.586c0 .905 -.36 1.774 -1 2.414"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-javascript" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M7.5 8h3v8l-2 -1"></path>
+                                    <path d="M16.5 8h-2.5a.5 .5 0 0 0 -.5 .5v3a.5 .5 0 0 0 .5 .5h1.423a.5 .5 0 0 1 .495 .57l-.418 2.93l-2 .5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-bootstrap" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M2 12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"></path>
+                                    <path d="M2 12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2"></path>
+                                    <path d="M9 16v-8h3.5a2 2 0 1 1 0 4h-3.5h4a2 2 0 1 1 0 4h-4z"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 15v-6"></path>
+                                    <path d="M15 11l-2 -2"></path>
+                                    <path d="M11 7l-1.9 -1.9"></path>
+                                    <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                </svg></div>
+                            <div class="position-relative top-50" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="network-hover" href="https://github.com/MJBishop/CS50W/tree/network" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="network-hover" href="network.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="network-hover" href="https://cs50.harvard.edu/web/2020/projects/4/network/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="project-card-no-image" style="min-height: 231px;border-top-color: var(--bs-purple);margin-right: 10px;">
+                            <h3 style="margin-right: 10px;">Project 5 : Capstone</h3>
+                            <h4 style="margin-right: 10px;"><span style="color: rgb(0, 0, 0);">Design and implement a web application.</span></h4>
+                            <div class="social-icons" style="width: inherit;height: inherit;min-width: 20px;min-height: 20px;margin-right: 10px;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-python" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 9h-7a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h3"></path>
+                                    <path d="M12 15h7a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-3"></path>
+                                    <path d="M8 9v-4a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v5a2 2 0 0 1 -2 2h-4a2 2 0 0 0 -2 2v5a2 2 0 0 0 2 2h4a2 2 0 0 0 2 -2v-4"></path>
+                                    <path d="M11 6l0 .01"></path>
+                                    <path d="M13 18l0 .01"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-django" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                    <path d="M12 7v8.5l-2.015 .201a2.715 2.715 0 1 1 0 -5.402l2.015 .201"></path>
+                                    <path d="M16 7v.01"></path>
+                                    <path d="M16 10v5.586c0 .905 -.36 1.774 -1 2.414"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-javascript" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M7.5 8h3v8l-2 -1"></path>
+                                    <path d="M16.5 8h-2.5a.5 .5 0 0 0 -.5 .5v3a.5 .5 0 0 0 .5 .5h1.423a.5 .5 0 0 1 .495 .57l-.418 2.93l-2 .5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-html5" style="margin-right: 10px;color: #60605b;height: 20px;min-width: 20px;min-height: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M20 4l-2 14.5l-6 2l-6 -2l-2 -14.5z"></path>
+                                    <path d="M15.5 8h-7l.5 4h6l-.5 3.5l-2.5 .75l-2.5 -.75l-.1 -.5"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-bootstrap" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M2 12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"></path>
+                                    <path d="M2 12a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-4a2 2 0 0 1 2 -2"></path>
+                                    <path d="M9 16v-8h3.5a2 2 0 1 1 0 4h-3.5h4a2 2 0 1 1 0 4h-4z"></path>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-git" style="margin-right: 10px;color: #60605b;min-height: 20px;min-width: 20px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                                    <path d="M12 15v-6"></path>
+                                    <path d="M15 11l-2 -2"></path>
+                                    <path d="M11 7l-1.9 -1.9"></path>
+                                    <path d="M13.446 2.6l7.955 7.954a2.045 2.045 0 0 1 0 2.892l-7.955 7.955a2.045 2.045 0 0 1 -2.892 0l-7.955 -7.955a2.045 2.045 0 0 1 0 -2.892l7.955 -7.955a2.045 2.045 0 0 1 2.892 0z"></path>
+                                </svg></div>
+                            <div class="position-relative top-50" style="margin-top: 30px;">
+                                <div class="position-absolute top-0 end-0" style="min-height: 25px;"><a class="capstone-hover" href="https://github.com/MJBishop/CS50W/tree/capstone" style="padding-left: 0px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-code" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 8l-4 4l4 4"></path>
+                                            <path d="M17 8l4 4l-4 4"></path>
+                                            <path d="M14 4l-4 16"></path>
+                                        </svg></a><a class="capstone-hover" href="capstone.html" style="padding-left: 10px;min-height: inherit;"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-video" style="min-height: inherit;min-width: 30px;">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                                            <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        </svg></a></div>
+                                <div class="position-absolute top-0 start-0"><a class="capstone-hover" href="https://cs50.harvard.edu/web/2020/projects/final/capstone/" style="padding-left: 0px;height: inherit;font-size: 13px;">SPECIFICATION</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>
