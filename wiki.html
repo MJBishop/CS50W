@@ -1,32 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>CS50 Web Project 1 | Wiki</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <link rel="stylesheet" href="assets/css/styles.css">
-        <script src="assets/js/time-stamp.js"></script>
-    </head>
-    <body>
-        <div id="header">
-            <h2>MJBishop - CS50 Web Project 1 - Wiki</h2>
-            <p>Design a Wikipedia-like online encyclopedia.</p>
-        </div>
-        <div id="grid">
-            <div id="grid-item">
-                <video id="video" width="95%" controls src="assets/videos/wiki.mov"></video>
-            </div>
-            <div id="grid-item">
-                <div id="buttons">
-                    <h3>Specification:</h3>
-                    <button data-timestamp="4">0:04 - Entry Page</button>
-                    <button data-timestamp="13">0:13 - Index Page</button>
-                    <button data-timestamp="24">0:24 - Search</button>
-                    <button data-timestamp="51">0:51 - New Page</button>
-                    <button data-timestamp="91">1:31 - Edit Page</button>
-                    <button data-timestamp="104">1:44 - Random Page</button>
-                    <button data-timestamp="113">1:53 - Markdown to HTML Conversion</button>
+<html data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Projects - CS50W</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/time-stamp.js"></script>
+</head>
+
+<body>
+    <main class="page projets-page">
+        <section class="mt-4">
+            <div class="container">
+                <div class="row top-0">
+                    <div class="col-md-12 col-lg-12 col-xxl-12">
+                        <div class="project-card-no-image" style="min-height: 30px;border-top-color: var(--bs-orange);min-width: 20px;">
+                            <h3 style="min-width: 20px;min-height: 20px;">Project 1 : Wiki</h3>
+                            <h4 style="min-width: 20px;min-height: 20px;"><span style="color: rgb(0, 0, 0);">Design a Wikipedia-like online encyclopedia.</span></h4>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-7 col-xxl-8 mb-2">
+                        <video id="video" width="100%" controls src="assets/videos/wiki.mov"></video>
+                    </div>
+                    <div class="col-md-12 col-lg-5 col-xxl-4">
+                        <div class="card">
+                            <div class="card-body" id="buttons">
+                                <h6 class="text-muted card-subtitle mb-3">SPECIFICATION:</h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="4">0:04 - Entry Page</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="13">0:13 - Index Page</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="24">0:24 - Search</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="51">0:51 - New Page</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="91">1:31 - Edit Page</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="104">1:44 - Random Page</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="wiki-hover" style="cursor: pointer; width: inherit;" data-timestamp="113">1:53 - Markdown to HTML Conversion</a>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </body>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

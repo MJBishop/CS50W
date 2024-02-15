@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     var video = document.getElementById('video')
-    var buttons = document.querySelectorAll('#buttons button')
+    var buttons = document.querySelectorAll('#buttons a')
 
     Array.from(buttons).forEach(function (button) {
         button.addEventListener('click', function () {

@@ -1,32 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>CS50 Web Project 0 | Search</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <link rel="stylesheet" href="assets/css/styles.css">
-        <script src="assets/js/time-stamp.js"></script>
-    </head>
-    <body>
-        <div id="header">
-            <h2>MJBishop - CS50 Web Project 0 - Search</h2>
-            <p>Design a front-end for Google Search, Google Image Search, and Google Advanced Search.</p>
-        </div>
-        <div id="grid">
-            <div id="grid-item">
-                <video id="video" width="95%" controls src="assets/videos/search.mov"></video>
-            </div>
-            <div id="grid-item">
-                <div id="buttons">
-                    <h3>Specification:</h3>
-                    <button data-timestamp="1">0:01 - Pages</button>
-                    <button data-timestamp="15">0:15 - Query Text</button>
-                    <button data-timestamp="30">0:30 - Query Images</button>
-                    <button data-timestamp="46">0:46 - Query Advanced</button>
-                    <button data-timestamp="74">1:14 - Appearance</button>
-                    <button data-timestamp="102">1:42 - Lucky</button>
-                    <button data-timestamp="117">1:57 - Aesthetics</button>
+<html data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Projects - CS50W</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/time-stamp.js"></script>
+</head>
+
+<body>
+    <main class="page projets-page">
+        <section class="mt-4">
+            <div class="container">
+                <div class="row top-0">
+                    <div class="col-md-12 col-lg-12 col-xxl-12">
+                        <div class="project-card-no-image" style="min-height: 30px;border-top-color: var(--bs-red);min-width: 20px;">
+                            <h3 style="min-width: 20px;min-height: 20px;">Project 0 : Search</h3>
+                            <h4 style="min-width: 20px;min-height: 20px;"><span style="color: rgb(0, 0, 0);">Design a front-end for Google Search, Google Image Search, and Google Advanced Search.</span></h4>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-7 col-xxl-8 mb-2">
+                        <video id="video" width="100%" controls src="assets/videos/search.mov"></video>
+                    </div>
+                    <div class="col-md-12 col-lg-5 col-xxl-4">
+                        <div class="card">
+                            <div class="card-body" id="buttons">
+                                <h6 class="text-muted card-subtitle mb-3">SPECIFICATION:</h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="1">0:01 - Pages</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="15">0:15 - Query Text</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="30">0:30 - Query Images</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="46">0:46 - Query Advanced</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="74">1:14 - Appearance</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="102">1:42 - Lucky</a>
+                                </h6>
+                                <h6 class="text-muted card-subtitle mb-3">
+                                    <a class="search-hover" style="cursor: pointer; width: inherit;" data-timestamp="117">1:57 - Aesthetics</a>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </body>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>
